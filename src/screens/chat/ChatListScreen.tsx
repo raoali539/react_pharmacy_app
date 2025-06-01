@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   View,
@@ -14,6 +13,7 @@ import { Icon } from '@rneui/base';
 import theme from '../../assets/theme';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils/globalFunctions';
 import { useNavigation } from '@react-navigation/native';
+import Animated, { FadeInRight, Layout } from 'react-native-reanimated';
 
 interface ChatPreview {
   id: string;
@@ -65,70 +65,80 @@ const ChatListScreen = () => {
   };
 
   const renderChatItem = ({ item }: { item: ChatPreview }) => (
-    <TouchableOpacity 
-      style={[styles.chatItem, item.unreadCount > 0 && styles.unreadChatItem]}
-      onPress={() => navigateToChat(item)}
-      activeOpacity={0.7}
+    <Animated.View
+      entering={FadeInRight}
+      layout={Layout.springify()}
     >
-      <View style={styles.avatarContainer}>
-        {item.avatar ? (
-          <Image source={{ uri: item.avatar }} style={styles.avatar} />
-        ) : (
-          <View style={styles.avatarPlaceholder}>
-            <Text style={styles.avatarText}>
-              {item.recipientName.charAt(0).toUpperCase()}
-            </Text>
-          </View>
-        )}
-        {item.unreadCount > 0 && (
-          <View style={styles.onlineIndicator} />
-        )}
-      </View>
-
-      <View style={styles.chatInfo}>
-        <View style={styles.chatHeader}>
-          <Text style={[
-            styles.recipientName,
-            item.unreadCount > 0 && styles.unreadText
-          ]}>
-            {item.recipientName}
-          </Text>
-          <Text style={[
-            styles.timestamp,
-            item.unreadCount > 0 && styles.unreadTimestamp
-          ]}>
-            {formatTime(item.timestamp)}
-          </Text>
-        </View>
-
-        <View style={styles.messagePreview}>
-          <Text 
-            style={[
-              styles.lastMessage,
-              item.unreadCount > 0 && styles.unreadText
-            ]} 
-            numberOfLines={1}
-          >
-            {item.lastMessage}
-          </Text>
-          {item.unreadCount > 0 && (
-            <View style={styles.unreadBadge}>
-              <Text style={styles.unreadCount}>{item.unreadCount}</Text>
+      <TouchableOpacity 
+        style={[styles.chatItem, item.unreadCount > 0 && styles.unreadChatItem]}
+        onPress={() => navigateToChat(item)}
+        activeOpacity={0.7}
+      >
+        <View style={styles.avatarContainer}>
+          {item.avatar ? (
+            <Image source={{ uri: item.avatar }} style={styles.avatar} />
+          ) : (
+            <View style={styles.avatarPlaceholder}>
+              <Text style={styles.avatarText}>
+                {item.recipientName.charAt(0).toUpperCase()}
+              </Text>
             </View>
           )}
+          {item.unreadCount > 0 && (
+            <View style={styles.onlineIndicator} />
+          )}
         </View>
-      </View>
-    </TouchableOpacity>
+
+        <View style={styles.chatInfo}>
+          <View style={styles.chatHeader}>
+            <Text style={[
+              styles.recipientName,
+              item.unreadCount > 0 && styles.unreadText
+            ]}>
+              {item.recipientName}
+            </Text>
+            <Text style={[
+              styles.timestamp,
+              item.unreadCount > 0 && styles.unreadTimestamp
+            ]}>
+              {formatTime(item.timestamp)}
+            </Text>
+          </View>
+
+          <View style={styles.messagePreview}>
+            <Text 
+              style={[
+                styles.lastMessage,
+                item.unreadCount > 0 && styles.unreadText
+              ]} 
+              numberOfLines={1}
+            >
+              {item.lastMessage}
+            </Text>
+            {item.unreadCount > 0 && (
+              <View style={styles.unreadBadge}>
+                <Text style={styles.unreadCount}>{item.unreadCount}</Text>
+              </View>
+            )}
+          </View>
+        </View>
+      </TouchableOpacity>
+    </Animated.View>
   );
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Messages</Text>
-        <TouchableOpacity style={styles.searchButton}>
-          <Icon name="search" type="feather" size={22}       />
-        </TouchableOpacity>
+        <View style={styles.headerRight}>
+          <TouchableOpacity style={styles.iconButton}>
+            <Icon name="edit-2" type="feather" size={20} color={theme.text} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.searchButton}>
+            <Icon name="search" type="feather" size={20} color={theme.text} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {chats.length === 0 ? (
@@ -153,51 +163,68 @@ const ChatListScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.background,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: wp(4),
-    backgroundColor: '#fff',
+    paddingTop: hp(2),
+    paddingBottom: hp(2),
+    backgroundColor: theme.background,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: 'rgba(0,0,0,0.05)',
   },
   headerTitle: {
-    fontSize: wp(5),
-    fontWeight: '600',
-         
+    fontSize: wp(6),
+    fontWeight: '700',
+    color: theme.text,
+    letterSpacing: -0.5,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: wp(3),
+  },
+  iconButton: {
+    width: wp(10),
+    height: wp(10),
+    borderRadius: wp(5),
+    backgroundColor: 'rgba(0,0,0,0.05)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   searchButton: {
     width: wp(10),
     height: wp(10),
     borderRadius: wp(5),
-    backgroundColor: '#f0f0f0',
+    backgroundColor: 'rgba(0,0,0,0.05)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   listContent: {
     padding: wp(4),
+    paddingTop: hp(1),
   },
   chatItem: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: wp(3),
+    backgroundColor: theme.background,
+    borderRadius: wp(4),
+    padding: wp(3.5),
     marginBottom: hp(2),
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 1,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.08,
+    shadowRadius: 2.84,
+    elevation: 2,
   },
   unreadChatItem: {
-    backgroundColor: '#fff',
+    backgroundColor: `${theme.active}10`,
     borderLeftWidth: 3,
     borderLeftColor: theme.active,
   },
@@ -206,22 +233,22 @@ const styles = StyleSheet.create({
     marginRight: wp(3),
   },
   avatar: {
-    width: wp(14),
-    height: wp(14),
-    borderRadius: wp(7),
-    backgroundColor: '#f0f0f0',
+    width: wp(13),
+    height: wp(13),
+    borderRadius: wp(6.5),
+    backgroundColor: theme.border,
   },
   avatarPlaceholder: {
-    width: wp(14),
-    height: wp(14),
-    borderRadius: wp(7),
+    width: wp(13),
+    height: wp(13),
+    borderRadius: wp(6.5),
     backgroundColor: theme.active,
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarText: {
     color: '#fff',
-    fontSize: wp(6),
+    fontSize: wp(5),
     fontWeight: '600',
   },
   onlineIndicator: {
@@ -276,7 +303,7 @@ const styles = StyleSheet.create({
     minWidth: wp(5),
     height: wp(5),
     borderRadius: wp(2.5),
-    backgroundColor: theme.active,
+    backgroundColor: theme.background,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: wp(1.5),
@@ -293,17 +320,18 @@ const styles = StyleSheet.create({
     padding: wp(8),
   },
   emptyText: {
-    fontSize: wp(5),
+    fontSize: wp(4.5),
     fontWeight: '600',
-         
+    color: theme.text,
     marginTop: hp(2),
     marginBottom: hp(1),
   },
   emptySubtext: {
     fontSize: wp(3.5),
-         
+    color: theme.textLight,
     textAlign: 'center',
     lineHeight: wp(5),
+    maxWidth: wp(70),
   },
 });
 

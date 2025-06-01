@@ -1,10 +1,11 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
-import { Icon } from '@rneui/base';
 import { useCart } from '../contexts/CartContext';
 import { widthPercentageToDP as wp ,heightPercentageToDP as hp } from '../utils/globalFunctions';
-import theme from '../assets/theme';
+import theme, { TYPOGRAPHY_STYLES } from '../assets/theme';
+import { Icon } from '@rneui/base';
+
 
 interface HeaderProps {
   onMenuPress?: () => void;
@@ -35,7 +36,7 @@ const Header: React.FC<HeaderProps> = ({
         accessibilityRole="header"
       >
         <View style={styles.logoContainer}>
-          <Text style={styles.logoText}>Dharmacy</Text>
+          <Text style={[styles.logoText,TYPOGRAPHY_STYLES.header12]}>Dharmacy</Text>
         </View>
       </View>
       
@@ -48,7 +49,8 @@ const Header: React.FC<HeaderProps> = ({
           accessibilityLabel={`Notifications${hasNotifications ? ', new notifications available' : ''}`}
           accessibilityHint="Opens notifications screen"
         >
-          <Icon name="bell" type="feather" size={22} color="#000" />
+
+         <Icon name="notifications" size={30} color="#900" />
           {hasNotifications && <View style={styles.notificationBadge} />}
         </TouchableOpacity>
         <TouchableOpacity 
@@ -76,20 +78,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: wp(4),
+    paddingHorizontal: wp(1.5),
     paddingVertical: hp(1.5),
-    backgroundColor: '#fff',
-    // ...Platform.select({
-    //   ios: {
-    //     shadowColor: '#000',
-    //     shadowOffset: { width: 0, height: 2 },
-    //     shadowOpacity: 0.1,
-    //     shadowRadius: 4,
-    //   },
-    //   android: {
-    //     elevation: 4,
-    //   },
-    // }),
+        backgroundColor: theme.background,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
   },
   titleContainer: {
     alignItems: 'center',
@@ -99,8 +101,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logoText: {
-    fontSize: 20,
-    fontWeight: '600',
     color: theme.active,
     marginLeft: 8,
   },
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: theme.active,
+    backgroundColor: theme.background,
   },
   cartBadge: {
     position: 'absolute',
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     minWidth: 16,
     height: 16,
     borderRadius: 8,
-    backgroundColor: theme.active,
+    backgroundColor: theme.background,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 4,

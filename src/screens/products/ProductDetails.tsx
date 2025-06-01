@@ -121,7 +121,7 @@ export default ProductDetails;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+            backgroundColor: theme.background,
   },
   header: {
     flexDirection: 'row',
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     padding: wp(4),
     borderTopWidth: 1,
     borderTopColor: '#e0e0e0',
-    backgroundColor: '#fff',
+            backgroundColor: theme.background,
   },
   quantitySelector: {
     flexDirection: 'row',

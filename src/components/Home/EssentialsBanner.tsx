@@ -47,7 +47,6 @@ const FloatingImage = ({ style, delay = 0 }: FloatingImageProps) => {
 const EssentialsBanner = () => {
   return (
     <TouchableOpacity activeOpacity={0.9} style={styles.banner}>
-    
         <View style={styles.leftContent}>
           <View style={styles.iconContainer}>
             <Icon name="shopping-bag" type="feather" size={24} color="#fff" />
@@ -86,7 +85,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: theme.active,
+    backgroundColor: theme.background,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
@@ -106,7 +105,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 12,
-    backgroundColor: '#fff',
+            backgroundColor: theme.background,
     alignSelf: 'flex-start',
     paddingVertical: 6,
     paddingHorizontal: 12,
@@ -128,17 +127,17 @@ const styles = StyleSheet.create({
     borderRadius: wp(7.5),
   },
   image1: {
-    backgroundColor: '#fff',
+            backgroundColor: theme.background,
     top: '10%',
     right: '10%',
   },
   image2: {
-    backgroundColor: '#fff',
+            backgroundColor: theme.background,
     top: '40%',
     right: '30%',
   },
   image3: {
-    backgroundColor: '#fff',
+            backgroundColor: theme.background,
     top: '60%',
     right: '5%',
   },

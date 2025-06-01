@@ -137,14 +137,22 @@ const SettingsScreen = () => {
   const renderSettingsItem = ({ title, icon, iconType, onPress, rightText }: SettingsItem) => (
     <TouchableOpacity
       key={title}
-      style={styles.settingsItem}
+      style={[
+        styles.settingsItem,
+        title === 'Log out' && styles.logoutItem
+      ]}
       onPress={onPress}
       activeOpacity={0.7}
     >
       <View style={styles.settingsItemLeft}>
         {icon && iconType && (
-          <View style={styles.iconContainer}>
-            <Icon name={icon} type={iconType} size={22} color={theme.active} />
+          <View style={[styles.iconContainer, title === 'Log out' && styles.logoutIconContainer]}>
+            <Icon 
+              name={icon} 
+              type={iconType} 
+              size={22} 
+              color={title === 'Log out' ? theme.error : theme.active} 
+            />
           </View>
         )}
         <Text style={[
@@ -155,7 +163,12 @@ const SettingsScreen = () => {
       {rightText ? (
         <Text style={styles.rightText}>{rightText}</Text>
       ) : (
-        <Icon name="chevron-right" type="feather" size={20} />
+        <Icon 
+          name="chevron-right" 
+          type="feather" 
+          size={18} 
+          color={title === 'Log out' ? theme.error : theme.textSecondary} 
+        />
       )}
     </TouchableOpacity>
   );
@@ -176,7 +189,7 @@ const SettingsScreen = () => {
         {settingsSections.map((section, index) => (
           <View key={index} style={styles.sectionContainer}>
             {section.title && <Text style={styles.sectionTitle}>{section.title}</Text>}
-            <View style={styles.settingsList}>
+            <View style={styles.settingsList}>ground,
               {section.items.map(renderSettingsItem)}
             </View>
           </View>
@@ -189,86 +202,117 @@ const SettingsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: theme.background,
   },
   content: {
     padding: wp(4),
+    paddingBottom: hp(4),
   },
   profileSection: {
     alignItems: 'center',
-    marginBottom: hp(3),
+    marginBottom: hp(4),
+    marginTop: hp(2),
   },
   profileImageContainer: {
-    width: wp(20),
-    height: wp(20),
-    borderRadius: wp(10),
-    backgroundColor: '#333',
+    width: wp(24),
+    height: wp(24),
+    borderRadius: wp(12),
+    backgroundColor: theme.background,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: hp(1),
+    marginBottom: hp(1.5),
+    shadowColor: theme.primary,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
   profileInitial: {
-    color: '#fff',
-    fontSize: wp(10),
+    color: theme.background,
+    fontSize: wp(12),
     fontWeight: '600',
   },
   profileName: {
     fontSize: wp(5),
-    fontWeight: '600',
-     
+    fontWeight: '700',
+    color: theme.text,
     marginBottom: hp(0.5),
   },
   profileSubtitle: {
     fontSize: wp(3.5),
-     
+    color: theme.textSecondary,
+    letterSpacing: 0.5,
   },
   sectionContainer: {
     marginBottom: hp(3),
   },
   sectionTitle: {
-    fontSize: wp(4),
-    fontWeight: '500',
-     
+    fontSize: wp(3.8),
+    fontWeight: '600',
+    color: theme.textSecondary,
     marginBottom: hp(1),
+    marginLeft: wp(2),
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   settingsList: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
+    backgroundColor: theme.surface,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 3,
   },
   settingsItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: hp(2),
+    paddingVertical: hp(1.8),
     paddingHorizontal: wp(4),
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: theme.border,
   },
   settingsItemLeft: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
   },
   iconContainer: {
     width: wp(10),
     height: wp(10),
     borderRadius: wp(5),
-    backgroundColor: '#F5F6FA',
+    backgroundColor: theme.surfaceVariant,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: wp(3),
   },
   settingsItemTitle: {
     fontSize: wp(4),
-     
-    fontWeight: '400',
+    color: theme.text,
+    fontWeight: '500',
+    flex: 1,
   },
   rightText: {
     fontSize: wp(4),
-     
-    fontWeight: '500',
+    color: theme.primary,
+    fontWeight: '600',
+  },
+  logoutItem: {
+    borderBottomWidth: 0,
   },
   logoutText: {
-    color: '#d32f2f',
+    color: theme.error,
+    fontWeight: '600',
+  },
+  logoutIconContainer: {
+    backgroundColor: theme.coldLight,
   },
 });
 

@@ -26,7 +26,7 @@ const BrowseProducts = () => {
     };
 
     const renderCategoryCard = (title: string, image: string) => (
-        <TouchableOpacity 
+        <TouchableOpacity
             style={styles.categoryCard}
             onPress={() => handleCategoryPress(title)}
         >
@@ -36,7 +36,7 @@ const BrowseProducts = () => {
     );
 
     const renderForYouSection = (title: string, image: string) => (
-        <TouchableOpacity 
+        <TouchableOpacity
             style={styles.forYouCard}
             onPress={() => handleCategoryPress(title)}
         >
@@ -47,11 +47,10 @@ const BrowseProducts = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-
+            <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
             <View style={styles.header}>
                 <View style={styles.searchContainer}>
-                    <Icon name="search" type="feather" size={20}  style={styles.searchIcon} />
+                    <Icon name="search" type="feather" size={20} style={styles.searchIcon} />
                     <TextInput
                         style={styles.searchInput}
                         placeholder="Search..."
@@ -120,10 +119,11 @@ const BrowseProducts = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: theme.background,
+
     },
     header: {
-        backgroundColor: '#fff',
+        backgroundColor: theme.background,
         padding: wp(4),
         borderBottomWidth: 1,
         borderBottomColor: '#eee',
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
         flex: 1,
         height: hp(5.5),
         fontSize: wp(3.8),
-         },
+    },
     categoriesBanner: {
         padding: wp(4),
     },
@@ -151,11 +151,13 @@ const styles = StyleSheet.create({
         height: hp(15),
         borderRadius: 10,
         marginTop: hp(1),
+        borderWidth: 1,
+        borderColor: '#ddd',
     },
     sectionTitle: {
         fontSize: wp(5),
         fontWeight: '600',
-             marginBottom: hp(1),
+        marginBottom: hp(1),
     },
     quickCategories: {
         flexDirection: 'row',
@@ -166,16 +168,23 @@ const styles = StyleSheet.create({
     quickCategoryCard: {
         width: '48%',
         height: hp(10),
-        backgroundColor: '#FFF5F5',
+        backgroundColor: theme.active,
         borderRadius: 10,
         padding: wp(3),
         justifyContent: 'center',
         marginBottom: wp(2),
+        borderWidth: 1,
+        borderColor: 'gray',
+        display: 'flex',
+        alignContent: 'center',
+        alignItems: 'center',
     },
     quickCategoryTitle: {
         fontSize: wp(3.5),
         fontWeight: '500',
-         },
+        color: '#fff',
+        cursor: 'pointer',
+    },
     forYouSection: {
         padding: wp(4),
     },
@@ -196,7 +205,7 @@ const styles = StyleSheet.create({
     forYouTitle: {
         fontSize: wp(3.5),
         marginTop: hp(1),
-         },
+    },
     browseAll: {
         padding: wp(4),
     },
@@ -204,6 +213,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         gap: wp(2),
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: hp(1),
+        paddingBottom: hp(2),
+        borderBottomWidth: 1,
+        borderBottomColor: '#ddd',
+        backgroundColor: theme.background,
+        borderRadius: 10,
+        paddingHorizontal: wp(2),
     },
     categoryCard: {
         width: '48%',
@@ -217,7 +235,7 @@ const styles = StyleSheet.create({
     categoryTitle: {
         fontSize: wp(3.5),
         marginTop: hp(1),
-         },
+    },
 });
 
 export default BrowseProducts;

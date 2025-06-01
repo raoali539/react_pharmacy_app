@@ -1,6 +1,5 @@
-
 import React, { useCallback, useMemo } from "react";
-import { Platform, TouchableOpacity, View, Animated } from "react-native";
+import { Platform, TouchableOpacity, View, Animated, Text } from "react-native";
 import { BottomTabBarProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Icon } from "@rneui/base";
 import  {styles}  from "./styles";
@@ -18,10 +17,11 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({
   navigation,
 }) => {
   return (
-    <View>
+    <View style={{ flexDirection: 'row', backgroundColor: '#000000' }}>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const isFocused = state.index === index;
+        const label = options.tabBarLabel || route.name;
 
         const onPress = useCallback(() => {
           navigation.emit({
@@ -35,7 +35,7 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({
         const tabBarIcon = useMemo(() => {
           return options.tabBarIcon
             ? options.tabBarIcon({
-              color: isFocused ? theme.active : "rgba(255, 255, 255, 0.6)",
+              color: isFocused ? 'white' : "rgba(255, 255, 255, 0.6)",
               focused: isFocused,
               size: 24,
             })
@@ -49,11 +49,25 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({
             activeOpacity={0.7}
             style={[
               styles.tabButton,
+              {
+                flex: 1,
+                alignItems: 'center',
+                paddingVertical: 8,
+              },
               index === 0 && styles.firstButton,
               index === state.routes.length - 1 && styles.lastButton,
             ]}
           >
             {tabBarIcon}
+            <Text
+              style={{
+                color: isFocused ? 'white' : "rgba(255, 255, 255, 0.6)",
+                fontSize: 12,
+                marginTop: 4,
+              }}
+            >
+              {label}
+            </Text>
           </TouchableOpacity>
         );
       })}
@@ -66,10 +80,10 @@ function BottomTab() {
 
   const tabBarStyle = useMemo(
     () => ({
-      backgroundColor: '#000000',
+      backgroundColor:theme.active,
       height: Platform.OS === "android"
-        ? heightPercentageToDP(8.2)
-        : heightPercentageToDP(9.2),
+        ? heightPercentageToDP(12)
+        : heightPercentageToDP(13),
       borderTopWidth: 0,
       position: 'absolute' as const,
       left: 0,
@@ -86,8 +100,8 @@ function BottomTab() {
       tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{
         headerShown: false,
-        tabBarShowLabel: false,
-        tabBarActiveTintColor: theme.active,
+        tabBarShowLabel: true,
+        tabBarActiveTintColor: '#ffffff',
         tabBarInactiveTintColor: "rgba(255, 255, 255, 0.6)",
         tabBarStyle: tabBarStyle,
       }}
@@ -99,26 +113,26 @@ function BottomTab() {
           tabBarIcon: ({ focused, color }) => (
             <Icon
               name="home"
-              type="octicon"
+              type="material"
               color={color}
               size={22}
-                  />
+            />
           ),
         }}
       />
 
       {/* Browse All Categories */}
       <Tab.Screen
-        name="BrowseProducts"
+        name="Browse"
         component={BrowseProducts}
         options={{
           tabBarIcon: ({ focused, color }) => (
             <Icon
-              name="grid"
-              type="feather"
+              name="apps"
+              type="material"
               color={color}
               size={22}
-                  />
+            />
           ),
         }}
       />
@@ -130,11 +144,11 @@ function BottomTab() {
         options={{
           tabBarIcon: ({ focused, color }) => (
             <Icon
-              name="shopping-bag"
-              type="feather"
+              name="shopping-cart"
+              type="material"
               color={color}
               size={22}
-                  />
+            />
           ),
         }}
       />
@@ -146,8 +160,8 @@ function BottomTab() {
         options={{
           tabBarIcon: ({ focused, color }) => (
             <Icon
-              name="chatbubbles"
-              type="ionicon"
+              name="chat"
+              type="material"
               color={color}
               size={22}
             />
@@ -162,10 +176,10 @@ function BottomTab() {
           tabBarIcon: ({ focused, color }) => (
             <Icon
               name="settings"
-              type="ionicon"
+              type="material"
               color={color}
               size={22}
-                  />
+            />
           ),
         }}
       />

@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import {
   View,
@@ -23,6 +21,7 @@ const CartScreen = () => {
   const { state, dispatch } = useCart();
   const navigation = useNavigation();
   const scaleAnim = new Animated.Value(1);
+  const slideAnimation = new Animated.Value(0);
   const [activeTab, setActiveTab] = useState<'cart' | 'saved'>('cart');
 
   // Add safe checks for arrays
@@ -60,15 +59,49 @@ const CartScreen = () => {
     navigation.navigate('Browse' as never);
   };
 
-  const renderCartItem = ({ item }: any) => (
-    <Animated.View style={[styles.cartItem, { transform: [{ scale: scaleAnim }] }]}>
+  const animateItem = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.95,
+      useNativeDriver: true,
+      tension: 100,
+      friction: 8,
+    }).start(() => {
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        useNativeDriver: true,
+        tension: 100,
+        friction: 8,
+      }).start();
+    });
+  };
+
+  const renderCartItem = ({ item, index }: any) => (
+    <Animated.View 
+      style={[
+        styles.cartItem, 
+        { 
+          transform: [{ scale: scaleAnim }],
+          opacity: slideAnimation.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 1]
+          }),
+        }
+      ]}
+    >
       <View style={styles.cartItemContent}>
-        <Image source={{ uri: item.image }} style={styles.itemImage} />
+        <Image 
+          source={{ uri: item.image }} 
+          style={styles.itemImage}
+          resizeMode="cover"
+        />
         
         <View style={styles.itemDetailsContainer}>
           <View style={styles.itemInfo}>
             <Text style={styles.itemName} numberOfLines={2}>{item.name}</Text>
-            <Text style={styles.vendorName}>{item.vendorName}</Text>
+            <View style={styles.vendorContainer}>
+              <Icon name="shop" type="feather" size={12} color="#666" />
+              <Text style={styles.vendorName}>{item.vendorName}</Text>
+            </View>
             <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
           </View>
 
@@ -76,33 +109,38 @@ const CartScreen = () => {
             <View style={styles.quantityContainer}>
               <TouchableOpacity
                 style={[styles.quantityButton, item.quantity === 1 && styles.quantityButtonDisabled]}
-                onPress={() => updateQuantity(item.id, item.quantity - 1)}
+                onPress={() => {
+                  animateItem();
+                  updateQuantity(item.id, item.quantity - 1);
+                }}
                 disabled={item.quantity === 1}
               >
-                <Icon name="minus" type="feather" size={16} 
-               />
+                <Icon name="minus" type="feather" size={16} color={item.quantity === 1 ? '#999' : theme.active} />
               </TouchableOpacity>
               <Text style={styles.quantity}>{item.quantity}</Text>
               <TouchableOpacity
                 style={styles.quantityButton}
-                onPress={() => updateQuantity(item.id, item.quantity + 1)}
+                onPress={() => {
+                  animateItem();
+                  updateQuantity(item.id, item.quantity + 1);
+                }}
               >
-                <Icon name="plus" type="feather" size={16}       />
+                <Icon name="plus" type="feather" size={16} color={theme.active} />
               </TouchableOpacity>
             </View>
             
             <View style={styles.actionButtons}>
               <TouchableOpacity 
-                style={styles.actionButton}
+                style={[styles.actionButton, styles.saveButton]}
                 onPress={() => handleSaveForLater(item)}
               >
-                <Icon name="bookmark" type="feather" size={20}     />
+                <Icon name="bookmark" type="feather" size={20} color={theme.active} />
               </TouchableOpacity>
               <TouchableOpacity 
-                style={styles.actionButton}
+                style={[styles.actionButton, styles.removeButton]}
                 onPress={() => handleRemoveItem(item.id)}
               >
-                <Icon name="trash-2" type="feather" size={20}      />
+                <Icon name="trash-2" type="feather" size={20} color="#ff4444" />
               </TouchableOpacity>
             </View>
           </View>
@@ -139,14 +177,15 @@ const CartScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      <Text style={styles.headerTitle}>Cart</Text>
+      <Text style={styles.headerTitle}>Shopping Cart</Text>
       
       <View style={styles.searchContainer}>
-        <Icon name="search" type="feather" size={20}     style={styles.searchIcon} />
+        <Icon name="search" type="feather" size={20} color="#666" style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
-          placeholder="Search Medicine cart"
-          placeholderTextColor={theme.inActiveColor}
+          placeholder="Search in cart"
+          placeholderTextColor="#999"
+          returnKeyType="search"
         />
       </View>
 
@@ -210,8 +249,8 @@ const CartScreen = () => {
                   style={styles.checkoutButton}
                   onPress={proceedToCheckout}
                 >
-                  <Text style={styles.checkoutButtonText}>Checkout</Text>
-                  <Icon name="arrow-right" type="feather" size={20} color="#fff" style={styles.checkoutIcon} />
+                  <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
+                  <Icon name="arrow-right" type="feather" size={20} color="#fff" />
                 </TouchableOpacity>
               </View>
             </View>
@@ -225,7 +264,7 @@ const CartScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+            backgroundColor: theme.background,
   },
   headerTitle: {
     fontSize: wp(5),
@@ -237,11 +276,19 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f8f9fa',
     marginHorizontal: wp(4),
-    borderRadius: 25,
+    borderRadius: 12,
     paddingHorizontal: wp(4),
     height: hp(6),
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   searchIcon: {
     marginRight: wp(2),
@@ -249,6 +296,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: wp(3.8),
+    color:'#000'
          
   },
   tabContainer: {
@@ -285,15 +333,15 @@ const styles = StyleSheet.create({
   cartItem: {
     backgroundColor: '#fff',
     borderRadius: 16,
-    padding: wp(3),
+    padding: wp(4),
     marginBottom: hp(2),
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 4,
     },
     shadowOpacity: 0.1,
-    shadowRadius: 3.84,
+    shadowRadius: 8,
     elevation: 5,
   },
   cartItemContent: {
@@ -327,6 +375,12 @@ const styles = StyleSheet.create({
     marginBottom: hp(0.5),
     flexWrap: 'wrap',
   },
+  vendorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: wp(1),
+    marginVertical: hp(0.5),
+  },
   vendorName: {
     fontSize: wp(3.2),
         
@@ -349,7 +403,7 @@ const styles = StyleSheet.create({
     width: wp(7),
     height: wp(7),
     borderRadius: 8,
-    backgroundColor: '#fff',
+            backgroundColor: theme.background,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -413,7 +467,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   footer: {
-    backgroundColor: '#fff',
+            backgroundColor: theme.background,
     paddingHorizontal: wp(4),
     paddingVertical: hp(2),
     borderTopWidth: 1,
@@ -438,9 +492,17 @@ const styles = StyleSheet.create({
     backgroundColor: theme.active,
     paddingHorizontal: wp(6),
     paddingVertical: hp(1.5),
-    borderRadius: 25,
+    borderRadius: 12,
     flexDirection: 'row',
     alignItems: 'center',
+    shadowColor: theme.active,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 4,
   },
   checkoutButtonText: {
     color: '#fff',

@@ -28,7 +28,7 @@ import SectionHeader from '../../../common/SectionHeader';
 import EssentialsBanner from '../../../components/Home/EssentialsBanner';
 import Categories from '../../../components/Home/Categories';
 import VirtualizedHorizontalList from '../../../common/VirtualizedHorizontalList';
-import { heightPercentageToDP as hp ,widthPercentageToDP as wp } from '../../../utils/globalFunctions';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../../utils/globalFunctions';
 
 interface Product {
   id: string;
@@ -157,7 +157,7 @@ const Home = () => {
   const keyExtractor = useCallback((item: Product) => item.id.toString(), []);
 
   const handleNotificationPress = () => {
-    // navigation.navigate(routeNames.Notifications);
+    navigation.navigate('Notifications');
   };
 
   const handleCartPress = () => {
@@ -175,20 +175,21 @@ const Home = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      
+      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
       <Header
         onMenuPress={() => console.log('Menu pressed')}
         onNotificationPress={handleNotificationPress}
         onCartPress={handleCartPress}
       />
-      <View>
-        <Text style={{ fontSize: 24, fontWeight: 'bold', paddingHorizontal:16 }}>
+      <View style={{
+        marginTop: hp(2),
+      }}>
+        <Text style={{ fontSize: 24, fontWeight: 'bold', paddingHorizontal: 12 }}>
           Welcome Ali
         </Text>
       </View>
 
-      <ScrollView 
+      <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
         refreshControl={
@@ -200,25 +201,14 @@ const Home = () => {
           />
         }
       >
-        {/* <View style={styles.searchContainer}>
-          <SearchBar
-            onSearch={setSearchQuery}
-            onFocus={() => console.log('Search focused')}
-            onBlur={() => console.log('Search blurred')}
-          />
-        </View> */}
-
         <Categories onSelectCategory={(category) => console.log('Selected:', category)} />
-        
-        {/* <Promotions onPromotionPress={(promo) => console.log('Promotion:', promo)} /> */}
-        
         <View style={styles.bannerContainer}>
           <EssentialsBanner />
         </View>
 
         <View style={styles.section}>
-          <SectionHeader 
-            title="All Products" 
+          <SectionHeader
+            title="All Products"
             onViewAll={handleViewAll}
           />
           <VirtualizedHorizontalList
@@ -229,20 +219,6 @@ const Home = () => {
             contentContainerStyle={styles.productList}
           />
         </View>
-
-        {/* <View style={styles.section}>
-          <SectionHeader 
-            title="Trending Now" 
-            onViewAll={() => console.log('View all trending')}
-          />
-          <VirtualizedHorizontalList
-            data={TRENDING_PRODUCTS}
-            renderItem={renderProduct}
-            keyExtractor={keyExtractor}
-            itemWidth={wp(44)}
-            containerStyle={styles.productList}
-          />
-        </View> */}
       </ScrollView>
     </SafeAreaView>
   );
@@ -251,13 +227,13 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#FEF9F2',
   },
   content: {
     paddingBottom: hp(2),
   },
   searchContainer: {
-    backgroundColor: '#fff',
+            backgroundColor: theme.background,
     ...Platform.select({
       ios: {
         shadowColor: '#000',
@@ -273,7 +249,7 @@ const styles = StyleSheet.create({
   },
   bannerContainer: {
     marginVertical: hp(2),
-    backgroundColor:'#F2F2F2'
+    backgroundColor: '#F2F2F2'
   },
   section: {
     marginTop: hp(3),

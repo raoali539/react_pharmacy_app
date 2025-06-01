@@ -1,7 +1,13 @@
 import { fonts } from "../utils/typography";
 
 const theme = {
-  active: "#00C7BE",
+  background:'#FEF9F2',
+  primary: "#00C7BE",
+  text: "#33384B",
+  error: "#d9534f",
+  surfaceVariant: "#F2F2F2",
+  textSecondary: "#7D848D",
+  active: "#000",
   lightActive: "#04e0d6",
   inActive: "#929299",
   dark: "#2C3434",
@@ -43,6 +49,12 @@ export const TYPOGRAPHY_STYLES = {
     fontSize: 64,
     lineHeight: 84,
   },
+  header:{
+    fontFamily: fonts.BOLD,
+    fontWeight: "600",
+    fontSize: 32,
+    lineHeight: 40,
+  },
   titletext: {
     fontFamily: fonts.BOLD,
     fontWeight: "600",
@@ -79,10 +91,9 @@ export const TYPOGRAPHY_STYLES = {
     fontSize: 12,
     lineHeight: 16,
   },
-  header: {
+  header12: {
     fontFamily: fonts.MEDIUM,
-    fontSize: 16,
-    fontWeight: "500",
+    fontSize: 24,
     lineHeight: 24,
   },
   points: {

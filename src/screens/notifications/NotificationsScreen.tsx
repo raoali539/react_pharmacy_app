@@ -89,14 +89,14 @@ const NotificationsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+            backgroundColor: theme.background,
   },
   listContainer: {
     padding: wp(4),
 
   },
   notificationItem: {
-    backgroundColor: '#fff',
+            backgroundColor: theme.background,
     padding: wp(4),
     marginBottom: hp(2),
     borderRadius: 8,

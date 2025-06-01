@@ -80,7 +80,7 @@ export default ShowProducts;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+                backgroundColor: theme.background,
     },
     productList: {
         padding: wp(2),
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     productCard: {
         flex: 1,
         margin: wp(2),
-        backgroundColor: '#fff',
+                backgroundColor: theme.background,
         borderRadius: 8,
         overflow: 'hidden',
     },

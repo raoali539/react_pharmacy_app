@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   button: {
-    backgroundColor: theme.active,
+    backgroundColor: theme.background,
     height: hp(7),
     borderRadius: 12,
     justifyContent: 'center',

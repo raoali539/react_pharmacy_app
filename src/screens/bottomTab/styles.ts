@@ -1,52 +1,73 @@
-
-  import { Platform, StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import { heightPercentageToDP, widthPercentageToDP } from "../../utils/globalFunctions";
-  
-  export const styles = StyleSheet.create({
-    tabBar: {
-      flexDirection: "row",
-      position: "relative",
-      justifyContent: "space-between",
-      height:
-        Platform.OS === "android"
-          ? heightPercentageToDP(8.2)
-          : heightPercentageToDP(9.5),
-      backgroundColor: "#fff",
-      paddingTop: 20,
-      ...Platform.select({
-        ios: {
-          // shadowColor: "#000",
-          // shadowOffset: { width: 0, height: -1 },
-          // shadowOpacity: 0.05,
-          // shadowRadius: 1.84,
-          shadowColor: "#000000",
-          shadowOffset: {
-            width: 0,
-            height: 5,
-          },
-          shadowOpacity: 0.2,
-          shadowRadius: 5.62,
+
+export const styles = StyleSheet.create({
+  tabBar: {
+    flexDirection: "row",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    justifyContent: "space-between",
+    height: Platform.OS === "android"
+      ? heightPercentageToDP(7.5)
+      : heightPercentageToDP(8.5),
+    // backgroundColor: "red",
+    paddingHorizontal: widthPercentageToDP(2),
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000000",
+        shadowOffset: {
+          width: 0,
+          height: -3,
         },
-        android: {
-          elevation: 5,
+        shadowOpacity: 0.15,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
+  },
+  tabButton: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: heightPercentageToDP(1),
+    backgroundColor: 'transparent',
+  },
+  middleButton: {
+    top: heightPercentageToDP(-2),
+    backgroundColor: "#000",
+    borderRadius: 30,
+    padding: widthPercentageToDP(2),
+    borderColor: "#fff",
+    borderWidth: 1,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000000",
+        shadowOffset: {
+          width: 0,
+          height: 3,
         },
-      }),
-    },
-    tabButton: {
-      flex: 1,
-      alignItems: "center",
-    },
-    middleButton: {
-      top: heightPercentageToDP(2),
-    },
-    firstButton: {
-      paddingLeft: widthPercentageToDP(3),
-    },
-    lastButton: {
-      paddingRight: widthPercentageToDP(3),
-    },
-    icon: {
-      marginTop: 5,
-    },
-  });
-  
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
+  },
+  firstButton: {
+    paddingLeft: widthPercentageToDP(2),
+  },
+  lastButton: {
+    paddingRight: widthPercentageToDP(2),
+  },
+  icon: {
+    marginTop: Platform.OS === "android" ? 2 : 3,
+    tintColor: "#fff"
+  },
+});

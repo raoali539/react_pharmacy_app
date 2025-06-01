@@ -174,13 +174,15 @@ const ProductCard: React.FC<ProductCardProps> = React.memo(({
 
 const styles = StyleSheet.create({
   container: {
-    width: wp(40),
+    width: wp(50),
     marginRight: wp(4),
-    backgroundColor:"#F2F2F2"
+    backgroundColor:theme.background
   },
   card: {
-    backgroundColor: '#fff',
+        backgroundColor: theme.background,
     borderRadius: 12,
+    borderWidth: 2,
+    borderColor: theme.border,
     overflow: 'hidden',
     ...Platform.select({
       ios: {
@@ -208,7 +210,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 8,
     right: 8,
-    backgroundColor: theme.active,
+    backgroundColor: theme.background,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -249,7 +251,7 @@ const styles = StyleSheet.create({
     textDecorationLine: 'line-through',
   },
   addButton: {
-    backgroundColor: theme.active,
+    backgroundColor: theme.background,
     borderRadius: 20,
     width: 32,
     height: 32,

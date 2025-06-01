@@ -1,5 +1,3 @@
-
-
 // Import necessary modules and components
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -9,6 +7,7 @@ import NotificationsScreen from "../notifications/NotificationsScreen";
 import ProductDetails from "../products/ProductDetails";
 import ShowProducts from "../products/ShowProducts";
 import BrowseProducts from "../products/BrowseProducts";
+import ChatConversationScreen from "../chat/ChatConversationScreen";
 
 // Default option for screens without a header
 const headerShownFalse = { headerShown: false };
@@ -68,6 +67,15 @@ export const homeStackScreens: Array<{
     options: {
       headerShown: true,
       title: "Product Details",
+      headerTitleAlign: "center",
+    },
+  },
+  {
+    name: "ChatConversation",
+    component: ChatConversationScreen,
+    options: {
+      headerShown: true,
+      title: "Chat",
       headerTitleAlign: "center",
     },
   },

@@ -22,7 +22,7 @@ const BrowseProducts = () => {
     const [searchQuery, setSearchQuery] = React.useState('');
 
     const handleCategoryPress = (category: string) => {
-        // navigation.navigate('ShowProducts', { category });
+        navigation.navigate('ShowProducts', { category });
     };
 
     const renderCategoryCard = (title: string, image: string) => (
@@ -72,16 +72,20 @@ const BrowseProducts = () => {
 
                 {/* Quick Category Cards */}
                 <View style={styles.quickCategories}>
-                    <TouchableOpacity style={styles.quickCategoryCard}>
+                    <TouchableOpacity style={styles.quickCategoryCard} 
+                        onPress={() => handleCategoryPress('Medicines')}
+                        >
                         <Text style={styles.quickCategoryTitle}>Bestsellers</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.quickCategoryCard}>
+                    <TouchableOpacity style={styles.quickCategoryCard} 
+                        onPress={() => handleCategoryPress('Medicines')}
+                                            >
                         <Text style={styles.quickCategoryTitle}>Sale</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.quickCategoryCard}>
+                    <TouchableOpacity  onPress={() => handleCategoryPress('Medicines')} style={styles.quickCategoryCard}>
                         <Text style={styles.quickCategoryTitle}>New Products</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.quickCategoryCard}>
+                    <TouchableOpacity  onPress={() => handleCategoryPress('Medicines')} style={styles.quickCategoryCard}>
                         <Text style={styles.quickCategoryTitle}>New Brands</Text>
                     </TouchableOpacity>
                 </View>

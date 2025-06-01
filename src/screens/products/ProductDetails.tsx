@@ -1,7 +1,3 @@
-
-
-
-
 import React, { useState } from 'react';
 import {
   View,
@@ -24,16 +20,20 @@ const ProductDetails = ({ route, navigation }:any) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Text>←</Text>
+          </TouchableOpacity>
           <Text style={styles.headerTitle}>{product.name}</Text>
-          <TouchableOpacity>
+          <TouchableOpacity style={styles.heartButton}>
             <Text style={styles.heartIcon}>♡</Text>
           </TouchableOpacity>
         </View>
 
-        <Image source={{ uri: product.image }} style={styles.productImage} />
+        <View style={styles.imageContainer}>
+          <Image source={{ uri: product.image }} style={styles.productImage} />
+        </View>
 
         <View style={styles.detailsContainer}>
           <Text style={styles.productName}>{product.name}</Text>
@@ -51,20 +51,26 @@ const ProductDetails = ({ route, navigation }:any) => {
 
           <View style={styles.colorSection}>
             <Text style={styles.sectionTitle}>Colour</Text>
-            <View style={styles.colorOptions}>
-              {colors.map((color) => (
-                <TouchableOpacity
-                  key={color}
-                  style={[
-                    styles.colorButton,
-                    selectedColor === color && styles.selectedColor
-                  ]}
-                  onPress={() => setSelectedColor(color)}
-                >
-                  <Text style={styles.colorText}>{color}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <View style={styles.colorOptions}>
+                {colors.map((color) => (
+                  <TouchableOpacity
+                    key={color}
+                    style={[
+                      styles.colorButton,
+                      selectedColor === color && styles.selectedColor,
+                    ]}
+                    onPress={() => setSelectedColor(color)}
+                  >
+                    <View style={[styles.colorDot, { backgroundColor: color.toLowerCase() }]} />
+                    <Text style={[
+                      styles.colorText,
+                      selectedColor === color && styles.selectedColorText
+                    ]}>{color}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </ScrollView>
           </View>
 
           <View style={styles.shippingInfo}>
@@ -72,21 +78,28 @@ const ProductDetails = ({ route, navigation }:any) => {
             <Text style={styles.deliveryDate}>Estimated Delivery May 23 - Jun 4, 2025</Text>
             <Text style={styles.shippingLocation}>Ships from Australia</Text>
 
-            <View style={styles.freeShippingBox}>
-              <Text style={styles.freeShippingText}>Free shipping over $450</Text>
-              <Text style={styles.membershipText}>
-                Available with an Insider membership. Free for 30 days.
-              </Text>
-              <TouchableOpacity>
-                <Text style={styles.learnMore}>Learn more</Text>
-              </TouchableOpacity>
+            <View style={styles.infoCard}>
+              <View style={styles.iconContainer}>
+                <Text>🚚</Text>
+              </View>
+              <View style={styles.infoContent}>
+                <Text style={styles.freeShippingText}>Free shipping over $450</Text>
+                <Text style={styles.membershipText}>
+                  Available with an Insider membership. Free for 30 days.
+                </Text>
+              </View>
             </View>
 
-            <View style={styles.returnsBox}>
-              <Text style={styles.returnsTitle}>Free returns on all opening orders</Text>
-              <Text style={styles.returnsText}>
-                You're eligible for free returns on this order with Caslew Pty Ltd.
-              </Text>
+            <View style={styles.infoCard}>
+              <View style={styles.iconContainer}>
+                <Text>↩️</Text>
+              </View>
+              <View style={styles.infoContent}>
+                <Text style={styles.returnsTitle}>Free returns on all opening orders</Text>
+                <Text style={styles.returnsText}>
+                  You're eligible for free returns on this order with Caslew Pty Ltd.
+                </Text>
+              </View>
             </View>
           </View>
         </View>
@@ -98,14 +111,14 @@ const ProductDetails = ({ route, navigation }:any) => {
             onPress={() => quantity > 1 && setQuantity(quantity - 1)}
             style={styles.quantityButton}
           >
-            <Text>-</Text>
+            <Text style={styles.quantityButtonText}>−</Text>
           </TouchableOpacity>
           <Text style={styles.quantity}>{quantity}</Text>
           <TouchableOpacity
             onPress={() => setQuantity(quantity + 1)}
             style={styles.quantityButton}
           >
-            <Text>+</Text>
+            <Text style={styles.quantityButtonText}>+</Text>
           </TouchableOpacity>
         </View>
         <TouchableOpacity style={styles.addToCartButton}>
@@ -116,12 +129,10 @@ const ProductDetails = ({ route, navigation }:any) => {
   );
 };
 
-
-export default ProductDetails;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-            backgroundColor: theme.background,
+    backgroundColor: theme.background,
   },
   header: {
     flexDirection: 'row',
@@ -130,19 +141,27 @@ const styles = StyleSheet.create({
     padding: wp(4),
   },
   backButton: {
-    fontSize: wp(6),
+    padding: wp(2),
   },
   headerTitle: {
     fontSize: wp(4),
     fontWeight: '500',
   },
+  heartButton: {
+    padding: wp(2),
+  },
   heartIcon: {
     fontSize: wp(6),
   },
+  imageContainer: {
+    backgroundColor: theme.background,
+    height: hp(40),
+    marginBottom: hp(2),
+  },
   productImage: {
     width: '100%',
-    height: hp(30),
-    resizeMode: 'cover',
+    height: '100%',
+    resizeMode: 'contain',
   },
   detailsContainer: {
     padding: wp(4),
@@ -191,14 +210,34 @@ const styles = StyleSheet.create({
     marginBottom: hp(1),
   },
   colorOptions: {
-    flexDirection: 'column',
+    flexDirection: 'row',
+    paddingHorizontal: wp(2),
   },
   colorButton: {
-    padding: wp(3),
-    marginBottom: hp(0.5),
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: wp(4),
+    paddingVertical: wp(2),
+    marginRight: wp(2),
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    alignContent: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.background,
+  },
+  colorDot: {
+    width: wp(3),
+    height: wp(3),
+    borderRadius: wp(1.5),
+    marginRight: wp(2),
   },
   selectedColor: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#000',
+    borderColor: '#000',
+  },
+  selectedColorText: {
+    color: '#fff',
   },
   colorText: {
     fontSize: wp(3.8),
@@ -217,14 +256,20 @@ const styles = StyleSheet.create({
   },
   shippingLocation: {
     fontSize: wp(3.8),
-       
     marginBottom: hp(2),
   },
-  freeShippingBox: {
-    backgroundColor: '#f5f5f5',
+  infoCard: {
+    flexDirection: 'row',
+    backgroundColor: '#f8f8f8',
     padding: wp(4),
-    borderRadius: 8,
+    borderRadius: 12,
     marginBottom: hp(2),
+  },
+  iconContainer: {
+    marginRight: wp(3),
+  },
+  infoContent: {
+    flex: 1,
   },
   freeShippingText: {
     fontSize: wp(3.8),
@@ -233,17 +278,7 @@ const styles = StyleSheet.create({
   },
   membershipText: {
     fontSize: wp(3.5),
-       
     marginBottom: hp(0.5),
-  },
-  learnMore: {
-    fontSize: wp(3.5),
-    textDecorationLine: 'underline',
-  },
-  returnsBox: {
-    backgroundColor: '#f5f5f5',
-    padding: wp(4),
-    borderRadius: 8,
   },
   returnsTitle: {
     fontSize: wp(3.8),
@@ -252,14 +287,13 @@ const styles = StyleSheet.create({
   },
   returnsText: {
     fontSize: wp(3.5),
-       
   },
   bottomBar: {
     flexDirection: 'row',
     padding: wp(4),
     borderTopWidth: 1,
     borderTopColor: '#e0e0e0',
-            backgroundColor: theme.background,
+    backgroundColor: theme.background,
   },
   quantitySelector: {
     flexDirection: 'row',
@@ -274,16 +308,25 @@ const styles = StyleSheet.create({
     width: wp(10),
     alignItems: 'center',
   },
+  quantityButtonText: {
+    fontSize: wp(4),
+    color: '#000',
+  },
   quantity: {
     paddingHorizontal: wp(3),
   },
   addToCartButton: {
     flex: 1,
     backgroundColor: '#000',
-    padding: wp(3),
-    borderRadius: 4,
+    padding: wp(3.5),
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   addToCartText: {
     color: '#fff',
@@ -291,5 +334,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
+
+export default ProductDetails;
 
 

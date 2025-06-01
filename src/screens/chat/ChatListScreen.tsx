@@ -42,10 +42,10 @@ const ChatListScreen = () => {
   ];
 
   const navigateToChat = (chat: ChatPreview) => {
-    // navigation.navigate('ChatConversation', {
-    //   recipientId: chat.recipientId,
-    //   recipientName: chat.recipientName,
-    // });
+    navigation.navigate('ChatConversation', {
+      recipientId: chat.recipientId,
+      recipientName: chat.recipientName,
+    });
   };
 
   const formatTime = (date: Date) => {

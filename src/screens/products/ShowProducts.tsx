@@ -7,11 +7,15 @@ import {
     Image,
     TouchableOpacity,
     SafeAreaView,
+    Platform,
+    StatusBar,
 } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils/globalFunctions';
+import { Icon } from '@rneui/base';
+import theme, { TYPOGRAPHY_STYLES } from '../../assets/theme';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 
 const ShowProducts = ({ route, navigation }: any) => {
-    const { category } = route.params;
 
     // Sample product data based on the image you provided
     const products = [
@@ -37,43 +41,72 @@ const ShowProducts = ({ route, navigation }: any) => {
         },
     ];
 
-    const renderProduct = ({ item }: any) => (
-        <TouchableOpacity
-            style={styles.productCard}
-            activeOpacity={0.7}
-            onPress={() => navigation.navigate('ProductDetails', { product: item })}
+    const renderProduct = ({ item, index }: any) => (
+        <Animated.View
+            entering={FadeInDown.delay(index * 100).springify()}
         >
-            <View style={styles.imageContainer}>
-                <Image source={{ uri: item.image }} style={styles.productImage} />
-            </View>
-            <View style={styles.productInfo}>
-                <Text numberOfLines={2} style={styles.productName}>{item.name}</Text>
-                <View style={styles.priceContainer}>
-                    <Text style={styles.price}>{item.price}</Text>
-                    <Text style={styles.msrp}>{item.msrp}</Text>
-                </View>
-                {item.sizes && <Text style={styles.sizes}>{item.sizes}</Text>}
-                {item.brand && <Text style={styles.brand}>{item.brand}</Text>}
-                <View style={styles.ratingContainer}>
-                    <View style={styles.ratingBox}>
-                        <Text style={styles.rating}>★ {item.rating}</Text>
+            <TouchableOpacity
+                style={styles.productCard}
+                activeOpacity={0.7}
+                onPress={() => navigation.navigate('ProductDetails', { product: item })}
+            >
+                <View style={styles.imageContainer}>
+                    <Image source={{ uri: item.image }} style={styles.productImage} />
+                    <View style={styles.discountTag}>
+                        <Text style={[styles.discountText, TYPOGRAPHY_STYLES.discount]}>50% OFF</Text>
                     </View>
-                    <Text style={styles.minOrder}>{item.minOrder}</Text>
                 </View>
-            </View>
-        </TouchableOpacity>
+                <View style={styles.productInfo}>
+                    <Text numberOfLines={2} style={[styles.productName, TYPOGRAPHY_STYLES.h4]}>{item.name}</Text>
+                    <View style={styles.priceContainer}>
+                        <Text style={[styles.price, TYPOGRAPHY_STYLES.price]}>{item.price}</Text>
+                        <Text style={[styles.msrp, TYPOGRAPHY_STYLES.body3]}>{item.msrp}</Text>
+                    </View>
+                    {item.sizes && <Text style={[styles.sizes, TYPOGRAPHY_STYLES.body2]}>{item.sizes}</Text>}
+                    {item.brand && <Text style={[styles.brand, TYPOGRAPHY_STYLES.body2]}>{item.brand}</Text>}
+                    <View style={styles.ratingContainer}>
+                        <View style={styles.ratingBox}>
+                            <Icon name="star" type="feather" size={14} color={theme.warning} />
+                            <Text style={styles.rating}>{item.rating}</Text>
+                        </View>
+                        <Text style={[styles.minOrder, TYPOGRAPHY_STYLES.body2]}>{item.minOrder}</Text>
+                    </View>
+                </View>
+            </TouchableOpacity>
+        </Animated.View>
     );
 
     return (
         <SafeAreaView style={styles.container}>
-            <Text style={styles.categoryTitle}>{category}</Text>
+            <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
+            <Animated.View 
+                entering={FadeInDown.duration(500)}
+                style={styles.header}
+            >
+                <TouchableOpacity 
+                    style={styles.iconButton}
+                    onPress={() => navigation.goBack()}
+                >
+                    <View style={styles.iconBackground}>
+                        <Icon name="arrow-left" type="feather" size={22} color={theme.text} />
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.iconButton}>
+                    <View style={styles.iconBackground}>
+                        <Icon name="sliders" type="feather" size={22} color={theme.text} />
+                    </View>
+                </TouchableOpacity>
+            </Animated.View>
             <FlatList
                 data={products}
                 renderItem={renderProduct}
                 keyExtractor={item => item.id}
-                numColumns={2}
                 contentContainerStyle={styles.productList}
                 showsVerticalScrollIndicator={false}
+                numColumns={1}
+                scrollEnabled={true}
+                bounces={true}
+                overScrollMode="always"
             />
         </SafeAreaView>
     );
@@ -84,49 +117,114 @@ export default ShowProducts;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F6F8',
+        backgroundColor: theme.background,
     },
-    categoryTitle: {
-        fontSize: wp(5),
-        fontWeight: '700',
-        padding: wp(4),
-        color: '#1A1B1E',
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: wp(4),
+        paddingVertical: hp(2),
+        backgroundColor: theme.background,
+        borderBottomLeftRadius: 24,
+        borderBottomRightRadius: 24,
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.1,
+                shadowRadius: 12,
+            },
+            android: {
+                elevation: 8,
+            },
+        }),
     },
-    productList: {
+    iconButton: {
         padding: wp(2),
     },
-    productCard: {
+    iconBackground: {
+        backgroundColor: theme.surface,
+        padding: wp(2),
+        borderRadius: wp(3),
+        ...Platform.select({
+            ios: {
+                shadowColor: theme.text,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.08,
+                shadowRadius: 4,
+            },
+            android: {
+                elevation: 2,
+            },
+        }),
+    },
+    headerTitle: {
         flex: 1,
-        margin: wp(2),
-        backgroundColor: '#FFFFFF',
-        borderRadius: 12,
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 3.84,
-        elevation: 5,
+        textAlign: 'center',
+        marginHorizontal: wp(2),
+        color: theme.text,
+    },
+    backButton: {
+        padding: wp(2),
+    },
+    filterButton: {
+        padding: wp(2),
+        backgroundColor: `${theme.primary}10`,
+        borderRadius: 8,
+    },
+    categoryTitle: {
+        flex: 1,
+        textAlign: 'center',
+        marginHorizontal: wp(2),
+    },
+    productList: {
+        padding: wp(4),
+        paddingBottom: hp(4), // Add extra padding at bottom for better scroll experience
+    },
+    productCard: {
+        width: '100%', // Make card take full width
+        marginVertical: wp(2), // Add vertical spacing between cards
+        backgroundColor: theme.surface,
+        borderRadius: 16,
+        overflow: 'hidden',
+        ...Platform.select({
+            ios: {
+                shadowColor: theme.primary,
+                shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.12,
+                shadowRadius: 16,
+            },
+            android: {
+                elevation: 6,
+            },
+        }),
     },
     imageContainer: {
-        borderTopLeftRadius: 12,
-        borderTopRightRadius: 12,
-        overflow: 'hidden',
+        position: 'relative',
     },
     productImage: {
         width: '100%',
-        height: hp(18),
+        height: hp(25), // Make image taller since we have more horizontal space
         resizeMode: 'cover',
+    },
+    discountTag: {
+        position: 'absolute',
+        top: 8,
+        left: 8,
+        backgroundColor: theme.primary,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 12,
+    },
+    discountText: {
+        color: theme.surface,
     },
     productInfo: {
         padding: wp(3),
     },
     productName: {
-        fontSize: wp(3.5),
-        fontWeight: '600',
         marginBottom: hp(1),
-        color: '#1A1B1E',
         height: hp(4),
     },
     priceContainer: {
@@ -135,26 +233,18 @@ const styles = StyleSheet.create({
         marginBottom: hp(1),
     },
     price: {
-        fontSize: wp(4),
-        fontWeight: '700',
         marginRight: wp(2),
-        color: '#2E7D32',
+        color: theme.primary,
     },
     msrp: {
-        fontSize: wp(3.2),
         textDecorationLine: 'line-through',
-        color: '#9E9E9E',
+        color: theme.textLight,
     },
     sizes: {
-        fontSize: wp(3.2),
         marginBottom: hp(0.5),
-        color: '#616161',
     },
     brand: {
-        fontSize: wp(3.2),
         marginBottom: hp(0.5),
-        color: '#616161',
-        fontWeight: '500',
     },
     ratingContainer: {
         flexDirection: 'row',
@@ -163,19 +253,21 @@ const styles = StyleSheet.create({
         marginTop: hp(1),
     },
     ratingBox: {
-        backgroundColor: '#FFF8E1',
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: `${theme.warning}10`,
         paddingHorizontal: wp(2),
         paddingVertical: wp(1),
         borderRadius: 6,
     },
     rating: {
+        marginLeft: 4,
         fontSize: wp(3.2),
-        color: '#FFA000',
+        color: theme.warning,
         fontWeight: '600',
     },
     minOrder: {
         fontSize: wp(3),
-        color: '#757575',
     },
 });
 

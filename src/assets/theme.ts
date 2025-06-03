@@ -1,245 +1,296 @@
+import { color } from "@rneui/base";
 import { fonts } from "../utils/typography";
+import { Platform } from "react-native";
 
 const theme = {
-  background:'#FEF9F2',
-  primary: "#00C7BE",
-  text: "#33384B",
-  error: "#d9534f",
-  surfaceVariant: "#F2F2F2",
-  textSecondary: "#7D848D",
-  active: "#000",
-  lightActive: "#04e0d6",
-  inActive: "#929299",
-  dark: "#2C3434",
-  light: "#949793",
-  unselectedColor: "#e9ebf0",
-  inActiveColor: "rgba(80, 176, 193,.5)",
-  black: "#050708",
-  whiteOpacity90: "#ffffffdd",
-  white: "#ffffff",
-  coldLight: "#f9f9f9",
-  gray: "#D9D9D9",
-  grayLight: "rgba(0, 0, 0, 0.19)",
-  lightAsh: "#D2D4D6",
-  lightGreen: "#8bdae1",
-  cyanGreen: "#89e0ec",
-  inactiveText: "#8F8F8F",
-  grayUnderline: "#CFCFCF",
-  red: "#a32424",
-  danger: "#d9534f",
-  steelGrey: "#7D848D",
-  infoBlack: "#33384B",
-  lightGray: "#F4F4F6",
-  lightBlue: "#81809E",
-  infoText: "#7D848D",
-  darkGrey: "#575757",
-  yellow: "#FFD233",
-  textAreaBorder: "#92929980",
-  border: "#ccc",
-  darkBlack: "#0E0E0E",
-  emailColor: "#71727A",
-  activeSearch: "#00C7BE",
+  // Primary Colors
+  primary: '#2563EB', // Rich blue
+  primaryLight: '#60A5FA',
+  primaryDark: '#1E40AF',
+  primaryAlpha: {
+    5: '#2563EB0D',
+    10: '#2563EB1A',
+    15: '#2563EB26',
+    20: '#2563EB33',
+  },
+
+  // Secondary Colors
+  secondary: '#10B981', // Emerald green
+  secondaryLight: '#34D399',
+  secondaryDark: '#059669',
+  secondaryAlpha: {
+    5: '#10B9810D',
+    10: '#10B9811A',
+    15: '#10B98126',
+    20: '#10B98133',
+  },
+
+  // Accent Colors
+  accent: '#8B5CF6', // Purple
+  accentLight: '#A78BFA',
+  accentDark: '#7C3AED',
+  accentAlpha: {
+    5: '#8B5CF60D',
+    10: '#8B5CF61A',
+    15: '#8B5CF626',
+    20: '#8B5CF633',
+  },
+
+  // Neutral Colors
+  background: '#FFF',
+  surface: '#FFFFFF',
+  surfaceHover: '#F1F5F9',
+  surfaceActive: '#E2E8F0',
+  text: '#5A5A5A',
+  textLight: '#64748B',
+  textMuted: '#94A3B8',
+  border: '#E2E8F0',
+  divider: '#F1F5F9',
+
+  // Status Colors
+  success: '#22C55E',
+  successLight: '#4ADE80',
+  successDark: '#16A34A',
+  warning: '#F59E0B',
+  warningLight: '#FBBF24',
+  warningDark: '#D97706',
+  error: '#EF4444',
+  errorLight: '#F87171',
+  errorDark: '#DC2626',
+  info: '#3B82F6',
+  infoLight: '#60A5FA',
+  infoDark: '#2563EB',
+
+  // Typography
+  fontSizes: {
+    xs: 12,
+    sm: 14,
+    base: 16,
+    lg: 18,
+    xl: 20,
+    '2xl': 24,
+    '3xl': 30,
+    '4xl': 36,
+    '5xl': 48,
+  },
+
+  // Spacing
+  spacing: {
+    none: 0,
+    xs: 4,
+    sm: 8,
+    base: 16,
+    lg: 24,
+    xl: 32,
+    '2xl': 48,
+    '3xl': 64,
+  },
+
+  // Border Radius
+  borderRadius: {
+    none: 0,
+    sm: 4,
+    base: 8,
+    lg: 12,
+    xl: 16,
+    '2xl': 24,
+    full: 9999,
+  },
+
+  // Shadows
+  shadows: {
+    none: {
+      shadowColor: 'transparent',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0,
+      shadowRadius: 0,
+      elevation: 0,
+    },
+    sm: Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+    base: Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
+    md: Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
+    lg: Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.15,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
+    xl: Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.2,
+        shadowRadius: 16,
+      },
+      android: {
+        elevation: 12,
+      },
+    }),
+  },
+
+  // Animation Durations
+  animation: {
+    fast: 200,
+    normal: 300,
+    slow: 500,
+  },
+
+  // Z-Index
+  zIndex: {
+    base: 0,
+    drawer: 1000,
+    modal: 1100,
+    toast: 1200,
+    tooltip: 1300,
+  },
 };
+
 export default theme;
 
 export const TYPOGRAPHY_STYLES = {
-  body: {
-    fontFamily: fonts.LIGHT,
-    fontWeight: "600",
-    fontSize: 64,
-    lineHeight: 84,
-  },
-  header:{
+  // Display styles
+  display1: {
     fontFamily: fonts.BOLD,
-    fontWeight: "600",
-    fontSize: 32,
-    lineHeight: 40,
+    fontSize: theme.fontSizes['5xl'],
+    lineHeight: theme.fontSizes['5xl'] * 1.2,
+    letterSpacing: -0.5,
   },
-  titletext: {
+  display2: {
     fontFamily: fonts.BOLD,
-    fontWeight: "600",
-    fontSize: 19,
-    lineHeight: 30,
+    fontSize: theme.fontSizes['4xl'],
+    lineHeight: theme.fontSizes['4xl'] * 1.2,
+    letterSpacing: -0.5,
   },
-  description: {
+  
+  // Heading styles
+  h1: {
+    fontFamily: fonts.BOLD,
+    fontSize: theme.fontSizes['3xl'],
+    lineHeight: theme.fontSizes['3xl'] * 1.2,
+    letterSpacing: -0.5,
+  },
+  h2: {
+    fontFamily: fonts.BOLD,
+    fontSize: theme.fontSizes['2xl'],
+    lineHeight: theme.fontSizes['2xl'] * 1.2,
+    letterSpacing: -0.5,
+  },
+  h3: {
+    fontFamily: fonts.BOLD,
+    fontSize: theme.fontSizes.xl,
+    lineHeight: theme.fontSizes.xl * 1.2,
+    letterSpacing: -0.25,
+  },
+  h4: {
+    fontFamily: fonts.BOLD,
+    fontSize: theme.fontSizes.lg,
+    lineHeight: theme.fontSizes.lg * 1.2,
+    letterSpacing: -0.25,
+  },
+  
+  // Body styles
+  body1: {
     fontFamily: fonts.REGULAR,
-    fontSize: 12,
-    fontWeight: "400",
-    lineHeight: 18,
+    fontSize: theme.fontSizes.base,
+    lineHeight: theme.fontSizes.base * 1.5,
+    letterSpacing: 0.15,
   },
-  descriptionText: {
+  body2: {
     fontFamily: fonts.REGULAR,
-    fontSize: 12,
-    fontWeight: "400",
-    lineHeight: 20,
+    fontSize: theme.fontSizes.sm,
+    lineHeight: theme.fontSizes.sm * 1.5,
+    letterSpacing: 0.15,
   },
-  questonstext: {
+  body3: {
     fontFamily: fonts.REGULAR,
-    fontWeight: "400",
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: theme.fontSizes.xs,
+    lineHeight: theme.fontSizes.xs * 1.5,
+    letterSpacing: 0.15,
   },
-  name: {
-    fontFamily: fonts.REGULAR,
-    fontWeight: "500",
-    fontSize: 12,
-    lineHeight: 18,
-  },
-  support: {
-    fontFamily: fonts.BOLD,
-    fontWeight: "600",
-    fontSize: 12,
-    lineHeight: 16,
-  },
-  header12: {
+  
+  // Label styles
+  label1: {
     fontFamily: fonts.MEDIUM,
-    fontSize: 24,
-    lineHeight: 24,
+    fontSize: theme.fontSizes.sm,
+    lineHeight: theme.fontSizes.sm * 1.4,
+    letterSpacing: 0.1,
   },
-  points: {
+  label2: {
     fontFamily: fonts.MEDIUM,
-    fontSize: 20,
-    fontWeight: "600",
-    lineHeight: 29,
+    fontSize: theme.fontSizes.xs,
+    lineHeight: theme.fontSizes.xs * 1.4,
+    letterSpacing: 0.1,
+    color:'#5A5A5A'
   },
-  loyaltyPointsinfo: {
-    fontFamily: fonts.MEDIUM,
-    fontSize: 10,
-    fontWeight: "400",
-    lineHeight: 24,
-  },
-  level: {
-    fontFamily: fonts.MEDIUM,
-    fontSize: 12,
-    fontWeight: "400",
-    lineHeight: 24,
-  },
-  firstname: {
-    fontFamily: fonts.MEDIUM,
-    fontSize: 14,
-    fontWeight: "500",
-    lineHeight: 24,
-  },
-  xsmax: {
-    fontSize: 15,
-    fontFamily: fonts.MEDIUM,
-    lineHeight: 25,
-    fontWeight: "500",
-  },
-  smax: {
-    fontSize: 11,
-    fontFamily: fonts.BOLD,
-    lineHeight: 18,
-    fontWeight: "400",
-  },
-  sm: {
-    fontSize: 16,
-    fontFamily: fonts.BOLD,
-    lineHeight: 18,
-    fontWeight: "500",
-  },
-  smmd: {
-    fontSize: 17,
+  
+  // Button styles
+  button1: {
     fontFamily: fonts.SEMIBOLD,
-    lineHeight: 35,
-    fontWeight: "500",
+    fontSize: theme.fontSizes.base,
+    lineHeight: theme.fontSizes.base * 1.5,
+    letterSpacing: 0.1,
   },
-  md: {
-    fontSize: 18,
-    fontFamily: fonts.BOLD,
-    lineHeight: 18,
-    fontWeight: "500",
+  button2: {
+    fontFamily: fonts.SEMIBOLD,
+    fontSize: theme.fontSizes.sm,
+    lineHeight: theme.fontSizes.sm * 1.5,
+    letterSpacing: 0.1,
+    color: theme.text,
   },
-  lg: {
-    fontSize: 24,
-    fontFamily: fonts.BOLD,
-    lineHeight: 18,
-    fontWeight: "500",
-  },
-  xl: {
-    fontSize: 32,
-    fontFamily: fonts.BOLD,
-    lineHeight: 18,
-    fontWeight: "500",
-  },
-  xxl: {
-    fontSize: 48,
-    fontFamily: fonts.BOLD,
-    lineHeight: 18,
-    fontWeight: "500",
-  },
-  xxxl: {
-    fontSize: 64,
-    fontFamily: fonts.BOLD,
-    lineHeight: 18,
-    fontWeight: "500",
-  },
-  textInfo: {
+  
+  // Special cases
+  caption: {
     fontFamily: fonts.REGULAR,
-    fontSize: 12,
-    fontWeight: "400",
-    lineHeight: 18,
+    fontSize: theme.fontSizes.xs,
+    lineHeight: theme.fontSizes.xs * 1.4,
+    letterSpacing: 0.15,
   },
-  datechecker: {
-    fontFamily: fonts.REGULAR,
-    fontSize: 14,
-    fontWeight: "400",
-    lineHeight: 18,
-  },
-  textdescription: {
-    fontFamily: fonts.REGULAR,
-    fontSize: 12,
-    fontWeight: "500",
-    lineHeight: 18,
-  },
-  discountprice: {
-    fontFamily: fonts.REGULAR,
-    fontSize: 12,
-    fontWeight: "500",
-    lineHeight: 18,
-  },
-  descriptionInfo: {
-    fontFamily: fonts.REGULAR,
-    fontWeight: "400",
-    fontSize: 12,
-    lineHeight: 18,
-  },
-
-  status: {
+  price: {
     fontFamily: fonts.BOLD,
-    fontSize: 12,
-    lineHeight: 15,
-    fontWeight: "400",
+    fontSize: theme.fontSizes.xl,
+    lineHeight: theme.fontSizes.xl * 1.2,
+    letterSpacing: -0.25,
   },
-  buttonVariant: {
-    fontFamily: fonts.MEDIUM,
-    fontWeight: "500",
-    fontSize: 14,
-    lineHeight: 20,
-    mdlgText: {
-      fontFamily: fonts.BOLD,
-      fontWeight: "600",
-      fontSize: 14,
-      lineHeight: 21,
-    },
-    mdlgText2: {
-      fontFamily: fonts.BOLD,
-      fontWeight: "800",
-      fontSize: 16,
-      lineHeight: 21,
-    },
-    smText: {
-      fontFamily: fonts.REGULAR,
-      fontWeight: "500",
-      fontSize: 9,
-      lineHeight: 14,
-    },
-    otptext: {
-      fontFamily: fonts.BOLD,
-      fontWeight: "800",
-      fontSize: 16,
-      lineHeight: 20,
-    },
+  badge: {
+    fontFamily: fonts.SEMIBOLD,
+    fontSize: theme.fontSizes.xs,
+    lineHeight: theme.fontSizes.xs,
+    letterSpacing: 0.1,
   },
 };
 

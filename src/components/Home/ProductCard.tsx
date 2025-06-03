@@ -1,14 +1,9 @@
-
-
-
-
-
-
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Platform, Animated, AccessibilityRole } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Platform, Image } from 'react-native';
 import { Icon } from '@rneui/base';
-import theme from '../../assets/theme';
-import { widthPercentageToDP as wp ,heightPercentageToDP as hp } from '../../utils/globalFunctions';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils/globalFunctions';
+import theme, { TYPOGRAPHY_STYLES } from '../../assets/theme';
+import Animated, { FadeIn, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
 interface ProductCardProps {
   item: {
@@ -16,247 +11,184 @@ interface ProductCardProps {
     description: string;
     price: number;
     originalPrice?: number;
-    image: any;
+    image: string;
+    vendor: {
+      name: string;
+    };
   };
+  index: number;
   showDiscount?: boolean;
-  onPress?: () => void;
-  onAddToCart?: () => void;
-  style?: any;
-  index?: number;
+  onPress: () => void;
+  onAddToCart: () => void;
+  style?: object;
 }
 
-const ProductCard: React.FC<ProductCardProps> = React.memo(({
+const ProductCard: React.FC<ProductCardProps> = ({
   item,
-  showDiscount = false,
+  showDiscount,
   onPress,
   onAddToCart,
   style,
-  index = 0,
 }) => {
-  const scaleAnim = useMemo(() => new Animated.Value(1), []);
-  const animatedValue = useMemo(() => new Animated.Value(0), []);
+  const discount = item.originalPrice 
+    ? Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)
+    : 0;
 
-  useEffect(() => {
-    Animated.spring(animatedValue, {
-      toValue: 1,
-      delay: index * 100,
-      useNativeDriver: true,
-      tension: 50,
-      friction: 7,
-    }).start();
-  }, [animatedValue, index]);
-
-  const handlePressIn = useCallback(() => {
-    Animated.spring(scaleAnim, {
-      toValue: 0.95,
-      useNativeDriver: true,
-      tension: 40,
-      friction: 3,
-    }).start();
-  }, [scaleAnim]);
-
-  const handlePressOut = useCallback(() => {
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-      tension: 40,
-      friction: 3,
-    }).start();
-  }, [scaleAnim]);
-
-  const discount = useMemo(() => 
-    item.originalPrice 
-      ? Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)
-      : 0
-  , [item.originalPrice, item.price]);
-
-  const animatedStyle = useMemo(() => ({
-    transform: [
-      { 
-        translateY: animatedValue.interpolate({
-          inputRange: [0, 1],
-          outputRange: [50, 0],
-        }),
-      },
-      { scale: scaleAnim },
-    ],
-    opacity: animatedValue,
-  }), [animatedValue, scaleAnim]);
-
-  const accessibilityLabel = useMemo(() => {
-    let label = `${item.name}, ${item.description}. Price: ${item.price.toFixed(2)} rupees`;
-    if (showDiscount && discount > 0) {
-      label += `. ${discount}% off, Original price: ${item.originalPrice?.toFixed(2)} rupees`;
-    }
-    return label;
-  }, [item, showDiscount, discount]);
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{
+        scale: withSpring(1)
+      }]
+    };
+  });
 
   return (
-    <Animated.View style={[styles.container, animatedStyle, style]}>
+    <Animated.View 
+      entering={FadeIn.delay(200).springify()}
+      style={[styles.container, style, animatedStyle]}
+    >
       <TouchableOpacity
-        activeOpacity={1}
-        onPress={onPress}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
         style={styles.card}
+        onPress={onPress}
+        activeOpacity={0.9}
         accessible={true}
-        accessibilityLabel={accessibilityLabel}
-        accessibilityRole="button"
+        accessibilityLabel={`${item.name} ${item.description}`}
         accessibilityHint="Double tap to view product details"
       >
         <View style={styles.imageContainer}>
-          <Image
-            source={item.image}
+          {/* <Image
+            source={item.image ? { uri: item.image } : require('../../assets/images/placeholder.png')}
             style={styles.image}
-            resizeMode="contain"
-            accessible={true}
-            accessibilityRole="image"
-            accessibilityLabel={`Image of ${item.name}`}
-          />
-          {showDiscount && discount > 0 && (
-            <View 
-              style={styles.discountBadge}
-              accessible={true}
-              accessibilityRole="text"
-              accessibilityLabel={`${discount}% off`}
-            >
-              <Text style={styles.discountText}>{discount}% OFF</Text>
+            resizeMode="cover"
+          /> */}
+          {/* {showDiscount && (
+            <View style={styles.discountTag}>
+              <Text style={[styles.discountText, TYPOGRAPHY_STYLES.discount]}>{discount}% OFF</Text>
             </View>
-          )}
+          )} */}
         </View>
+        
         <View style={styles.content}>
-          <Text 
-            style={styles.name} 
-            numberOfLines={1}
-            accessible={true}
-            accessibilityRole="text"
-          >
-            {item.name}
-          </Text>
-          <Text 
-            style={styles.description} 
-            numberOfLines={2}
-            accessible={true}
-            accessibilityRole="text"
-          >
-            {item.description}
-          </Text>
-          <View style={styles.priceRow}>
-            <View accessible={true} accessibilityRole="text">
-              <Text style={styles.price}>Rs. {item.price.toFixed(2)}</Text>
-              {showDiscount && item.originalPrice && (
-                <Text style={styles.originalPrice}>Rs. {item.originalPrice.toFixed(2)}</Text>
+          <Text style={[styles.vendor, TYPOGRAPHY_STYLES.label2]}>{item.vendor.name}</Text>
+          <Text style={[styles.name, TYPOGRAPHY_STYLES.h4]} numberOfLines={1}>{item.name}</Text>
+          <Text style={[styles.description, TYPOGRAPHY_STYLES.body2]} numberOfLines={2}>{item.description}</Text>
+          
+          <View style={styles.footer}>
+            <View>
+              <Text style={[styles.price, TYPOGRAPHY_STYLES.price]}>₹{item.price.toFixed(2)}</Text>
+              {showDiscount && (
+                <Text style={[styles.originalPrice, TYPOGRAPHY_STYLES.body3]}>₹{item.originalPrice?.toFixed(2)}</Text>
               )}
             </View>
+            
             <TouchableOpacity
               style={styles.addButton}
               onPress={onAddToCart}
-              activeOpacity={0.8}
+              activeOpacity={0.7}
               accessible={true}
               accessibilityLabel={`Add ${item.name} to cart`}
-              accessibilityRole="button"
-              accessibilityHint="Double tap to add item to shopping cart"
+              accessibilityHint="Double tap to add this item to your shopping cart"
             >
-              <Icon name="plus" type="feather" size={20} color="#fff" />
+              <Icon name="plus" type="feather" size={20} color={theme.text} />
             </TouchableOpacity>
           </View>
         </View>
       </TouchableOpacity>
     </Animated.View>
   );
-}, (prevProps, nextProps) => {
-  return (
-    prevProps.item.price === nextProps.item.price &&
-    prevProps.showDiscount === nextProps.showDiscount &&
-    prevProps.index === nextProps.index
-  );
-});
+};
 
 const styles = StyleSheet.create({
   container: {
-    width: wp(50),
-    marginRight: wp(4),
-    backgroundColor:theme.background
+    width: wp(42),
+    marginHorizontal: wp(1),
+    marginBottom: hp(1.5),
   },
   card: {
-        backgroundColor: theme.background,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: theme.border,
+    backgroundColor: theme.card,
+    borderRadius: 16,
     overflow: 'hidden',
     ...Platform.select({
       ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
+        shadowColor: theme.primary,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.12,
+        shadowRadius: 16,
       },
       android: {
-        elevation: 3,
+        elevation: 6,
       },
     }),
   },
   imageContainer: {
     width: '100%',
-    height: wp(30),
-    backgroundColor: '#f9f9f9',
+    height: wp(42),
+    backgroundColor: theme.primaryLight,
     position: 'relative',
   },
   image: {
     width: '100%',
     height: '100%',
   },
-  discountBadge: {
+  discountTag: {
     position: 'absolute',
     top: 8,
-    right: 8,
-    backgroundColor: theme.background,
+    left: 8,
+    backgroundColor: theme.primary,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
   },
   discountText: {
-    color: '#fff',
-    fontSize: 10,
-    fontWeight: '600',
+    color: theme.white,
   },
   content: {
-    padding: wp(3),
+    padding: 12,
+  },
+  vendor: {
+    color: theme.textSecondary,
+    marginBottom: 4,
   },
   name: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#000',
+    color: theme.text,
     marginBottom: 4,
   },
   description: {
-    fontSize: 12,
-    color: '#666',
+    color: theme.textSecondary,
     marginBottom: 8,
-    height: 32,
   },
-  priceRow: {
+  footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
+    marginTop: 4,
   },
   price: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: theme.active,
+    color: theme.text,
   },
   originalPrice: {
-    fontSize: 12,
-    color: '#666',
+    color: theme.textSecondary,
     textDecorationLine: 'line-through',
+    marginTop: 2,
   },
   addButton: {
-    backgroundColor: theme.background,
-    borderRadius: 20,
-    width: 32,
-    height: 32,
+    backgroundColor: 'white',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
+    ...Platform.select({
+      ios: {
+        shadowColor: theme.primary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
   },
 });
 

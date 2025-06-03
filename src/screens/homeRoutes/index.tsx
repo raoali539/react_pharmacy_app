@@ -56,7 +56,7 @@ export const homeStackScreens: Array<{
     name: "ShowProducts",
     component: ShowProducts,
     options: {
-      headerShown: true,
+      headerShown: false,
       title: "Products",
       headerTitleAlign: "center",
     },
@@ -65,7 +65,7 @@ export const homeStackScreens: Array<{
     name: "ProductDetails",
     component: ProductDetails,
     options: {
-      headerShown: true,
+      headerShown: false,
       title: "Product Details",
       headerTitleAlign: "center",
     },

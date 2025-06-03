@@ -7,9 +7,14 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  Platform,
+  StatusBar,
 } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils/globalFunctions';
-import theme from '../../assets/theme';
+import { Icon } from '@rneui/base';
+import theme, { TYPOGRAPHY_STYLES } from '../../assets/theme';
+import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
+import { commonStyles } from '../../assets/commonStyles';
 
 const ProductDetails = ({ route, navigation }:any) => {
   const { product } = route.params;
@@ -20,37 +25,63 @@ const ProductDetails = ({ route, navigation }:any) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Text>←</Text>
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>{product.name}</Text>
-          <TouchableOpacity style={styles.heartButton}>
-            <Text style={styles.heartIcon}>♡</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.imageContainer}>
+      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
+      <Animated.View 
+        entering={FadeInDown.duration(500)}
+        style={[commonStyles.headerContainer]}
+      >
+        <TouchableOpacity 
+          style={styles.iconButton}
+          onPress={() => navigation.goBack()}
+        >
+          <View style={styles.iconBackground}>
+            <Icon name="arrow-left" type="feather" size={22} color={theme.text} />
+          </View>
+        </TouchableOpacity>
+        <Text style={[styles.headerTitle, TYPOGRAPHY_STYLES.h4]}>Product Details</Text>
+        <TouchableOpacity style={styles.iconButton}>
+          <View style={styles.iconBackground}>
+            <Icon name="heart" type="feather" size={22} color={theme.text} />
+          </View>
+        </TouchableOpacity>
+      </Animated.View>
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.content}>
+        <Animated.View 
+          entering={FadeInDown.delay(100)}
+          style={styles.imageContainer}
+        >
           <Image source={{ uri: product.image }} style={styles.productImage} />
-        </View>
+        </Animated.View>
 
-        <View style={styles.detailsContainer}>
-          <Text style={styles.productName}>{product.name}</Text>
+        <View style={styles.detailsSection}>
+          <Animated.View 
+            entering={FadeInRight.delay(200)}
+            style={styles.mainInfo}
+          >
+            <Text style={[styles.productName, TYPOGRAPHY_STYLES.h3]}>{product.name}</Text>
 
-          <View style={styles.priceRow}>
-            <Text style={styles.price}>{product.price}</Text>
-            <Text style={styles.msrp}>{product.msrp}</Text>
-          </View>
+            <View style={styles.priceContainer}>
+              <Text style={[styles.price, TYPOGRAPHY_STYLES.price]}>${product.price}</Text>
+              {product.msrp && (
+                <Text style={[styles.originalPrice, TYPOGRAPHY_STYLES.body2]}>${product.msrp}</Text>
+              )}
+            </View>
 
-          <View style={styles.ratingContainer}>
-            <Text style={styles.rating}>★ {product.rating}</Text>
-            <Text style={styles.reviews}>(1)</Text>
-            <Text style={styles.minOrder}>{product.minOrder}</Text>
-          </View>
+            <View style={styles.ratingContainer}>
+              <Icon name="star" type="feather" size={16} color={theme.warning} />
+              <Text style={[styles.rating, TYPOGRAPHY_STYLES.body2]}>{product.rating}</Text>
+              <Text style={[styles.reviews, TYPOGRAPHY_STYLES.body2]}>(1)</Text>
+              {product.minOrder && (
+                <Text style={[styles.minOrder, TYPOGRAPHY_STYLES.body2]}>{product.minOrder}</Text>
+              )}
+            </View>
+          </Animated.View>
 
-          <View style={styles.colorSection}>
-            <Text style={styles.sectionTitle}>Colour</Text>
+          <Animated.View 
+            entering={FadeInRight.delay(300)}
+            style={styles.colorSection}
+          >
+            <Text style={[styles.sectionTitle, TYPOGRAPHY_STYLES.h4]}>Colour</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View style={styles.colorOptions}>
                 {colors.map((color) => (
@@ -65,26 +96,36 @@ const ProductDetails = ({ route, navigation }:any) => {
                     <View style={[styles.colorDot, { backgroundColor: color.toLowerCase() }]} />
                     <Text style={[
                       styles.colorText,
+                      TYPOGRAPHY_STYLES.button2,
                       selectedColor === color && styles.selectedColorText
                     ]}>{color}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
             </ScrollView>
-          </View>
+          </Animated.View>
 
-          <View style={styles.shippingInfo}>
-            <Text style={styles.shippingTitle}>Shipping</Text>
-            <Text style={styles.deliveryDate}>Estimated Delivery May 23 - Jun 4, 2025</Text>
-            <Text style={styles.shippingLocation}>Ships from Australia</Text>
+          <Animated.View 
+            entering={FadeInRight.delay(400)}
+            style={styles.shippingInfo}
+          >
+            <Text style={[styles.sectionTitle, TYPOGRAPHY_STYLES.h4]}>Shipping</Text>
+            <Text style={[styles.deliveryDate, TYPOGRAPHY_STYLES.body1]}>
+              Estimated Delivery May 23 - Jun 4, 2025
+            </Text>
+            <Text style={[styles.shippingLocation, TYPOGRAPHY_STYLES.body2]}>
+              Ships from Australia
+            </Text>
 
             <View style={styles.infoCard}>
               <View style={styles.iconContainer}>
-                <Text>🚚</Text>
+                <Icon name="truck" type="feather" size={20} color={theme.primary} />
               </View>
               <View style={styles.infoContent}>
-                <Text style={styles.freeShippingText}>Free shipping over $450</Text>
-                <Text style={styles.membershipText}>
+                <Text style={[styles.freeShippingText, TYPOGRAPHY_STYLES.button2]}>
+                  Free shipping over $450
+                </Text>
+                <Text style={[styles.membershipText, TYPOGRAPHY_STYLES.body2]}>
                   Available with an Insider membership. Free for 30 days.
                 </Text>
               </View>
@@ -92,39 +133,50 @@ const ProductDetails = ({ route, navigation }:any) => {
 
             <View style={styles.infoCard}>
               <View style={styles.iconContainer}>
-                <Text>↩️</Text>
+                <Icon name="refresh-ccw" type="feather" size={20} color={theme.primary} />
               </View>
               <View style={styles.infoContent}>
-                <Text style={styles.returnsTitle}>Free returns on all opening orders</Text>
-                <Text style={styles.returnsText}>
+                <Text style={[styles.returnsTitle, TYPOGRAPHY_STYLES.button2]}>
+                  Free returns on all opening orders
+                </Text>
+                <Text style={[styles.returnsText, TYPOGRAPHY_STYLES.body2]}>
                   You're eligible for free returns on this order with Caslew Pty Ltd.
                 </Text>
               </View>
             </View>
-          </View>
+          </Animated.View>
         </View>
       </ScrollView>
 
-      <View style={styles.bottomBar}>
+      <Animated.View 
+        entering={FadeInDown.delay(500)}
+        style={styles.bottomBar}
+      >
         <View style={styles.quantitySelector}>
           <TouchableOpacity
             onPress={() => quantity > 1 && setQuantity(quantity - 1)}
-            style={styles.quantityButton}
+            style={[styles.quantityButton, quantity === 1 && styles.quantityButtonDisabled]}
           >
-            <Text style={styles.quantityButtonText}>−</Text>
+            <Icon 
+              name="minus" 
+              type="feather" 
+              size={20} 
+              color={quantity === 1 ? theme.textLight : theme.text} 
+            />
           </TouchableOpacity>
-          <Text style={styles.quantity}>{quantity}</Text>
+          <Text style={[styles.quantity, TYPOGRAPHY_STYLES.button1]}>{quantity}</Text>
           <TouchableOpacity
             onPress={() => setQuantity(quantity + 1)}
             style={styles.quantityButton}
           >
-            <Text style={styles.quantityButtonText}>+</Text>
+            <Icon name="plus" type="feather" size={20} color={theme.text} />
           </TouchableOpacity>
         </View>
         <TouchableOpacity style={styles.addToCartButton}>
           <Text style={styles.addToCartText}>Add to cart</Text>
+          <Icon name="shopping-cart" type="feather" size={20} color={theme.surface} />
         </TouchableOpacity>
-      </View>
+      </Animated.View>
     </SafeAreaView>
   );
 };
@@ -134,55 +186,66 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.background,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: wp(4),
+  content: {
+    flex: 1,
   },
-  backButton: {
+  iconButton: {
     padding: wp(2),
+  },
+  iconBackground: {
+    backgroundColor: theme.surface,
+    padding: wp(2),
+    borderRadius: wp(3),
+    ...Platform.select({
+      ios: {
+        shadowColor: theme.text,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
   },
   headerTitle: {
-    fontSize: wp(4),
-    fontWeight: '500',
-  },
-  heartButton: {
-    padding: wp(2),
-  },
-  heartIcon: {
-    fontSize: wp(6),
+    flex: 1,
+    textAlign: 'center',
+    marginHorizontal: wp(2),
+    color: theme.text,
   },
   imageContainer: {
-    backgroundColor: theme.background,
-    height: hp(40),
+    backgroundColor: theme.surface,
+    height: hp(45),
     marginBottom: hp(2),
+    ...theme.shadows.base,
   },
   productImage: {
     width: '100%',
     height: '100%',
-    resizeMode: 'contain',
+    resizeMode: 'cover',
   },
-  detailsContainer: {
-    padding: wp(4),
+  detailsSection: {
+    paddingHorizontal: wp(4),
+  },
+  mainInfo: {
+    marginBottom: hp(3),
   },
   productName: {
-    fontSize: wp(5),
-    fontWeight: '600',
     marginBottom: hp(1),
   },
-  priceRow: {
+  priceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: hp(1),
+    marginBottom: hp(2),
   },
   price: {
-    fontSize: wp(5),
-    fontWeight: '600',
+    ...TYPOGRAPHY_STYLES.price,
+    color: theme.primary,
     marginRight: wp(2),
   },
-  msrp: {
-    fontSize: wp(4),
+  originalPrice: {
+    ...TYPOGRAPHY_STYLES.body2,
     textDecorationLine: 'line-through',
   },
   ratingContainer: {
@@ -191,27 +254,24 @@ const styles = StyleSheet.create({
     marginBottom: hp(2),
   },
   rating: {
-    fontSize: wp(3.5),
+    marginLeft: wp(1),
     marginRight: wp(1),
   },
   reviews: {
-    fontSize: wp(3.5),
     marginRight: wp(2),
   },
   minOrder: {
-    fontSize: wp(3.5),
+    color: theme.textLight,
   },
   colorSection: {
-    marginBottom: hp(2),
+    marginBottom: hp(3),
   },
   sectionTitle: {
-    fontSize: wp(4),
-    fontWeight: '500',
     marginBottom: hp(1),
   },
   colorOptions: {
     flexDirection: 'row',
-    paddingHorizontal: wp(2),
+    paddingVertical: hp(1),
   },
   colorButton: {
     flexDirection: 'row',
@@ -219,12 +279,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp(4),
     paddingVertical: wp(2),
     marginRight: wp(2),
-    borderRadius: 20,
+    borderRadius: wp(8),
     borderWidth: 1,
-    borderColor: '#e0e0e0',
-    alignContent: 'center',
-    justifyContent: 'center',
-    backgroundColor: theme.background,
+    borderColor: theme.border,
+    backgroundColor: theme.surface,
   },
   colorDot: {
     width: wp(3),
@@ -233,105 +291,99 @@ const styles = StyleSheet.create({
     marginRight: wp(2),
   },
   selectedColor: {
-    backgroundColor: '#000',
-    borderColor: '#000',
+    backgroundColor: theme.text,
+    borderColor: theme.text,
   },
   selectedColorText: {
-    color: '#fff',
+    color: theme.surface,
   },
   colorText: {
-    fontSize: wp(3.8),
+    color: theme.text,
   },
   shippingInfo: {
     marginTop: hp(2),
   },
-  shippingTitle: {
-    fontSize: wp(4),
-    fontWeight: '500',
-    marginBottom: hp(1),
-  },
   deliveryDate: {
-    fontSize: wp(3.8),
     marginBottom: hp(0.5),
   },
   shippingLocation: {
-    fontSize: wp(3.8),
     marginBottom: hp(2),
   },
   infoCard: {
     flexDirection: 'row',
-    backgroundColor: '#f8f8f8',
+    backgroundColor: `${theme.primary}08`,
     padding: wp(4),
-    borderRadius: 12,
+    borderRadius: wp(4),
     marginBottom: hp(2),
   },
   iconContainer: {
+    width: wp(10),
+    height: wp(10),
+    borderRadius: wp(5),
+    backgroundColor: `${theme.primary}15`,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: wp(3),
   },
   infoContent: {
     flex: 1,
   },
   freeShippingText: {
-    fontSize: wp(3.8),
-    fontWeight: '500',
     marginBottom: hp(0.5),
   },
   membershipText: {
-    fontSize: wp(3.5),
-    marginBottom: hp(0.5),
+    color: theme.textLight,
   },
   returnsTitle: {
-    fontSize: wp(3.8),
-    fontWeight: '500',
     marginBottom: hp(0.5),
   },
   returnsText: {
-    fontSize: wp(3.5),
+    color: theme.textLight,
   },
   bottomBar: {
     flexDirection: 'row',
     padding: wp(4),
+    backgroundColor: theme.surface,
     borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-    backgroundColor: theme.background,
+    borderTopColor: theme.border,
+    ...theme.shadows.lg,
   },
   quantitySelector: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    borderRadius: 4,
+    backgroundColor: theme.background,
+    borderRadius: theme.borderRadius.lg,
     marginRight: wp(4),
+    padding: wp(1),
+    borderWidth: 1,
+    borderColor: theme.border,
   },
   quantityButton: {
     padding: wp(2),
     width: wp(10),
+    height: wp(10),
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  quantityButtonText: {
-    fontSize: wp(4),
-    color: '#000',
+  quantityButtonDisabled: {
+    opacity: 0.5,
   },
   quantity: {
-    paddingHorizontal: wp(3),
+    ...TYPOGRAPHY_STYLES.h3,
+    marginHorizontal: wp(3),
   },
   addToCartButton: {
     flex: 1,
-    backgroundColor: '#000',
-    padding: wp(3.5),
-    borderRadius: 8,
+    backgroundColor: theme.primary,
+    borderRadius: theme.borderRadius.lg,
+    paddingVertical: hp(1.5),
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    ...theme.shadows.base,
   },
   addToCartText: {
-    color: '#fff',
-    fontSize: wp(4),
-    fontWeight: '500',
+    ...TYPOGRAPHY_STYLES.button1,
+    color: theme.surface,
   },
 });
 

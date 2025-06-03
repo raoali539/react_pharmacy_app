@@ -1,8 +1,6 @@
 import React, { useCallback, useMemo } from "react";
-import { Platform, TouchableOpacity, View, Animated, Text } from "react-native";
+import { Platform, TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { BottomTabBarProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Icon } from "@rneui/base";
-import  {styles}  from "./styles";
 import theme from "../../assets/theme";
 import { heightPercentageToDP } from "../../utils/globalFunctions";
 import SettingsScreen from "../settings/SettingScreen";
@@ -10,6 +8,7 @@ import Home from "../HomeScreen/Home";
 import BrowseProducts from "../products/BrowseProducts";
 import CartScreen from "../cart/CartScreen/CartScreen";
 import ChatListScreen from "../chat/ChatListScreen";
+import { Icon } from "@rneui/base";
 
 const CustomTabBar: React.FC<BottomTabBarProps> = ({
   state,
@@ -17,60 +16,57 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({
   navigation,
 }) => {
   return (
-    <View style={{ flexDirection: 'row', backgroundColor: '#000000' }}>
-      {state.routes.map((route, index) => {
-        const { options } = descriptors[route.key];
-        const isFocused = state.index === index;
-        const label = options.tabBarLabel || route.name;
+    <View style={styles.tabBarContainer}>
+      <View style={styles.tabBarContent}>
+        {state.routes.map((route, index) => {
+          const { options } = descriptors[route.key];
+          const isFocused = state.index === index;
 
-        const onPress = useCallback(() => {
-          navigation.emit({
-            type: "tabPress",
-            target: route.key,
-            canPreventDefault: true,
-          });
-          navigation.navigate(route.name);
-        }, [navigation, route.key, route.name]);
+          const onPress = useCallback(() => {
+            navigation.emit({
+              type: "tabPress",
+              target: route.key,
+              canPreventDefault: true,
+            });
+            navigation.navigate(route.name);
+          }, [navigation, route.key, route.name]);
 
-        const tabBarIcon = useMemo(() => {
-          return options.tabBarIcon
-            ? options.tabBarIcon({
-              color: isFocused ? 'white' : "rgba(255, 255, 255, 0.6)",
-              focused: isFocused,
-              size: 24,
-            })
-            : null;
-        }, [options, isFocused]);
+          const tabBarIcon = useMemo(() => {
+            return options.tabBarIcon
+              ? options.tabBarIcon({
+                color: isFocused ? theme.primary : "rgba(255, 255, 255, 0.7)",
+                focused: isFocused,
+                size: 24,
+              })
+              : null;
+          }, [options, isFocused]);
 
-        return (
-          <TouchableOpacity
-            key={index}
-            onPress={onPress}
-            activeOpacity={0.7}
-            style={[
-              styles.tabButton,
-              {
-                flex: 1,
-                alignItems: 'center',
-                paddingVertical: 8,
-              },
-              index === 0 && styles.firstButton,
-              index === state.routes.length - 1 && styles.lastButton,
-            ]}
-          >
-            {tabBarIcon}
-            <Text
-              style={{
-                color: isFocused ? 'white' : "rgba(255, 255, 255, 0.6)",
-                fontSize: 12,
-                marginTop: 4,
-              }}
+          return (
+            <TouchableOpacity
+              key={index}
+              onPress={onPress}
+              activeOpacity={0.7}
+              style={[
+                styles.tabButton,
+                isFocused && styles.tabButtonActive
+              ]}
             >
-              {label}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
+              <View style={styles.iconContainer}>
+                {tabBarIcon}
+                {isFocused && <View style={styles.activeDot} />}
+              </View>
+              <Text
+                style={[
+                  styles.tabLabel,
+                  isFocused && styles.tabLabelActive
+                ]}
+              >
+                {typeof options.tabBarLabel === 'string' ? options.tabBarLabel : route.name}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
     </View>
   );
 };
@@ -80,17 +76,24 @@ function BottomTab() {
 
   const tabBarStyle = useMemo(
     () => ({
-      backgroundColor:theme.active,
+      backgroundColor: '#000000',
       height: Platform.OS === "android"
-        ? heightPercentageToDP(12)
-        : heightPercentageToDP(13),
+        ? heightPercentageToDP(10)
+        : heightPercentageToDP(11),
       borderTopWidth: 0,
       position: 'absolute' as const,
-      left: 0,
-      right: 0,
-      bottom: 0,
+      left: 8,
+      right: 8,
+      bottom: Platform.OS === 'ios' ? 24 : 16,
       elevation: 0,
-      shadowColor: 'transparent',
+      borderRadius: 20,
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 4,
+      },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
     }),
     [],
   );
@@ -102,7 +105,7 @@ function BottomTab() {
         headerShown: false,
         tabBarShowLabel: true,
         tabBarActiveTintColor: '#ffffff',
-        tabBarInactiveTintColor: "rgba(255, 255, 255, 0.6)",
+        tabBarInactiveTintColor: "#5A5A5A",
         tabBarStyle: tabBarStyle,
       }}
     >
@@ -114,7 +117,7 @@ function BottomTab() {
             <Icon
               name="home"
               type="material"
-              color={color}
+              color={focused ? theme.primary : "#5A5A5A"}
               size={22}
             />
           ),
@@ -122,7 +125,7 @@ function BottomTab() {
       />
 
       {/* Browse All Categories */}
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Browse"
         component={BrowseProducts}
         options={{
@@ -135,7 +138,7 @@ function BottomTab() {
             />
           ),
         }}
-      />
+      /> */}
 
       {/* add to card screen */}
       <Tab.Screen
@@ -146,7 +149,7 @@ function BottomTab() {
             <Icon
               name="shopping-cart"
               type="material"
-              color={color}
+              color={focused ? theme.primary : "#5A5A5A"}
               size={22}
             />
           ),
@@ -162,7 +165,7 @@ function BottomTab() {
             <Icon
               name="chat"
               type="material"
-              color={color}
+              color={focused ? theme.primary : "#5A5A5A"}
               size={22}
             />
           ),
@@ -177,7 +180,7 @@ function BottomTab() {
             <Icon
               name="settings"
               type="material"
-              color={color}
+              color={focused ? theme.primary : "#5A5A5A"}
               size={22}
             />
           ),
@@ -187,6 +190,61 @@ function BottomTab() {
     </Tab.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBarContainer: {
+    position: 'absolute',
+    bottom: Platform.OS === 'ios' ? 24 : 16,
+    left: 8,
+    right: 8,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    height: Platform.OS === "android"
+      ? heightPercentageToDP(8)
+      : heightPercentageToDP(9),
+    ...theme.shadows.lg,
+  },
+  tabBarContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    height: '100%',
+    paddingHorizontal: 5,
+  },
+  tabButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    position: 'relative',
+  },
+  tabButtonActive: {
+    transform: [{scale: 1.1}],
+  },
+  iconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+  },
+  activeDot: {
+    position: 'absolute',
+    bottom: -8,
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: theme.primary,
+  },
+  tabLabel: {
+    fontSize: theme.fontSizes.xs,
+    fontWeight: '600',
+    color: "#5A5A5A",
+    marginTop: 2,
+  },
+  tabLabelActive: {
+    color: theme.primary,
+    fontWeight: '700',
+  },
+});
 
 export default BottomTab;
 

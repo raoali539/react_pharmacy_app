@@ -1,45 +1,57 @@
-
-
-
-
-
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Icon } from '@rneui/base';
-import { widthPercentageToDP as wp ,heightPercentageToDP as hp } from '../utils/globalFunctions';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { Icon } from '@rneui/themed';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../utils/globalFunctions';
 import theme from '../assets/theme';
+import { TYPOGRAPHY_STYLES } from '../assets/theme';
+import Animated from 'react-native-reanimated';
 
 interface SectionHeaderProps {
   title: string;
-  onViewAll?: () => void;
+  subtitle?: string;
   viewAllLabel?: string;
+  onViewAll?: () => void;
+  showDecoration?: boolean;
+  style?: object;
 }
 
 const SectionHeader: React.FC<SectionHeaderProps> = ({
   title,
-  onViewAll,
+  subtitle,
   viewAllLabel = 'View All',
+  onViewAll,
+  showDecoration = true,
+  style,
 }) => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
+    <Animated.View style={[styles.container, style]}>
+      <View style={styles.titleContainer}>
+        <Text style={[styles.title, TYPOGRAPHY_STYLES.h3]} numberOfLines={1}>
+          {title}
+        </Text>
+        {subtitle && (
+          <Text style={[styles.subtitle, TYPOGRAPHY_STYLES.body2]} numberOfLines={1}>
+            {subtitle}
+          </Text>
+        )}
+        {showDecoration && <View style={styles.titleDecoration} />}
+      </View>
+
       {onViewAll && (
-        <TouchableOpacity
-          style={styles.viewAllButton}
-          onPress={onViewAll}
-          activeOpacity={0.7}
-        >
-          {/* <Text style={styles.viewAllText}>{viewAllLabel}</Text> */}
+        <TouchableOpacity style={styles.viewAllButton} onPress={onViewAll}>
+          <Text style={[styles.viewAllText, TYPOGRAPHY_STYLES.button2]}>
+            {viewAllLabel}
+          </Text>
           <Icon
             name="chevron-right"
             type="feather"
             size={16}
-            color={theme.active}
+            color={theme.text}
             style={styles.icon}
           />
         </TouchableOpacity>
       )}
-    </View>
+    </Animated.View>
   );
 };
 
@@ -51,18 +63,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp(4),
     marginBottom: hp(2),
   },
+  titleContainer: {
+    flex: 1,
+  },
   title: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#000',
+    color: theme.text,
+    marginBottom: 4,
+  },
+  subtitle: {
+    color: theme.textLight,
+    marginBottom: 4,
+  },
+  titleDecoration: {
+    width: 102,
+    height: 3,
+    backgroundColor: theme.text,
+    borderRadius: 2,
   },
   viewAllButton: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
   },
   viewAllText: {
-    fontSize: 14,
-    color: theme.active,
+    color: '#5A5A5A',
     marginRight: 4,
   },
   icon: {

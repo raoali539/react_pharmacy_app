@@ -1,5 +1,6 @@
 import { Platform, StyleSheet } from "react-native";
-import { heightPercentageToDP, widthPercentageToDP } from "../../utils/globalFunctions";
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from "../../utils/globalFunctions";
+import theme from "../../assets/theme";
 
 export const styles = StyleSheet.create({
   tabBar: {
@@ -9,65 +10,43 @@ export const styles = StyleSheet.create({
     left: 0,
     right: 0,
     justifyContent: "space-between",
-    height: Platform.OS === "android"
-      ? heightPercentageToDP(7.5)
-      : heightPercentageToDP(8.5),
-    // backgroundColor: "red",
-    paddingHorizontal: widthPercentageToDP(2),
+    height: Platform.OS === "android" ? hp(7.5) : hp(8.5),
+    paddingHorizontal: wp(2),
+    backgroundColor: theme.surface,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000000",
-        shadowOffset: {
-          width: 0,
-          height: -3,
-        },
-        shadowOpacity: 0.15,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 8,
-      },
-    }),
+    ...theme.shadows.lg,
   },
   tabButton: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: heightPercentageToDP(1),
-    backgroundColor: 'transparent',
+    paddingVertical: hp(1),
   },
   middleButton: {
-    top: heightPercentageToDP(-2),
-    backgroundColor: "#000",
+    top: hp(-2),
+    backgroundColor: theme.primary,
     borderRadius: 30,
-    padding: widthPercentageToDP(2),
-    borderColor: "#fff",
+    padding: wp(2),
+    borderColor: theme.surface,
     borderWidth: 1,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000000",
-        shadowOffset: {
-          width: 0,
-          height: 3,
-        },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 5,
-      },
-    }),
+    ...theme.shadows.base,
   },
   firstButton: {
-    paddingLeft: widthPercentageToDP(2),
+    paddingLeft: wp(2),
   },
   lastButton: {
-    paddingRight: widthPercentageToDP(2),
+    paddingRight: wp(2),
   },
   icon: {
     marginTop: Platform.OS === "android" ? 2 : 3,
-    tintColor: "#fff"
+  },
+  label: {
+    ...theme.TYPOGRAPHY_STYLES.caption,
+    marginTop: 2,
+  },
+  activeLabel: {
+    color: theme.primary,
+    fontWeight: '600',
   },
 });

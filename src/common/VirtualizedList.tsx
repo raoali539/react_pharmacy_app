@@ -14,6 +14,7 @@ interface VirtualizedListProps<T> {
   windowSize?: number;
   onEndReached?: () => void;
   onEndReachedThreshold?: number;
+  numColumns?: number;
 }
 
 const VirtualizedList = <T extends any>({
@@ -24,10 +25,11 @@ const VirtualizedList = <T extends any>({
   contentContainerStyle,
   showsVerticalScrollIndicator = false,
   initialNumToRender = 10,
-  maxToRenderPerBatch = 10,
+  maxToRenderPerBatch = 5,
   windowSize = 5,
   onEndReached,
   onEndReachedThreshold = 0.5,
+  numColumns = 2,
 }: VirtualizedListProps<T>) => {
   const getItemLayout = (_: any, index: number) => ({
     length: itemHeight,
@@ -53,7 +55,8 @@ const VirtualizedList = <T extends any>({
       decelerationRate="fast"
       snapToInterval={itemHeight}
       bounces={false}
-      numColumns={2}
+      numColumns={numColumns}
+      columnWrapperStyle={numColumns > 1 ? styles.row : undefined}
     />
   );
 };
@@ -61,11 +64,11 @@ const VirtualizedList = <T extends any>({
 const styles = StyleSheet.create({
   container: {
     paddingVertical: wp(4),
+    paddingHorizontal: wp(4),
+  },
+  row: {
+    justifyContent: 'space-between',
   },
 });
 
 export default VirtualizedList;
-
-
-
-

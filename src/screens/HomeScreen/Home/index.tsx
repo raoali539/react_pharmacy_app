@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import React, { useState, useCallback, useEffect } from 'react';
 import {
@@ -17,8 +9,9 @@ import {
   RefreshControl,
   Platform,
   AccessibilityInfo,
+  TextInput,
+  Dimensions,
 } from 'react-native';
-
 import { Text } from 'react-native-gesture-handler';
 import { useCart } from '../../../contexts/CartContext';
 import ProductCard from '../../../components/Home/ProductCard';
@@ -29,6 +22,10 @@ import EssentialsBanner from '../../../components/Home/EssentialsBanner';
 import Categories from '../../../components/Home/Categories';
 import VirtualizedHorizontalList from '../../../common/VirtualizedHorizontalList';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../../utils/globalFunctions';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { Icon } from '@rneui/base';
+import { commonStyles } from '../../../assets/commonStyles';
+import { TYPOGRAPHY_STYLES } from '../../../assets/theme';
 
 interface Product {
   id: string;
@@ -100,7 +97,6 @@ const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    // Announce screen load to screen readers
     AccessibilityInfo.announceForAccessibility('Home screen loaded');
     fetchData();
   }, []);
@@ -123,7 +119,7 @@ const Home = () => {
   }, [fetchData]);
 
   const handleViewAll = () => {
-    navigation.navigate('Browse'); // Navigate to Browse screen
+    navigation.navigate('ShowProducts'); // Navigate to Browse screen
   };
 
   const handleAddToCart = useCallback((item: Product) => {
@@ -168,7 +164,6 @@ const Home = () => {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-        {/* <HomeSkeleton /> */}
       </SafeAreaView>
     );
   }
@@ -177,47 +172,69 @@ const Home = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
       <Header
-        onMenuPress={() => console.log('Menu pressed')}
-        onNotificationPress={handleNotificationPress}
-        onCartPress={handleCartPress}
+        leftIcon='menu'
+        rightIcon='notifications'
+        rightIcon2='shopping-cart'
+        leftIconType='feather'
+        rightIconType='feather'
+        title=""
+        style={styles.elevation}
+        containerStyle={commonStyles.headerContainer}
+        onLeftPress={() => console.log('Menu pressed')}
+        onRightPress={handleNotificationPress}
+        onRightIcon2Press={handleCartPress}
       />
-      <View style={{
-        marginTop: hp(2),
-      }}>
-        <Text style={{ fontSize: 24, fontWeight: 'bold', paddingHorizontal: 12 }}>
-          Welcome Ali
-        </Text>
-      </View>
+
+      <Animated.View 
+        entering={FadeInDown.duration(600).delay(200) as any}
+        style={styles.welcomeSection}
+      >
+        <View style={styles.welcomeContent}>
+          <Text style={styles.welcomeText}>
+             <Text style={styles.nameText}>Welcome Ali</Text>
+          </Text>
+          <Text style={styles.subtitleText}>
+            Find your medicines and health products
+          </Text>
+        </View>
+      </Animated.View>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={styles.scrollContent}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
-            tintColor={theme.active}
-            colors={[theme.active]}
+            tintColor={theme.primary}
+            colors={[theme.primary]}
           />
         }
       >
-        <Categories onSelectCategory={(category) => console.log('Selected:', category)} />
-        <View style={styles.bannerContainer}>
+        {/* <Categories onSelectCategory={(category) => console.log('Selected:', category)} /> */}
+        {/* <View style={styles.bannerContainer}>
           <EssentialsBanner />
-        </View>
+        </View> */}
 
         <View style={styles.section}>
           <SectionHeader
             title="All Products"
             onViewAll={handleViewAll}
           />
+          <View style={{
+            width:Dimensions.get('window').width - wp(12), // full width minus horizontal padding
+            marginHorizontal: wp(6),
+          }}>
           <VirtualizedHorizontalList
             data={FEATURED_PRODUCTS}
             renderItem={renderProduct}
             keyExtractor={keyExtractor}
+            showsHorizontalScrollIndicator={false}
             itemWidth={wp(44)} // width + margin
             contentContainerStyle={styles.productList}
           />
+          </View>
+         
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -227,29 +244,37 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FEF9F2',
+    backgroundColor: theme.background,
   },
-  content: {
+  scrollContent: {
+    flexGrow: 1,
     paddingBottom: hp(2),
   },
   searchContainer: {
-            backgroundColor: theme.background,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 4,
-      },
-    }),
-    zIndex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.surface,
+    marginHorizontal: 0,
+    borderRadius: theme.borderRadius.xl,
+    paddingHorizontal: wp(4),
+    height: hp(6),
+    marginTop: hp(2),
+    ...theme.shadows.base,
+  },
+  searchIcon: {
+    marginRight: wp(2),
+    color:'#5A5A5A'
+  },
+  searchInput: {
+    flex: 1,
+    height: '100%',
+    color: theme.text,
+    padding: 0,
+    ...TYPOGRAPHY_STYLES.body1,
   },
   bannerContainer: {
     marginVertical: hp(2),
-    backgroundColor: '#F2F2F2'
+    backgroundColor: theme.background,
   },
   section: {
     marginTop: hp(3),
@@ -259,6 +284,41 @@ const styles = StyleSheet.create({
   },
   firstProduct: {
     marginLeft: 0,
+  },
+  welcomeSection: {
+    marginHorizontal: wp(4),
+    marginTop: hp(2),
+    marginBottom: hp(2),
+  },
+  welcomeContent: {
+    marginBottom: hp(2),
+  },
+  welcomeText: {
+    ...TYPOGRAPHY_STYLES.body1,
+    marginBottom: 4,
+    color:'#5A5A5A'
+  },
+  nameText: {
+    ...TYPOGRAPHY_STYLES.h2,
+    color: '#5A5A5A',
+    // italic fontStyle: 'italic',
+    fontWeight: '600',
+    fontSize: wp(5.2),
+    lineHeight: wp(6.5),
+    marginBottom: 2,
+
+  },
+  subtitleText: {
+    ...TYPOGRAPHY_STYLES.body2,
+    color: '#5A5A5A',
+  },
+  elevation: {
+    ...Platform.select({
+      ios: theme.shadows.base,
+      android: {
+        elevation: 4
+      }
+    })
   },
 });
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,16 +6,18 @@ import {
   ScrollView,
   TouchableOpacity,
   SafeAreaView,
-  Image,
+  Platform,
+  StatusBar,
 } from 'react-native';
 import { Icon } from '@rneui/base';
-import theme from '../../assets/theme';
+import theme, { TYPOGRAPHY_STYLES } from '../../assets/theme';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils/globalFunctions';
+import Animated, { FadeInDown, Layout } from 'react-native-reanimated';
 
 interface SettingsItem {
   title: string;
-  icon?: string;
-  iconType?: string;
+  icon: string;
+  iconType: string;
   onPress: () => void;
   rightText?: string;
 }
@@ -26,100 +28,138 @@ interface SettingsSection {
 }
 
 const SettingsScreen = () => {
+  const [animatedIndex, setAnimatedIndex] = useState(-1);
+
   const settingsSections: SettingsSection[] = [
-    {
-      title: 'Balances',
-      items: [
-        {
-          title: 'Available credit',
-          rightText: 'A$0.00',
-          onPress: () => {},
-        },
-        {
-          title: 'Earn credit',
-          onPress: () => {},
-        },
-      ],
-    },
+    // {
+    //   title: 'Balances',
+    //   items: [
+    //     {
+    //       title: 'Available credit',
+    //       rightText: 'A$0.00',
+    //       icon: 'wallet',
+    //       iconType: 'feather',
+    //       onPress: () => {},
+    //     },
+    //     {
+    //       title: 'Earn credit',
+    //       icon: 'gift',
+    //       iconType: 'feather',
+    //       onPress: () => {},
+    //     },
+    //   ],
+    // },
     {
       title: 'Account',
       items: [
         {
           title: 'Orders & reviews',
+          icon: 'shopping-bag',
+          iconType: 'feather',
           onPress: () => {},
         },
         {
           title: 'Invoices',
+          icon: 'file-text',
+          iconType: 'feather',
           onPress: () => {},
         },
         {
           title: 'Messages',
+          icon: 'message-circle',
+          iconType: 'feather',
           onPress: () => {},
         },
         {
           title: 'Settings',
+          icon: 'settings',
+          iconType: 'feather',
           onPress: () => {},
         },
-        {
-          title: 'Refer brands, earn A$2,000',
-          onPress: () => {},
-        },
-        {
-          title: 'My team',
-          onPress: () => {},
-        },
-        {
-          title: 'Blog',
-          onPress: () => {},
-        },
+        // {
+        //   title: 'Refer brands, earn A$2,000',
+        //   icon: 'users',
+        //   iconType: 'feather',
+        //   onPress: () => {},
+        // },
+        // {
+        //   title: 'My team',
+        //   icon: 'user-plus',
+        //   iconType: 'feather',
+        //   onPress: () => {},
+        // },
+        // {
+        //   title: 'Blog',
+        //   icon: 'book-open',
+        //   iconType: 'feather',
+        //   onPress: () => {},
+        // },
       ],
     },
-    {
-      items: [
-        {
-          title: 'Instagram',
-          onPress: () => {},
-        },
-        {
-          title: 'Facebook',
-          onPress: () => {},
-        },
-        {
-          title: 'Twitter',
-          onPress: () => {},
-        },
-      ],
-    },
+    // {
+    //   items: [
+    //     {
+    //       title: 'Instagram',
+    //       icon: 'instagram',
+    //       iconType: 'feather',
+    //       onPress: () => {},
+    //     },
+    //     {
+    //       title: 'Facebook',
+    //       icon: 'facebook',
+    //       iconType: 'feather',
+    //       onPress: () => {},
+    //     },
+    //     {
+    //       title: 'Twitter',
+    //       icon: 'twitter',
+    //       iconType: 'feather',
+    //       onPress: () => {},
+    //     },
+    //   ],
+    // },
     {
       title: 'Legal',
       items: [
         {
           title: 'Terms of Service',
+          icon: 'file',
+          iconType: 'feather',
           onPress: () => {},
         },
         {
           title: 'Privacy Policy',
+          icon: 'shield',
+          iconType: 'feather',
           onPress: () => {},
         },
-        {
-          title: 'Open Source Licenses',
-          onPress: () => {},
-        },
+        // {
+        //   title: 'Open Source Licenses',
+        //   icon: 'code',
+        //   iconType: 'feather',
+        //   onPress: () => {},
+        // },
       ],
     },
     {
       title: 'Support',
       items: [
-        {
-          title: 'Give feedback',
-          onPress: () => {},
-        },
-        {
-          title: 'Help Center',
-          onPress: () => {},
-        },
+        // {
+        //   title: 'Give feedback',
+        //   icon: 'message-square',
+        //   iconType: 'feather',
+        //   onPress: () => {},
+        // },
+        // {
+        //   title: 'Help Center',
+        //   icon: 'help-circle',
+        //   iconType: 'feather',
+        //   onPress: () => {},
+        // },
         {
           title: 'Contact us',
+          icon: 'phone',
+          iconType: 'feather',
           onPress: () => {},
         },
       ],
@@ -128,71 +168,90 @@ const SettingsScreen = () => {
       items: [
         {
           title: 'Log out',
+          icon: 'log-out',
+          iconType: 'feather',
           onPress: () => {},
         },
       ],
     },
   ];
 
-  const renderSettingsItem = ({ title, icon, iconType, onPress, rightText }: SettingsItem) => (
-    <TouchableOpacity
-      key={title}
-      style={[
-        styles.settingsItem,
-        title === 'Log out' && styles.logoutItem
-      ]}
-      onPress={onPress}
-      activeOpacity={0.7}
+  const renderSettingsItem = ({ title, icon, iconType, onPress, rightText }: SettingsItem, index: number) => (
+    <Animated.View
+      entering={FadeInDown.delay(index * 100).springify()}
+      layout={Layout.springify()}
     >
-      <View style={styles.settingsItemLeft}>
-        {icon && iconType && (
+      <TouchableOpacity
+        key={title}
+        style={[
+          styles.settingsItem,
+          title === 'Log out' && styles.logoutItem
+        ]}
+        onPress={() => {
+          setAnimatedIndex(index);
+          onPress();
+        }}
+        activeOpacity={0.7}
+      >
+        <View style={styles.settingsItemLeft}>
           <View style={[styles.iconContainer, title === 'Log out' && styles.logoutIconContainer]}>
             <Icon 
               name={icon} 
               type={iconType} 
-              size={22} 
-              color={title === 'Log out' ? theme.error : theme.active} 
+              size={20} 
+              color={title === 'Log out' ? theme.error : theme.primary} 
             />
           </View>
+          <Text style={[
+            styles.settingsItemTitle,
+            title === 'Log out' && styles.logoutText
+          ]}>{title}</Text>
+        </View>
+        {rightText ? (
+          <Text style={styles.rightText}>{rightText}</Text>
+        ) : (
+          <Icon 
+            name="chevron-right" 
+            type="feather" 
+            size={18} 
+            color={title === 'Log out' ? theme.error : theme.textLight} 
+          />
         )}
-        <Text style={[
-          styles.settingsItemTitle,
-          title === 'Log out' && styles.logoutText
-        ]}>{title}</Text>
-      </View>
-      {rightText ? (
-        <Text style={styles.rightText}>{rightText}</Text>
-      ) : (
-        <Icon 
-          name="chevron-right" 
-          type="feather" 
-          size={18} 
-          color={title === 'Log out' ? theme.error : theme.textSecondary} 
-        />
-      )}
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </Animated.View>
   );
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
+     
       <ScrollView contentContainerStyle={styles.content}>
         {/* Profile Section */}
-        <View style={styles.profileSection}>
+        <Animated.View 
+          entering={FadeInDown.duration(600)}
+          style={styles.profileSection}
+        >
           <View style={styles.profileImageContainer}>
             <Text style={styles.profileInitial}>Z</Text>
           </View>
           <Text style={styles.profileName}>Zohaib Rao</Text>
           <Text style={styles.profileSubtitle}>My Cat</Text>
-        </View>
+        </Animated.View>
 
         {/* Settings Sections */}
-        {settingsSections.map((section, index) => (
-          <View key={index} style={styles.sectionContainer}>
-            {section.title && <Text style={styles.sectionTitle}>{section.title}</Text>}
-            <View style={styles.settingsList}>ground,
-              {section.items.map(renderSettingsItem)}
+        {settingsSections.map((section, sectionIndex) => (
+          <Animated.View 
+            key={sectionIndex}
+            entering={FadeInDown.delay(sectionIndex * 200).springify()}
+            style={styles.sectionContainer}
+          >
+            {section.title && (
+              <Text style={styles.sectionTitle}>{section.title}</Text>
+            )}
+            <View style={styles.settingsList}>
+              {section.items.map((item, index) => renderSettingsItem(item, sectionIndex * 10 + index))}
             </View>
-          </View>
+          </Animated.View>
         ))}
       </ScrollView>
     </SafeAreaView>
@@ -203,6 +262,52 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.background,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: wp(4),
+    paddingVertical: hp(2),
+    backgroundColor: theme.background,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
+  },
+  iconButton: {
+    padding: wp(2),
+  },
+  iconBackground: {
+    backgroundColor: theme.surface,
+    padding: wp(2),
+    borderRadius: wp(3),
+    ...Platform.select({
+      ios: {
+        shadowColor: theme.text,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  headerTitle: {
+    flex: 1,
+    textAlign: 'center',
+    marginHorizontal: wp(2),
+    color: theme.text,
   },
   content: {
     padding: wp(4),
@@ -217,22 +322,25 @@ const styles = StyleSheet.create({
     width: wp(24),
     height: wp(24),
     borderRadius: wp(12),
-    backgroundColor: theme.background,
+    backgroundColor: theme.primary,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: hp(1.5),
-    shadowColor: theme.primary,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    ...Platform.select({
+      ios: {
+        shadowColor: theme.primary,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.3,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
   },
   profileInitial: {
-    color: theme.background,
-    fontSize: wp(12),
+    color: theme.surface,
+    fontSize: wp(10),
     fontWeight: '600',
   },
   profileName: {
@@ -243,7 +351,7 @@ const styles = StyleSheet.create({
   },
   profileSubtitle: {
     fontSize: wp(3.5),
-    color: theme.textSecondary,
+    color: theme.textLight,
     letterSpacing: 0.5,
   },
   sectionContainer: {
@@ -252,7 +360,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: wp(3.8),
     fontWeight: '600',
-    color: theme.textSecondary,
+    color: theme.textLight,
     marginBottom: hp(1),
     marginLeft: wp(2),
     textTransform: 'uppercase',
@@ -261,14 +369,17 @@ const styles = StyleSheet.create({
   settingsList: {
     backgroundColor: theme.surface,
     borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 3,
+    ...Platform.select({
+      ios: {
+        shadowColor: theme.text,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
   },
   settingsItem: {
     flexDirection: 'row',
@@ -288,13 +399,13 @@ const styles = StyleSheet.create({
     width: wp(10),
     height: wp(10),
     borderRadius: wp(5),
-    backgroundColor: theme.surfaceVariant,
+    backgroundColor: `${theme.primary}10`,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: wp(3),
   },
   settingsItemTitle: {
-    fontSize: wp(4),
+    fontSize: wp(3.8),
     color: theme.text,
     fontWeight: '500',
     flex: 1,
@@ -312,7 +423,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   logoutIconContainer: {
-    backgroundColor: theme.coldLight,
+    backgroundColor: `${theme.error}15`,
   },
 });
 

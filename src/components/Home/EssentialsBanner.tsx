@@ -1,143 +1,131 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated, Easing } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { Icon } from '@rneui/base';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils/globalFunctions';
 import theme from '../../assets/theme';
-import { widthPercentageToDP as wp ,heightPercentageToDP as hp } from '../../utils/globalFunctions';
-
-interface FloatingImageProps {
-  style?: any;
-  delay?: number;
-}
-
-const FloatingImage = ({ style, delay = 0 }: FloatingImageProps) => {
-  const translateY = new Animated.Value(0);
-
-  useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.delay(delay),
-        Animated.timing(translateY, {
-          toValue: -10,
-          duration: 1500,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(translateY, {
-          toValue: 0,
-          duration: 1500,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  }, []);
-
-  return (
-    <Animated.View
-      style={[
-        style,
-        {
-          transform: [{ translateY }],
-        },
-      ]}
-    />
-  );
-};
+import Animated, { FadeInRight } from 'react-native-reanimated';
 
 const EssentialsBanner = () => {
   return (
-    <TouchableOpacity activeOpacity={0.9} style={styles.banner}>
-        <View style={styles.leftContent}>
-          <View style={styles.iconContainer}>
-            <Icon name="shopping-bag" type="feather" size={24} color="#fff" />
-          </View>
-          <Text style={styles.title}>SHOP YOUR</Text>
-          <Text style={styles.subtitle}>ESSENTIALS</Text>
-          <View style={styles.buttonContainer}>
-            <Text style={styles.buttonText}>Shop Now</Text>
-            <Icon name="chevron-right" type="feather" size={16} color={theme.active} />
-          </View>
+    <Animated.View 
+      entering={FadeInRight.duration(600)}
+      style={styles.container}
+    >
+      <View style={styles.leftContent}>
+        <View style={styles.headerContainer}>
+          <Text style={styles.title}>Daily Essentials</Text>
+          <Text style={styles.subtitle}>Up to 50% OFF</Text>
         </View>
+        <Text style={styles.description}>
+          Get your daily health and wellness products at the best prices
+        </Text>
+        <TouchableOpacity 
+          style={styles.button}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.buttonText}>Shop Now</Text>
+          <Icon name="arrow-right" type="feather" size={16} color={theme.active} />
+        </TouchableOpacity>
+      </View>
 
-        <View style={styles.rightContent}>
-          <FloatingImage style={[styles.floatingImage, styles.image1]} delay={0} />
-          <FloatingImage style={[styles.floatingImage, styles.image2]} delay={500} />
-          <FloatingImage style={[styles.floatingImage, styles.image3]} delay={1000} />
-        </View>
-    </TouchableOpacity>
+      <View style={styles.rightContent}>
+        <View style={[styles.floatingImage, styles.image1]} />
+        <View style={[styles.floatingImage, styles.image2]} />
+        <View style={[styles.floatingImage, styles.image3]} />
+      </View>
+    </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
-  banner: {
+  container: {
     flexDirection: 'row',
-    borderRadius: 16,
     padding: wp(4),
-    overflow: 'hidden',
-    height: hp(20),
+    backgroundColor: '#FFF',
     marginHorizontal: wp(4),
+    borderRadius: 16,
+    overflow: 'hidden',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 6,
+      },
+    }),
   },
   leftContent: {
-    flex: 1,
-    justifyContent: 'center',
+    flex: 3,
+    justifyContent: 'space-between',
   },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: theme.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 12,
+  headerContainer: {
+    marginBottom: hp(1),
   },
   title: {
-    fontSize: 14,
-    color: theme.active,
-    fontWeight: '500',
+    fontSize: 22,
+    fontWeight: '700',
+    color: theme.text,
+    marginBottom: 4,
   },
   subtitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: theme.active,
-    marginTop: 4,
+    fontSize: 18,
+    fontWeight: '800',
+    color: theme.primary,
   },
-  buttonContainer: {
+  description: {
+    fontSize: 14,
+    color: theme.textSecondary,
+    lineHeight: 20,
+    marginBottom: hp(2),
+  },
+  button: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 12,
-            backgroundColor: theme.background,
+    backgroundColor: `${theme.primary}15`,
     alignSelf: 'flex-start',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
   },
   buttonText: {
     color: theme.active,
     fontWeight: '600',
-    marginRight: 4,
+    marginRight: 6,
   },
   rightContent: {
-    flex: 1,
+    flex: 2,
     position: 'relative',
   },
   floatingImage: {
     position: 'absolute',
-    width: wp(15),
-    height: wp(15),
-    borderRadius: wp(7.5),
+    width: wp(12),
+    height: wp(12),
+    borderRadius: wp(6),
+    backgroundColor: `${theme.primary}30`,
+    ...Platform.select({
+      ios: {
+        shadowColor: theme.primary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
   },
   image1: {
-            backgroundColor: theme.background,
     top: '10%',
     right: '10%',
   },
   image2: {
-            backgroundColor: theme.background,
     top: '40%',
     right: '30%',
   },
   image3: {
-            backgroundColor: theme.background,
     top: '60%',
     right: '5%',
   },

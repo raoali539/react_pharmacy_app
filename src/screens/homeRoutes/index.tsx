@@ -2,6 +2,7 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import CartScreen from "../cart/CartScreen/CartScreen";
+import CheckoutScreen from "../cart/CheckoutScreen/CheckoutScreen";
 import BottomTab from "../bottomTab";
 import NotificationsScreen from "../notifications/NotificationsScreen";
 import ProductDetails from "../products/ProductDetails";
@@ -47,9 +48,16 @@ export const homeStackScreens: Array<{
     name: "Cart",
     component: CartScreen,
     options: {
-      headerShown: true,
+      headerShown: false,
       title: "Shopping Cart",
       headerTitleAlign: "center",
+    },
+  },
+  {
+    name: "Checkout",
+    component: CheckoutScreen,
+    options: {
+      headerShown: false,
     },
   },
   {
@@ -74,7 +82,7 @@ export const homeStackScreens: Array<{
     name: "ChatConversation",
     component: ChatConversationScreen,
     options: {
-      headerShown: true,
+      headerShown: false,
       title: "Chat",
       headerTitleAlign: "center",
     },
@@ -82,24 +90,23 @@ export const homeStackScreens: Array<{
 ];
 
 /**
- * HomeRoutes component that defines all the routes in the home navigation stack.
- * @returns {JSX.Element} A stack navigator with defined routes.
+ * HomeRoutes component manages the stack navigation for the main app flow.
+ * It defines the navigation stack for the home screen and related screens.
+ *
+ * @component
+ * @returns {React.ReactElement} The home stack navigator.
  */
-const HomeRoutes = () => {
-  return (
-    <>
-      <HomeStack.Navigator screenOptions={{ headerShown: true }}>
-        {homeStackScreens.map(({ name, component, options }) => (
-          <HomeStack.Screen
-            key={name.toString()}
-            name={name}
-            component={component}
-            options={options}
-          />
-        ))}
-      </HomeStack.Navigator>
-    </>
-  );
-};
+const HomeRoutes = () => (
+  <HomeStack.Navigator screenOptions={{ headerShown: false }}>
+    {homeStackScreens.map(({ name, component, options }) => (
+      <HomeStack.Screen
+        key={name}
+        name={name}
+        component={component}
+        options={options}
+      />
+    ))}
+  </HomeStack.Navigator>
+);
 
 export default HomeRoutes;

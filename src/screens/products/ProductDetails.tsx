@@ -15,11 +15,13 @@ import { Icon } from '@rneui/base';
 import theme, { TYPOGRAPHY_STYLES } from '../../assets/theme';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
 import { commonStyles } from '../../assets/commonStyles';
+import { useCart } from '../../contexts/CartContext';
 
 const ProductDetails = ({ route, navigation }:any) => {
   const { product } = route.params;
   const [selectedColor, setSelectedColor] = useState('Mint');
   const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useCart();
 
   const colors = ['Cloud', 'Milk Speckle', 'Mint', 'Rose Quartz'];
 
@@ -39,11 +41,11 @@ const ProductDetails = ({ route, navigation }:any) => {
           </View>
         </TouchableOpacity>
         <Text style={[styles.headerTitle, TYPOGRAPHY_STYLES.h4]}>Product Details</Text>
-        <TouchableOpacity style={styles.iconButton}>
+        {/* <TouchableOpacity style={styles.iconButton}>
           <View style={styles.iconBackground}>
             <Icon name="heart" type="feather" size={22} color={theme.text} />
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </Animated.View>
       <ScrollView showsVerticalScrollIndicator={false} style={styles.content}>
         <Animated.View 
@@ -68,7 +70,7 @@ const ProductDetails = ({ route, navigation }:any) => {
             </View>
 
             <View style={styles.ratingContainer}>
-              <Icon name="star" type="feather" size={16} color={theme.warning} />
+              <Icon name="star" type="feather" size={16} color={theme.text} />
               <Text style={[styles.rating, TYPOGRAPHY_STYLES.body2]}>{product.rating}</Text>
               <Text style={[styles.reviews, TYPOGRAPHY_STYLES.body2]}>(1)</Text>
               {product.minOrder && (
@@ -93,7 +95,7 @@ const ProductDetails = ({ route, navigation }:any) => {
                     ]}
                     onPress={() => setSelectedColor(color)}
                   >
-                    <View style={[styles.colorDot, { backgroundColor: color.toLowerCase() }]} />
+                    {/* <View style={[styles.colorDot, { backgroundColor: color.toLowerCase() }]} /> */}
                     <Text style={[
                       styles.colorText,
                       TYPOGRAPHY_STYLES.button2,
@@ -116,20 +118,6 @@ const ProductDetails = ({ route, navigation }:any) => {
             <Text style={[styles.shippingLocation, TYPOGRAPHY_STYLES.body2]}>
               Ships from Australia
             </Text>
-
-            <View style={styles.infoCard}>
-              <View style={styles.iconContainer}>
-                <Icon name="truck" type="feather" size={20} color={theme.primary} />
-              </View>
-              <View style={styles.infoContent}>
-                <Text style={[styles.freeShippingText, TYPOGRAPHY_STYLES.button2]}>
-                  Free shipping over $450
-                </Text>
-                <Text style={[styles.membershipText, TYPOGRAPHY_STYLES.body2]}>
-                  Available with an Insider membership. Free for 30 days.
-                </Text>
-              </View>
-            </View>
 
             <View style={styles.infoCard}>
               <View style={styles.iconContainer}>
@@ -172,9 +160,21 @@ const ProductDetails = ({ route, navigation }:any) => {
             <Icon name="plus" type="feather" size={20} color={theme.text} />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.addToCartButton}>
+        <TouchableOpacity style={styles.addToCartButton} 
+          onPress={() => {
+            addToCart({
+              id: product.id,
+              productId: product.id,
+              name: product.name,
+              price: product.price,
+              quantity: quantity,
+              image: product.image,
+              vendorName: product.vendorName || 'Unknown Vendor'
+            });
+            navigation.navigate('Cart');
+          }}
+        >
           <Text style={styles.addToCartText}>Add to cart</Text>
-          <Icon name="shopping-cart" type="feather" size={20} color={theme.surface} />
         </TouchableOpacity>
       </Animated.View>
     </SafeAreaView>
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     backgroundColor: theme.surface,
-    height: hp(45),
+    height: hp(25),
     marginBottom: hp(2),
     ...theme.shadows.base,
   },
@@ -233,6 +233,7 @@ const styles = StyleSheet.create({
   },
   productName: {
     marginBottom: hp(1),
+    color: theme.text,
   },
   priceContainer: {
     flexDirection: 'row',
@@ -241,12 +242,13 @@ const styles = StyleSheet.create({
   },
   price: {
     ...TYPOGRAPHY_STYLES.price,
-    color: theme.primary,
+    color: theme.text,
     marginRight: wp(2),
   },
   originalPrice: {
     ...TYPOGRAPHY_STYLES.body2,
     textDecorationLine: 'line-through',
+    color: theme.text,
   },
   ratingContainer: {
     flexDirection: 'row',
@@ -256,9 +258,11 @@ const styles = StyleSheet.create({
   rating: {
     marginLeft: wp(1),
     marginRight: wp(1),
+    color: theme.text,
   },
   reviews: {
     marginRight: wp(2),
+    color: theme.text,
   },
   minOrder: {
     color: theme.textLight,
@@ -268,21 +272,31 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     marginBottom: hp(1),
+    color: theme.text,
   },
   colorOptions: {
     flexDirection: 'row',
     paddingVertical: hp(1),
+    paddingHorizontal: wp(2),
+    alignContent: 'center',
+    alignItems: 'center',
+    backgroundColor: theme.surface,
+    borderRadius: wp(4),
+    ...theme.shadows.base,
+    marginRight: wp(2),
   },
   colorButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: wp(4),
-    paddingVertical: wp(2),
     marginRight: wp(2),
+    gap: wp(3),
+    paddingHorizontal: wp(7),
+    paddingVertical: wp(2),   
     borderRadius: wp(8),
     borderWidth: 1,
     borderColor: theme.border,
     backgroundColor: theme.surface,
+
   },
   colorDot: {
     width: wp(3),
@@ -305,9 +319,11 @@ const styles = StyleSheet.create({
   },
   deliveryDate: {
     marginBottom: hp(0.5),
+    color: theme.text,
   },
   shippingLocation: {
     marginBottom: hp(2),
+    color: theme.text,
   },
   infoCard: {
     flexDirection: 'row',
@@ -332,13 +348,14 @@ const styles = StyleSheet.create({
     marginBottom: hp(0.5),
   },
   membershipText: {
-    color: theme.textLight,
+    color: theme.text,
   },
   returnsTitle: {
     marginBottom: hp(0.5),
+    color: theme.text,
   },
   returnsText: {
-    color: theme.textLight,
+    color: theme.text,
   },
   bottomBar: {
     flexDirection: 'row',
@@ -374,9 +391,9 @@ const styles = StyleSheet.create({
   },
   addToCartButton: {
     flex: 1,
-    backgroundColor: theme.primary,
+    backgroundColor: theme.text,
     borderRadius: theme.borderRadius.lg,
-    paddingVertical: hp(1.5),
+    paddingVertical: hp(1),
     alignItems: 'center',
     justifyContent: 'center',
     ...theme.shadows.base,

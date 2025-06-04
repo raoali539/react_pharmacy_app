@@ -209,6 +209,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.background,
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
+    marginBottom: hp(2), // Add margin to create space
     ...Platform.select({
       ios: {
         shadowColor: '#000',
@@ -249,6 +250,7 @@ const styles = StyleSheet.create({
   searchContainer: {
     paddingHorizontal: wp(4),
     marginBottom: hp(2),
+    zIndex: 1, // Add zIndex to ensure proper layering
   },
   searchInputContainer: {
     flexDirection: 'row',
@@ -257,10 +259,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: wp(4),
     height: hp(6),
+    marginTop: hp(0.5), // Add some top margin
     ...Platform.select({
       ios: {
         shadowColor: theme.text,
-        shadowOffset: { width: 0, height: 4 },
+        shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.08,
         shadowRadius: 8,
       },
@@ -280,17 +283,18 @@ const styles = StyleSheet.create({
   listContent: {
     padding: wp(4),
     paddingTop: hp(1),
+    flexGrow: 1, // Ensure list takes remaining space
   },
   chatItem: {
     flexDirection: 'row',
-    backgroundColor: theme.surface,
+    backgroundColor: theme.text,
     borderRadius: theme.borderRadius.xl,
     padding: wp(3.5),
     marginBottom: hp(2),
     ...theme.shadows.base,
   },
   unreadChatItem: {
-    backgroundColor: `${theme.primary}08`,
+    backgroundColor: `${theme.text}08`,
     borderLeftWidth: 3,
     borderLeftColor: theme.primary,
   },
@@ -341,10 +345,10 @@ const styles = StyleSheet.create({
     color: theme.text,
   },
   timestamp: {
-    color: theme.textLight,
+    color: theme.text,
   },
   unreadTimestamp: {
-    color: theme.primary,
+    color: theme.text,
     fontWeight: '500',
   },
   messagePreview: {
@@ -365,7 +369,7 @@ const styles = StyleSheet.create({
     minWidth: wp(5),
     height: wp(5),
     borderRadius: wp(2.5),
-    backgroundColor: theme.primary,
+    backgroundColor: theme.text,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: wp(1.5),

@@ -52,9 +52,9 @@ const ShowProducts = ({ route, navigation }: any) => {
             >
                 <View style={styles.imageContainer}>
                     <Image source={{ uri: item.image }} style={styles.productImage} />
-                    <View style={styles.discountTag}>
+                    {/* <View style={styles.discountTag}>
                         <Text style={[styles.discountText, TYPOGRAPHY_STYLES.discount]}>50% OFF</Text>
-                    </View>
+                    </View> */}
                 </View>
                 <View style={styles.productInfo}>
                     <Text numberOfLines={2} style={[styles.productName, TYPOGRAPHY_STYLES.h4]}>{item.name}</Text>
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         ...Platform.select({
             ios: {
-                shadowColor: theme.primary,
+                shadowcolor: theme.text,
                 shadowOffset: { width: 0, height: 8 },
                 shadowOpacity: 0.12,
                 shadowRadius: 16,
@@ -212,7 +212,6 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 8,
         left: 8,
-        backgroundColor: theme.primary,
         paddingHorizontal: 8,
         paddingVertical: 4,
         borderRadius: 12,
@@ -234,7 +233,7 @@ const styles = StyleSheet.create({
     },
     price: {
         marginRight: wp(2),
-        color: theme.primary,
+        color: theme.text,
     },
     msrp: {
         textDecorationLine: 'line-through',

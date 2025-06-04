@@ -56,21 +56,6 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <View style={[styles.container, !showBorder && styles.noBorder, style, containerStyle]}>
-      <TouchableOpacity
-        style={styles.iconButton}
-        onPress={isSearchVisible ? handleSearchPress : onLeftPress}
-        disabled={!onLeftPress && !isSearchVisible}
-      >
-        <View style={styles.iconBackground}>
-          <Icon 
-            name={isSearchVisible ? 'x' : leftIcon} 
-            type={leftIconType} 
-            size={22} 
-            color={theme.text} 
-          />
-        </View>
-      </TouchableOpacity>
-
       {isSearchVisible ? (
         <View style={styles.searchContainer}>
           <TextInput
@@ -83,6 +68,14 @@ const Header: React.FC<HeaderProps> = ({
             returnKeyType="search"
             onSubmitEditing={handleSearchSubmit}
           />
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={handleSearchPress}
+          >
+            <View style={styles.iconBackground}>
+              <Icon name="x" type="feather" size={22} color={theme.text} />
+            </View>
+          </TouchableOpacity>
         </View>
       ) : (
         <>
@@ -165,14 +158,21 @@ const styles = StyleSheet.create({
   searchContainer: {
     flex: 1,
     marginHorizontal: wp(2),
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   searchInput: {
+    flex: 1,
     backgroundColor: theme.surface,
     height: hp(5),
     borderRadius: theme.borderRadius.lg,
     paddingHorizontal: wp(4),
     color: theme.text,
     ...theme.shadows.sm,
+  },
+  closeButton: {
+    marginLeft: wp(2),
+    padding: wp(2),
   }
 });
 

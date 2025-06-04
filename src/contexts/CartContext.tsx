@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useReducer } from 'react';
+import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface CartItem {
   id: string;
@@ -23,7 +24,10 @@ type CartAction =
   | { type: 'CLEAR_CART' }
   | { type: 'SAVE_FOR_LATER'; payload: CartItem }
   | { type: 'REMOVE_FROM_SAVED'; payload: string }
-  | { type: 'MOVE_TO_CART'; payload: CartItem };
+  | { type: 'MOVE_TO_CART'; payload: CartItem }
+  | { type: 'LOAD_CART'; payload: CartState };
+
+const CART_STORAGE_KEY = '@pharmacy_cart';
 
 const initialState: CartState = {
   items: [],
@@ -31,84 +35,111 @@ const initialState: CartState = {
   total: 0,
 };
 
+const calculateTotal = (items: CartItem[]): number => {
+  return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+};
+
 const cartReducer = (state: CartState, action: CartAction): CartState => {
+  let newState: CartState;
+
   switch (action.type) {
     case 'ADD_ITEM': {
-      const existingItem = state.items.find(item => item.productId === action.payload.productId);
-      if (existingItem) {
-        return {
+      const existingItemIndex = state.items.findIndex(
+        item => item.productId === action.payload.productId
+      );
+
+      if (existingItemIndex > -1) {
+        const updatedItems = [...state.items];
+        updatedItems[existingItemIndex] = {
+          ...updatedItems[existingItemIndex],
+          quantity: updatedItems[existingItemIndex].quantity + action.payload.quantity,
+        };
+        newState = {
           ...state,
-          items: state.items.map(item =>
-            item.productId === action.payload.productId
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
-          ),
-          total: state.total + action.payload.price,
+          items: updatedItems,
+          total: calculateTotal(updatedItems),
+        };
+      } else {
+        const updatedItems = [...state.items, action.payload];
+        newState = {
+          ...state,
+          items: updatedItems,
+          total: calculateTotal(updatedItems),
         };
       }
-      return {
-        ...state,
-        items: [...state.items, action.payload],
-        total: state.total + action.payload.price,
-      };
+      break;
     }
 
     case 'REMOVE_ITEM': {
-      const item = state.items.find(i => i.id === action.payload);
-      return {
+      const updatedItems = state.items.filter(item => item.id !== action.payload);
+      newState = {
         ...state,
-        items: state.items.filter(i => i.id !== action.payload),
-        total: state.total - (item ? item.price * item.quantity : 0),
+        items: updatedItems,
+        total: calculateTotal(updatedItems),
       };
+      break;
     }
 
     case 'UPDATE_QUANTITY': {
-      const item = state.items.find(i => i.id === action.payload.id);
-      if (!item) return state;
-
-      const quantityDiff = action.payload.quantity - item.quantity;
-      return {
+      const updatedItems = state.items.map(item =>
+        item.id === action.payload.id
+          ? { ...item, quantity: action.payload.quantity }
+          : item
+      );
+      newState = {
         ...state,
-        items: state.items.map(i =>
-          i.id === action.payload.id
-            ? { ...i, quantity: action.payload.quantity }
-            : i
-        ).filter(i => i.quantity > 0),
-        total: state.total + (item.price * quantityDiff),
+        items: updatedItems,
+        total: calculateTotal(updatedItems),
       };
+      break;
     }
 
     case 'SAVE_FOR_LATER': {
-      return {
+      newState = {
         ...state,
         savedItems: [...state.savedItems, action.payload],
         items: state.items.filter(item => item.id !== action.payload.id),
         total: state.total - (action.payload.price * action.payload.quantity),
       };
+      break;
     }
 
     case 'REMOVE_FROM_SAVED': {
-      return {
+      newState = {
         ...state,
         savedItems: state.savedItems.filter(item => item.id !== action.payload),
       };
+      break;
     }
 
     case 'MOVE_TO_CART': {
-      return {
+      newState = {
         ...state,
         items: [...state.items, action.payload],
         savedItems: state.savedItems.filter(item => item.id !== action.payload.id),
         total: state.total + (action.payload.price * action.payload.quantity),
       };
+      break;
     }
 
     case 'CLEAR_CART':
-      return initialState;
+      newState = initialState;
+      break;
+
+    case 'LOAD_CART':
+      newState = action.payload;
+      break;
 
     default:
-      return state;
+      newState = state;
   }
+
+  // Persist the new state to AsyncStorage
+  AsyncStorage.setItem(CART_STORAGE_KEY, JSON.stringify(newState)).catch(error => {
+    console.error('Error saving cart state:', error);
+  });
+
+  return newState;
 };
 
 const CartContext = createContext<{
@@ -119,6 +150,22 @@ const CartContext = createContext<{
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
+
+  useEffect(() => {
+    // Load saved cart state when the app starts
+    const loadSavedCart = async () => {
+      try {
+        const savedCart = await AsyncStorage.getItem(CART_STORAGE_KEY);
+        if (savedCart) {
+          dispatch({ type: 'LOAD_CART', payload: JSON.parse(savedCart) });
+        }
+      } catch (error) {
+        console.error('Error loading saved cart:', error);
+      }
+    };
+
+    loadSavedCart();
+  }, []);
 
   const addToCart = (item: CartItem) => {
     dispatch({ type: 'ADD_ITEM', payload: item });

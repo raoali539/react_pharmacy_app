@@ -1,15 +1,16 @@
-
-
-
-
-
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { registerUser } from '../../../redux/slices/authSlice';
+import { RootState } from '../../../redux/store/store';
+import theme from '../../../assets/theme';
 
 const Registration = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const { isLoading } = useSelector((state: RootState) => state.auth);
+
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -18,10 +19,33 @@ const Registration = () => {
     phone: '',
   });
 
-  const handleRegistration = () => {
-    // Implement registration logic here
-    // After successful registration, navigate to email verification
-    // navigation.navigate(routeNames.EmailOtpVerificationScreen);
+  const handleRegistration = async () => {
+    if (!formData.fullName || !formData.email || !formData.password || !formData.confirmPassword || !formData.phone) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+
+    try {
+      const resultAction = await dispatch(registerUser({
+        name: formData.fullName,
+        email: formData.email,
+        password: formData.password
+      }) as any);
+
+      if (registerUser.fulfilled.match(resultAction)) {
+        navigation.navigate('HomeRoutes' as never);
+      } else if (registerUser.rejected.match(resultAction)) {
+        Alert.alert('Error', resultAction.payload as string || 'Registration failed');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      Alert.alert('Error', 'Something went wrong during registration');
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -73,11 +97,17 @@ const Registration = () => {
           secureTextEntry
         />
 
-        <TouchableOpacity style={styles.button} onPress={handleRegistration}>
-          <Text style={styles.buttonText}>Register</Text>
+        <TouchableOpacity 
+          style={[styles.button, isLoading && styles.buttonDisabled]} 
+          onPress={handleRegistration}
+          disabled={isLoading}
+        >
+          <Text style={styles.buttonText}>
+            {isLoading ? 'Creating Account...' : 'Register'}
+          </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity onPress={() => navigation.navigate('Login' as never)}>
           <Text style={styles.linkText}>Already have an account? Login</Text>
         </TouchableOpacity>
       </View>
@@ -93,27 +123,33 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.background,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
+    color: theme.text,
   },
   input: {
     height: 50,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: theme.border,
     borderRadius: 8,
     paddingHorizontal: 15,
     marginBottom: 15,
+    color: theme.text,
+    backgroundColor: theme.surface,
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: theme.primary,
     padding: 15,
     borderRadius: 8,
     marginVertical: 15,
+  },
+  buttonDisabled: {
+    opacity: 0.7,
   },
   buttonText: {
     color: '#FFFFFF',
@@ -121,7 +157,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   linkText: {
-    color: '#007AFF',
+    color: theme.active,
     textAlign: 'center',
     marginTop: 10,
   },

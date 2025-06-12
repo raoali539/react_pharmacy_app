@@ -15,15 +15,22 @@ import {
 } from 'react-native';
 import { Icon } from '@rneui/base';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import theme, { TYPOGRAPHY_STYLES } from '../../../assets/theme';
 import { useCart } from '../../../contexts/CartContext';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../../utils/globalFunctions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+type RootStackParamList = {
+  Auth: { screen: string };
+  Checkout: undefined;
+};
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const CartScreen = () => {
   const { state, dispatch } = useCart();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [searchText, setSearchText] = useState('');
   const scaleAnims = useRef(new Map()).current;
 
@@ -70,8 +77,18 @@ const CartScreen = () => {
     });
   };
 
-  const proceedToCheckout = () => {
-    navigation.navigate('Checkout' as never);
+  const proceedToCheckout = async () => {
+    try {
+      const token = await AsyncStorage.getItem('userToken');
+      if (token) {
+        navigation.navigate('Checkout');
+      } else {
+        navigation.navigate('Login', { screen: 'Login' });
+      }
+    } catch (error) {
+      console.error('Error checking authentication:', error);
+      navigation.navigate('Login', { screen: 'Login' });
+    }
   };
 
   const navigateToBrowse = () => {

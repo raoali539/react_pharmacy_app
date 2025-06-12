@@ -1,4 +1,3 @@
-
 import { NavigationContainer } from '@react-navigation/native';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import React from 'react';
@@ -7,27 +6,24 @@ import {
 } from 'react-native';
 import HomeRoutes from './src/screens/homeRoutes';
 import AuthRoutes from './src/screens/authRoutes';
-import { Provider, useSelector } from 'react-redux';
-// import store, { RootState } from "./src/redux/store"
-// import { persistor } from "./src/redux/store"
-// import { PersistGate } from 'redux-persist/es/integration/react';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from './src/redux/store/store';
 import { CartProvider } from './src/contexts/CartContext';
 
 function App(): React.JSX.Element {
   const accessToken = true; // Replace with your actual logic to check for access token
-  // const accessToken = useSelector((state: RootState) => state.auth.token);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <CartProvider>
-
-        {/* <Provider store={store}> */}
-        {/* <PersistGate loading={null} persistor={persistor}> */}
-        <NavigationContainer>
-          {accessToken ? <HomeRoutes /> : <AuthRoutes />}
-        </NavigationContainer>
-        {/* </PersistGate> */}
-        {/* </Provider> */}
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <NavigationContainer>
+              {accessToken ? <HomeRoutes /> : <AuthRoutes />}
+            </NavigationContainer>
+          </PersistGate>
+        </Provider>
       </CartProvider>
     </GestureHandlerRootView>
   );

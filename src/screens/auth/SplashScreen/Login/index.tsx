@@ -1,9 +1,3 @@
-
-
-
-
-
-
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -20,21 +14,23 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import theme from '../../../../assets/theme';
-import { heightPercentageToDP  as hp ,widthPercentageToDP as wp} from '../../../../utils/globalFunctions';
-
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../../../utils/globalFunctions';
+import { loginUser } from '../../../../redux/slices/authSlice';
+import { RootState } from '../../../../redux/store/store';
 
 type NavigationProp = NativeStackNavigationProp<any>;
 
 const Login = () => {
   const navigation = useNavigation<NavigationProp>();
   const dispatch = useDispatch();
+  const { isLoading, error } = useSelector((state: RootState) => state.auth);
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   // Animations
   const fadeAnim = new Animated.Value(0);
@@ -62,23 +58,16 @@ const Login = () => {
         return;
       }
 
-      setIsLoading(true);
+      const resultAction = await dispatch(loginUser({ email, password }) as any);
       
-      if (email === 'medican@gmail.com' && password === '12345678') {
-        const dummyToken = 'dummy_bearer_token_123';
-        // dispatch(setCredentials({
-        //   token: dummyToken,
-        //   userEmail: email
-        // }));
+      if (loginUser.fulfilled.match(resultAction)) {
         navigation.navigate('HomeRoutes');
-      } else {
-        Alert.alert('Error', 'Invalid email or password');
+      } else if (loginUser.rejected.match(resultAction)) {
+        Alert.alert('Error', resultAction.payload as string || 'Login failed');
       }
     } catch (error) {
       console.error('Login error:', error);
       Alert.alert('Error', 'Something went wrong');
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -98,7 +87,7 @@ const Login = () => {
 
           <View style={styles.inputWrapper}>
             <View style={styles.inputContainer}>
-              <Icon name="email-outline" size={20}      style={styles.inputIcon} />
+              <Icon name="email-outline" size={20} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder="Email"
@@ -106,22 +95,20 @@ const Login = () => {
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
-                
               />
             </View>
 
             <View style={styles.inputContainer}>
-              <Icon name="lock-outline" size={20}      style={styles.inputIcon} />
+              <Icon name="lock-outline" size={20} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder="Password"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
-                    
               />
               <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-                <Icon name={showPassword ? "eye-off-outline" : "eye-outline"} size={20}      />
+                <Icon name={showPassword ? "eye-off-outline" : "eye-outline"} size={20} />
               </TouchableOpacity>
             </View>
           </View>
@@ -161,7 +148,7 @@ const Login = () => {
 
           <View style={styles.registerContainer}>
             <Text style={styles.registerText}>Don't have an account? </Text>
-            <TouchableOpacity onPress={() => {}}>
+            <TouchableOpacity onPress={() => navigation.navigate('Registration' as never)}>
               <Text style={styles.registerLink}>Sign Up</Text>
             </TouchableOpacity>
           </View>
@@ -194,12 +181,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '700',
-         textAlign: 'center',
+    textAlign: 'center',
     marginBottom: hp(1),
   },
   subtitle: {
     fontSize: 16,
-         textAlign: 'center',
+    textAlign: 'center',
     marginBottom: hp(4),
   },
   inputWrapper: {
@@ -221,7 +208,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-         fontSize: 16,
+    fontSize: 16,
   },
   eyeIcon: {
     padding: 8,
@@ -245,7 +232,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   buttonText: {
-         fontSize: 16,
+    fontSize: 16,
     fontWeight: '600',
   },
   forgotPasswordContainer: {
@@ -268,7 +255,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.border,
   },
   dividerText: {
-         paddingHorizontal: wp(4),
+    paddingHorizontal: wp(4),
     fontSize: 14,
   },
   socialButtonsContainer: {
@@ -296,7 +283,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   registerText: {
-         fontSize: 14,
+    fontSize: 14,
   },
   registerLink: {
     color: theme.active,

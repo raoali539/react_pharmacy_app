@@ -9,6 +9,8 @@ import ProductDetails from "../products/ProductDetails";
 import ShowProducts from "../products/ShowProducts";
 import BrowseProducts from "../products/BrowseProducts";
 import ChatConversationScreen from "../chat/ChatConversationScreen";
+import Login from "../auth/SplashScreen/Login";
+import Registration from "../auth/Registration";
 
 // Default option for screens without a header
 const headerShownFalse = { headerShown: false };
@@ -87,6 +89,8 @@ export const homeStackScreens: Array<{
       headerTitleAlign: "center",
     },
   },
+  { name: "Login", component: Login, options: headerShownFalse },
+  { name: "Register", component: Registration, options: headerShownFalse },
 ];
 
 /**

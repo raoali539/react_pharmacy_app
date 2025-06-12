@@ -12,7 +12,7 @@ import { store, persistor } from './src/redux/store/store';
 import { CartProvider } from './src/contexts/CartContext';
 
 function App(): React.JSX.Element {
-  const accessToken = true; // Replace with your actual logic to check for access token
+  const accessToken = true;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

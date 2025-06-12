@@ -84,7 +84,7 @@ function BottomTab() {
       position: 'absolute' as const,
       left: 8,
       right: 8,
-      bottom: Platform.OS === 'ios' ? 24 : 16,
+      bottom: Platform.OS === 'ios' ? 24 : 0,
       elevation: 0,
       borderRadius: 20,
       shadowColor: '#000',

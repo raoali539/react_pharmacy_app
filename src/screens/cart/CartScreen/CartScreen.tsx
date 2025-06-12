@@ -20,6 +20,8 @@ import theme, { TYPOGRAPHY_STYLES } from '../../../assets/theme';
 import { useCart } from '../../../contexts/CartContext';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../../utils/globalFunctions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Header from '../../../common/Header';
+import { commonStyles } from '../../../assets/commonStyles';
 
 type RootStackParamList = {
   Auth: { screen: string };
@@ -92,7 +94,7 @@ const CartScreen = () => {
   };
 
   const navigateToBrowse = () => {
-    navigation.navigate('Browse' as never);
+    navigation.navigate('ShowProducts' as never);
   };
 
   const filteredCartItems = cartItems.filter(item =>
@@ -165,24 +167,17 @@ const CartScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
-      <Animated.View 
-        style={styles.header}
-      >
-        <TouchableOpacity 
-          style={styles.iconButton}
-          onPress={() => navigation.goBack()}
-        >
-          <View style={styles.iconBackground}>
-            <Icon name="arrow-left" type="feather" size={22} color={theme.text} />
-          </View>
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, TYPOGRAPHY_STYLES.h4]}>Shopping Cart</Text>
-        <TouchableOpacity style={styles.iconButton}>
-          <View style={styles.iconBackground}>
-            <Icon name="more-vertical" type="feather" size={22} color={theme.text} />
-          </View>
-        </TouchableOpacity>
-      </Animated.View>
+       <Header
+                leftIcon='arrow-left'
+                title="Shopping Cart"
+                leftIconType='feather'
+                containerStyle={commonStyles.headerContainer}
+                onLeftPress={() =>{
+                    navigation.goBack();
+                }}
+                showSearch={false}
+             
+            />
       
       <View style={styles.searchContainer}>
         <Icon name="search" type="feather" size={20} color={theme.textLight} />
@@ -444,21 +439,10 @@ const styles = StyleSheet.create({
     width: wp(20),
     height: wp(20),
     borderRadius: wp(10),
-    backgroundColor: `${theme.primary}10`,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: hp(3),
-    ...Platform.select({
-      ios: {
-        shadowColor: theme.primary,
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.15,
-        shadowRadius: 12,
-      },
-      android: {
-        elevation: 4,
-      },
-    }),
+   
   },
   emptyText: {
     fontSize: wp(5),
@@ -477,17 +461,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp(6),
     paddingVertical: hp(1.5),
     borderRadius: theme.borderRadius.lg,
-    ...Platform.select({
-      ios: {
-        shadowColor: theme.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 4,
-      },
-    }),
+    backgroundColor: theme.background,
+    color: theme.text,
+    // ...Platform.select({
+    //   ios: {
+    //     shadowColor: theme.primary,
+    //     shadowOffset: { width: 0, height: 4 },
+    //     shadowOpacity: 0.3,
+    //     shadowRadius: 8,
+    //   },
+    //   android: {
+    //     elevation: 4,
+    //   },
+    // }),
   },
   browseButtonText: {
     fontSize: wp(4),

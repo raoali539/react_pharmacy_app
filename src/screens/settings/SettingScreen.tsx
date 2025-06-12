@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: wp(4),
-    paddingBottom: hp(4),
+    paddingBottom: hp(8),
   },
   profileSection: {
     alignItems: 'center',

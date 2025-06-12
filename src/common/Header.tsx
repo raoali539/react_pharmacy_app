@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Platform, TextInput } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Platform, TextInput, StatusBar } from 'react-native';
 import { Icon } from '@rneui/themed';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../utils/globalFunctions';
 import theme from '../assets/theme';
@@ -19,6 +19,7 @@ interface HeaderProps {
   style?: any;
   containerStyle?: any;
   onSearch?: (text: string) => void;
+  showSearch?:boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -35,6 +36,7 @@ const Header: React.FC<HeaderProps> = ({
   style,
   containerStyle,
   onSearch,
+  showSearch=true,
 }) => {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -56,7 +58,7 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <View style={[styles.container, !showBorder && styles.noBorder, style, containerStyle]}>
-      {isSearchVisible ? (
+      {isSearchVisible  ? (
         <View style={styles.searchContainer}>
           <TextInput
             style={[styles.searchInput, TYPOGRAPHY_STYLES.body1]}
@@ -79,12 +81,27 @@ const Header: React.FC<HeaderProps> = ({
         </View>
       ) : (
         <>
+        {
+          leftIcon && (
+            <TouchableOpacity
+              style={styles.iconButton}
+              onPress={onLeftPress}
+              disabled={!onLeftPress}
+            >
+              <View style={styles.iconBackground}>
+                <Icon name={leftIcon} type={leftIconType} size={22} color={theme.text} />
+              </View>
+            </TouchableOpacity>
+          )
+        }
           <Text style={[styles.title, TYPOGRAPHY_STYLES.h4]} numberOfLines={1}>
             {title}
           </Text>
 
           <View style={styles.rightIcons}>
-            <TouchableOpacity
+            {
+              showSearch && (
+<TouchableOpacity
               style={styles.iconButton}
               onPress={handleSearchPress}
             >
@@ -92,6 +109,9 @@ const Header: React.FC<HeaderProps> = ({
                 <Icon name="search" type="feather" size={22} color={theme.text} />
               </View>
             </TouchableOpacity>
+              )
+            }
+            
             
             {rightIcon2 && (
               <TouchableOpacity
@@ -122,8 +142,12 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
     ...theme.shadows.base,
-  },
-  noBorder: {
+    ...Platform.select({
+      android: {
+        paddingTop: StatusBar.currentHeight ? StatusBar.currentHeight + hp(1) : hp(3),
+      }
+    }),
+  },  noBorder: {
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
     ...Platform.select({
@@ -132,18 +156,24 @@ const styles = StyleSheet.create({
       },
       android: {
         elevation: 0,
+        // Keep the status bar padding even when no border
+        paddingTop: StatusBar.currentHeight ? StatusBar.currentHeight + hp(1) : hp(3),
       },
     }),
   },
   iconButton: {
     padding: wp(2),
     width: wp(14),
-  },
-  iconBackground: {
+  },  iconBackground: {
     backgroundColor: theme.surface,
     padding: wp(2),
     borderRadius: wp(3),
     ...theme.shadows.sm,
+    ...Platform.select({
+      android: {
+        elevation: 2,
+      }
+    }),
   },
   title: {
     flex: 1,
@@ -160,8 +190,7 @@ const styles = StyleSheet.create({
     marginHorizontal: wp(2),
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  searchInput: {
+  },  searchInput: {
     flex: 1,
     backgroundColor: theme.surface,
     height: hp(5),
@@ -169,6 +198,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp(4),
     color: theme.text,
     ...theme.shadows.sm,
+    ...Platform.select({
+      android: {
+        paddingVertical: 0,
+      }
+    }),
   },
   closeButton: {
     marginLeft: wp(2),

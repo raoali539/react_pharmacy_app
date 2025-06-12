@@ -171,6 +171,7 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: theme.border,
     backgroundColor: theme.background,
+    
   },
   input: {
     backgroundColor: theme.border,
@@ -199,7 +200,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: wp(4),
-    paddingVertical: hp(2),
+    paddingVertical: Platform.OS == "ios" ? hp(2) : hp(4),
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: theme.border,
     backgroundColor: theme.background,

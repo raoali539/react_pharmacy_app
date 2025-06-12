@@ -16,6 +16,7 @@ import theme, { TYPOGRAPHY_STYLES } from '../../assets/theme';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
 import { commonStyles } from '../../assets/commonStyles';
 import { useCart } from '../../contexts/CartContext';
+import Header from '../../common/Header';
 
 const ProductDetails = ({ route, navigation }:any) => {
   const { product } = route.params;
@@ -28,25 +29,17 @@ const ProductDetails = ({ route, navigation }:any) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
-      <Animated.View 
-        entering={FadeInDown.duration(500)}
-        style={[commonStyles.headerContainer]}
-      >
-        <TouchableOpacity 
-          style={styles.iconButton}
-          onPress={() => navigation.goBack()}
-        >
-          <View style={styles.iconBackground}>
-            <Icon name="arrow-left" type="feather" size={22} color={theme.text} />
-          </View>
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, TYPOGRAPHY_STYLES.h4]}>Product Details</Text>
-        {/* <TouchableOpacity style={styles.iconButton}>
-          <View style={styles.iconBackground}>
-            <Icon name="heart" type="feather" size={22} color={theme.text} />
-          </View>
-        </TouchableOpacity> */}
-      </Animated.View>
+      <Header
+                leftIcon='arrow-left'
+                title="Product Details"
+                leftIconType='feather'
+                containerStyle={commonStyles.headerContainer}
+                onLeftPress={() =>{
+                    navigation.goBack();
+                }}
+                showSearch={false}
+             
+            />
       <ScrollView showsVerticalScrollIndicator={false} style={styles.content}>
         <Animated.View 
           entering={FadeInDown.delay(100)}
@@ -216,9 +209,10 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     backgroundColor: theme.surface,
-    height: hp(25),
+    height: hp(30),
     marginBottom: hp(2),
     ...theme.shadows.base,
+    resizeMode:'cover'
   },
   productImage: {
     width: '100%',
@@ -277,13 +271,14 @@ const styles = StyleSheet.create({
   colorOptions: {
     flexDirection: 'row',
     paddingVertical: hp(1),
-    paddingHorizontal: wp(2),
+    paddingHorizontal: wp(3),
     alignContent: 'center',
     alignItems: 'center',
-    backgroundColor: theme.surface,
+    backgroundColor: theme.background,
     borderRadius: wp(4),
-    ...theme.shadows.base,
     marginRight: wp(2),
+    margin:'auto'
+    
   },
   colorButton: {
     flexDirection: 'row',

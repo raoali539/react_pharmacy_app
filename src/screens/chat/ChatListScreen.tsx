@@ -17,6 +17,7 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../uti
 import { useNavigation } from '@react-navigation/native';
 import Animated, { FadeInRight, Layout, FadeInDown } from 'react-native-reanimated';
 import { commonStyles } from '../../assets/commonStyles';
+import Header from '../../common/Header';
 
 interface ChatPreview {
   id: string;
@@ -135,25 +136,17 @@ const ChatListScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
-      <Animated.View 
-        entering={FadeInDown.duration(500)}
-        style={styles.header}
-      >
-        <TouchableOpacity 
-          style={styles.iconButton}
-          onPress={() => navigation.goBack()}
-        >
-          <View style={styles.iconBackground}>
-            <Icon name="arrow-left" type="feather" size={22} color={theme.text} />
-          </View>
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, TYPOGRAPHY_STYLES.h4]}>Messages</Text>
-        <TouchableOpacity style={styles.iconButton}>
-          <View style={styles.iconBackground}>
-            <Icon name="edit-2" type="feather" size={22} color={theme.text} />
-          </View>
-        </TouchableOpacity>
-      </Animated.View>
+     <Header
+                leftIcon='arrow-left'
+                title="Messages"
+                leftIconType='feather'
+                containerStyle={commonStyles.headerContainer}
+                onLeftPress={() =>{
+                    navigation.goBack();
+                }}
+                showSearch={false}
+             
+            />
 
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>

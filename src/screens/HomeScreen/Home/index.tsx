@@ -47,7 +47,7 @@ const FEATURED_PRODUCTS: Product[] = [
     description: 'Paracetamol & Caffeine Tablets',
     price: 150.00,
     originalPrice: 180.00,
-    image: "",
+    image: "https://c8.alamy.com/comp/D91062/fake-mushroom-on-forest-floor-D91062.jpg",
     vendor: {
       id: "v1",
       name: "Main Pharmacy"
@@ -59,7 +59,7 @@ const FEATURED_PRODUCTS: Product[] = [
     description: 'Multivitamin Tablets (30)',
     price: 1250.00,
     originalPrice: 1399.00,
-    image: "",
+    image: "https://www.brandonthatchers.co.uk/uploads/items/6456424cf4e1410e/1c26823365d0ae27.jpeg?size=224&date=1602000697",
     vendor: {
       id: "v2",
       name: "Health Plus"
@@ -70,7 +70,7 @@ const FEATURED_PRODUCTS: Product[] = [
     name: 'Ensure Gold',
     description: 'Adult Nutrition Drink 400g',
     price: 2199.00,
-    image: "",
+    image: "https://www.brandonthatchers.co.uk/uploads/items/7c76091ce601ce2f/b54e2fbd44fb96f6.jpeg?size=224&date=1602000547",
     vendor: {
       id: "v3",
       name: "Health Plus"
@@ -81,13 +81,61 @@ const FEATURED_PRODUCTS: Product[] = [
     name: 'Baby Milk',
     description: 'Infant Formula Stage 1',
     price: 3299.00,
-    image: "",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRn41hy2eegjTPDitK6e63GyBdSzvsSHR5JgGaRxWP5bO7gpGfFP01zplribLxllEWp8fc&usqp=CAU",
     vendor: {
       id: "v2",
       name: "Health Plus"
     }
-  }
+  },
+   {
+            id: "5",
+            name: 'Vicks Vaporub',
+            description: 'Relief for Cold Symptoms (50g)',
+            price: 280.00,
+            originalPrice: 310.00,
+            image: "https://media.post.rvohealth.io/wp-content/uploads/2020/02/mushrooms-varieties-types-732x549-thumbnail-732x549.jpg",
+            vendor: {
+                id: "v1",
+                name: "Main Pharmacy"
+            }
+        },
+        {
+            id: "6",
+            name: 'Dettol Hand Sanitizer',
+            description: 'Instant Hand Sanitizer 200ml',
+            price: 450.00,
+            originalPrice: 500.00,
+            image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2QG7iUSlAOSeTcY9rGTGN4cPNyYdndqSZYA&s",
+            vendor: {
+                id: "v4",
+                name: "SafeCare Pharmacy"
+            }
+        },
+        {
+            id: "7",
+            name: 'Revital H',
+            description: 'Daily Health Supplement (30 Capsules)',
+            price: 799.00,
+            image: "https://m.media-amazon.com/images/I/81EyKYuu06L._AC_UF894,1000_QL80_.jpg",
+            vendor: {
+                id: "v3",
+                name: "Health Plus"
+            }
+        },
+        {
+            id: "8",
+            name: 'ORS Powder Sachets',
+            description: 'Electrolyte Rehydration Formula (Pack of 10)',
+            price: 250.00,
+            originalPrice: 300.00,
+            image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7ppSBbwaGkSNB-GB2rfSY3dimWrn-LgsPeA&s",
+            vendor: {
+                id: "v5",
+                name: "Wellness Pharmacy"
+            }
+          }
 ];
+
 
 const Home = () => {
   const navigation = useNavigation<NavigationProp<any>>();
@@ -222,7 +270,7 @@ const Home = () => {
             onViewAll={handleViewAll}
           />
           <View style={{
-            width:Dimensions.get('window').width - wp(12), // full width minus horizontal padding
+            width:Dimensions.get('window').width - wp(8), // full width minus horizontal padding
             marginHorizontal: wp(6),
           }}>
           <VirtualizedHorizontalList
@@ -280,7 +328,8 @@ const styles = StyleSheet.create({
     marginTop: hp(3),
   },
   productList: {
-    paddingBottom: hp(2),
+    paddingBottom: hp(8),
+    paddingHorizontal: wp(1),
   },
   firstProduct: {
     marginLeft: 0,

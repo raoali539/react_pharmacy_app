@@ -135,15 +135,15 @@ const Login = () => {
           </View>
 
           <View style={styles.socialButtonsContainer}>
-            <TouchableOpacity style={styles.socialButton}>
+            {/* <TouchableOpacity style={styles.socialButton}> */}
               {/* <Image source={imagePath.googleIcon} style={styles.socialIcon} /> */}
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.socialButton}>
+            {/* </TouchableOpacity> */}
+            {/* <TouchableOpacity style={styles.socialButton}> */}
               {/* <Image source={imagePath.appleIcon} style={styles.socialIcon} /> */}
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.socialButton}>
+            {/* </TouchableOpacity> */}
+            {/* <TouchableOpacity style={styles.socialButton}> */}
               {/* <Image source={imagePath.facebookIcon} style={styles.socialIcon} /> */}
-            </TouchableOpacity>
+            {/* </TouchableOpacity> */}
           </View>
 
           <View style={styles.registerContainer}>

@@ -162,7 +162,8 @@ const ShowProducts = ({ route, navigation }: any) => {
                     onPress={() => navigation.navigate('ProductDetails', { product: item })}
                 >
                     <View style={styles.imageContainer}>
-                        <Image source={{ uri: item.image }} style={styles.productImage} />                        {discountPercentage && (
+                        <Image source={{ uri: item.image }} style={styles.productImage} />
+                        {discountPercentage && (
                             <View style={styles.discountTag}>
                                 <Text style={styles.discountText}>{discountPercentage}% OFF</Text>
                             </View>
@@ -177,21 +178,29 @@ const ShowProducts = ({ route, navigation }: any) => {
                                 <Text style={[styles.msrp, TYPOGRAPHY_STYLES.body3]}>{formatPrice(item.originalPrice)}</Text>
                             )}
                         </View>
-                        <View style={styles.vendorContainer}>
-                            <Icon name="store" type="material" size={14} color={theme.primary} />
-                            <Text style={[styles.vendorName, TYPOGRAPHY_STYLES.body3]}>{item.vendor.name}</Text>
+                        <View style={styles.bottomRow}>
+                            <View style={styles.vendorContainer}>
+                                <Icon name="store" type="material" size={14} color={theme.primary} />
+                                <Text style={[styles.vendorName, TYPOGRAPHY_STYLES.body3]}>{item.vendor.name}</Text>
+                            </View>
+                            <TouchableOpacity 
+                                style={styles.messageButton}
+                                onPress={() => navigation.navigate('ChatConversation', { vendor: item.vendor })}
+                            >
+                                <Icon name="message-circle" type="feather" size={20} color={theme.primary} />
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </TouchableOpacity>
             </Animated.View>
         );
-    };    return (
+    };
+
+    return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
             <Header
                 leftIcon='arrow-left'
-              
-                
                 leftIconType='feather'
                 rightIconType='feather'
                 title=""
@@ -345,16 +354,24 @@ const styles = StyleSheet.create({
     },
     price: {
         marginRight: wp(2),
-        color: theme.text,
+    color: theme.text,
     },
     msrp: {
         textDecorationLine: 'line-through',
         color: theme.textLight,
     },
+    bottomRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: hp(1),
+    },
+    messageButton: {
+        padding: 4,
+    },
     vendorContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: hp(1),
     },
     vendorName: {
         marginLeft: wp(1),

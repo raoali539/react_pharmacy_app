@@ -25,7 +25,7 @@ interface ProductCardProps {
 
 const CARD_WIDTH = wp(43);
 const IMAGE_HEIGHT = hp(16);
-const CONTENT_HEIGHT = hp(13);
+const CONTENT_HEIGHT = hp(15); // Increased height for better spacing
 
 const ProductCard: React.FC<ProductCardProps> = ({
   item,
@@ -210,57 +210,63 @@ const styles = StyleSheet.create({
     fontSize: 10,
   },
   content: {
-    padding: 10,
+    padding: wp(2.5),
     height: CONTENT_HEIGHT,
     justifyContent: 'space-between',
   },
   textContainer: {
     flex: 1,
+    marginBottom: hp(1), // Add margin to separate from footer
   },
   vendor: {
     color: theme.textMuted,
-    marginBottom: 2,
-    fontSize: 10,
+    marginBottom: hp(0.3),
+    fontSize: wp(2.4),
     fontWeight: '500',
   },
   name: {
     color: theme.text,
-    marginBottom: 4,
+    marginBottom: hp(0.5),
     fontWeight: '600',
-    fontSize: 14,
-    lineHeight: 18,
+    fontSize: wp(3.4),
+    lineHeight: wp(4.2),
   },
   description: {
     color: theme.textLight,
-    fontSize: 12,
-    lineHeight: 16,
-    marginBottom: 4,
+    fontSize: wp(2.8),
+    lineHeight: wp(3.6),
+    marginBottom: hp(0.5),
+    flexWrap: 'wrap',
+    flex: 1,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 4,
+    alignItems: 'flex-end', // Changed to flex-end to align items at the bottom
+    paddingTop: hp(0.5),
+    minHeight: hp(4), // Minimum height for footer
   },
   priceContainer: {
     flexDirection: 'column',
+    flex: 1,
+    marginRight: wp(2), // Add margin to prevent overlap with add button
   },
   price: {
     color: theme.text,
     fontWeight: '700',
-    fontSize: 15,
+    fontSize: wp(3.6),
   },
   originalPrice: {
     color: theme.textMuted,
     textDecorationLine: 'line-through',
-    fontSize: 11,
+    fontSize: wp(2.6),
     marginTop: 1,
   },
   addButton: {
     backgroundColor: theme.primary,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: wp(8),
+    height: wp(8),
+    borderRadius: wp(4),
     justifyContent: 'center',
     alignItems: 'center',
     ...Platform.select({

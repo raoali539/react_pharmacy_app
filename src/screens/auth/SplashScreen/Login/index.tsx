@@ -79,11 +79,13 @@ const Login = () => {
       >
         <Animated.View style={[styles.content, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
           <View style={styles.logoContainer}>
-            {/* <Image source={imagePath.logoImage} style={styles.logo} resizeMode="contain" /> */}
+            <Image source={{ uri: "https://www.shutterstock.com/image-photo/personalized-medicine-technologies-advanced-biotechnology-260nw-2486052417.jpg" }} style={styles.logo} resizeMode="cover" />
           </View>
 
           <Text style={styles.title}>Welcome Back!</Text>
-          <Text style={styles.subtitle}>Sign in to continue</Text>
+          <Text style={styles.subtitle}>Sign in or Sign up to 
+                      continue
+          </Text>
 
           <View style={styles.inputWrapper}>
             <View style={styles.inputContainer}>
@@ -133,6 +135,13 @@ const Login = () => {
             <Text style={styles.dividerText}>OR</Text>
             <View style={styles.divider} />
           </View>
+          {/* <TouchableOpacity 
+            style={[styles.button, isLoading && styles.buttonDisabled]} 
+            onPress={handleLogin}
+            disabled={isLoading}
+          >
+            <Text style={styles.buttonText}>{'Continue with Google'}</Text>
+          </TouchableOpacity> */}
 
           <View style={styles.socialButtonsContainer}>
             {/* <TouchableOpacity style={styles.socialButton}> */}
@@ -171,12 +180,14 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: 'center',
-    marginTop: hp(4),
+    // marginTop: hp(4),
     marginBottom: hp(3),
+    width: '100%',
+    justifyContent: 'center',
   },
   logo: {
-    width: wp(40),
-    height: hp(12),
+    width: wp(100),
+    height: hp(25),
   },
   title: {
     fontSize: 28,

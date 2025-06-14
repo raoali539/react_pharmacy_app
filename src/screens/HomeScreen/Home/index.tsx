@@ -270,8 +270,8 @@ const Home = () => {
             onViewAll={handleViewAll}
           />
           <View style={{
-            width:Dimensions.get('window').width - wp(8), // full width minus horizontal padding
-            marginHorizontal: wp(6),
+            width:Dimensions.get('window').width , // full width minus horizontal padding
+            marginHorizontal: wp(5),
           }}>
           <VirtualizedHorizontalList
             data={FEATURED_PRODUCTS}
@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
   },
   productList: {
     paddingBottom: hp(8),
-    paddingHorizontal: wp(1),
+    // paddingHorizontal: wp(1),
   },
   firstProduct: {
     marginLeft: 0,

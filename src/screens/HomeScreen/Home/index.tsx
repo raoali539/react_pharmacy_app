@@ -332,6 +332,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.background,
+    paddingBottom:Platform.OS === 'android' ? hp(3) : 0,
   },
   scrollContent: {
     flexGrow: 1,

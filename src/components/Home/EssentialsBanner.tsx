@@ -40,7 +40,7 @@ const EssentialsBanner = () => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    // padding: wp(4),
+    padding: wp(4),
     backgroundColor: '#FFF',
     marginHorizontal: wp(4),
     borderRadius: 16,
@@ -105,17 +105,7 @@ const styles = StyleSheet.create({
     height: wp(12),
     borderRadius: wp(6),
     backgroundColor: `${theme.primary}30`,
-    ...Platform.select({
-      ios: {
-        shadowColor: theme.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 4,
-      },
-    }),
+   
   },
   image1: {
     top: '10%',

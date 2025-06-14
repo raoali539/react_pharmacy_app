@@ -58,13 +58,75 @@ const VirtualizedList = <T extends any>({
   );
 };
 
+interface VirtualizedHorizontalListProps<T> {
+  data: T[];
+  renderItem: ({ item, index }: { item: T; index: number }) => React.ReactElement;
+  keyExtractor: (item: T) => string;
+  itemWidth: number;
+  contentContainerStyle?: ViewStyle;
+  showsHorizontalScrollIndicator?: boolean;
+  initialNumToRender?: number;
+  maxToRenderPerBatch?: number;
+  windowSize?: number;
+  onEndReached?: () => void;
+  onEndReachedThreshold?: number;
+}
+
+const VirtualizedHorizontalList = <T extends any>({
+  data,
+  renderItem,
+  keyExtractor,
+  itemWidth,
+  contentContainerStyle,
+  showsHorizontalScrollIndicator = false,
+  initialNumToRender = 10,
+  maxToRenderPerBatch = 10,
+  windowSize = 8,
+  onEndReached,
+  onEndReachedThreshold = 0.5,
+}: VirtualizedHorizontalListProps<T>) => {
+  const getItemLayout = (_: any, index: number) => ({
+    length: itemWidth,
+    offset: itemWidth * index,
+    index,
+  });
+
+  return (
+    <FlatList
+      data={data}
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
+      horizontal
+      showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
+      contentContainerStyle={[horizontalStyles.container, contentContainerStyle]}
+      initialNumToRender={initialNumToRender}
+      maxToRenderPerBatch={maxToRenderPerBatch}
+      windowSize={windowSize}
+      getItemLayout={getItemLayout}
+      onEndReached={onEndReached}
+      onEndReachedThreshold={onEndReachedThreshold}
+      removeClippedSubviews={true}
+      snapToAlignment="start"
+      decelerationRate="fast"
+      snapToInterval={itemWidth}
+      bounces={false}
+    />
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     paddingVertical: wp(4),
   },
 });
 
-export default VirtualizedList;
+const horizontalStyles = StyleSheet.create({
+  container: {
+    paddingHorizontal: wp(4),
+  },
+});
+
+export { VirtualizedList, VirtualizedHorizontalList };
 
 
 

@@ -8,6 +8,7 @@ import Home from "../HomeScreen/Home";
 import BrowseProducts from "../products/BrowseProducts";
 import CartScreen from "../cart/CartScreen/CartScreen";
 import ChatListScreen from "../chat/ChatListScreen";
+import OrdersScreen from "../orders/OrdersScreen";
 import { Icon } from "@rneui/base";
 
 const CustomTabBar: React.FC<BottomTabBarProps> = ({
@@ -156,6 +157,21 @@ function BottomTab() {
         }}
       />
 
+      {/* Orders Tab */}
+      <Tab.Screen
+        name="Orders"
+        component={OrdersScreen}
+        options={{
+          tabBarIcon: ({ focused, color }) => (
+            <Icon
+              name="receipt"
+              type="material"
+              color={focused ? theme.primary : "#5A5A5A"}
+              size={22}
+            />
+          ),
+        }}
+      />
 
       <Tab.Screen
         name="Messages"

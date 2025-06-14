@@ -20,6 +20,7 @@ import theme from '../../../../assets/theme';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../../../utils/globalFunctions';
 import { loginUser } from '../../../../redux/slices/authSlice';
 import { RootState } from '../../../../redux/store/store';
+import { imagePath } from '../../../../assets/imagePath';
 
 type NavigationProp = NativeStackNavigationProp<any>;
 
@@ -79,14 +80,11 @@ const Login = () => {
       >
         <Animated.View style={[styles.content, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
           <View style={styles.logoContainer}>
-            <Image source={{ uri: "https://www.shutterstock.com/image-photo/personalized-medicine-technologies-advanced-biotechnology-260nw-2486052417.jpg" }} style={styles.logo} resizeMode="cover" />
+            <Image source={require('../../../../assets/images/logo.jpeg')} style={styles.logo} resizeMode="cover" />
           </View>
 
-          <Text style={styles.title}>Welcome Back!</Text>
-          <Text style={styles.subtitle}>Sign in or Sign up to 
-                      continue
-          </Text>
-
+          <Text style={styles.title}>DHARMACY</Text>
+          <Text style={styles.subtitle}>Welcome to Dharmacy</Text>
           <View style={styles.inputWrapper}>
             <View style={styles.inputContainer}>
               <Icon name="email-outline" size={20} style={styles.inputIcon} />
@@ -97,6 +95,7 @@ const Login = () => {
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
+                placeholderTextColor={'black'}
               />
             </View>
 
@@ -108,6 +107,8 @@ const Login = () => {
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
+                placeholderTextColor={'black'}
+
               />
               <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
                 <Icon name={showPassword ? "eye-off-outline" : "eye-outline"} size={20} />
@@ -123,25 +124,29 @@ const Login = () => {
             <Text style={styles.buttonText}>{isLoading ? 'Signing in...' : 'Sign In'}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
+          {/* <TouchableOpacity 
             onPress={()=>{}}
             style={styles.forgotPasswordContainer}
           >
             <Text style={styles.linkText}>Forgot Password?</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <View style={styles.dividerContainer}>
             <View style={styles.divider} />
-            <Text style={styles.dividerText}>OR</Text>
+            <Text style={styles.dividerText}>Or</Text>
             <View style={styles.divider} />
           </View>
-          {/* <TouchableOpacity 
-            style={[styles.button, isLoading && styles.buttonDisabled]} 
-            onPress={handleLogin}
+          <TouchableOpacity 
+            style={[styles.button12, isLoading && styles.buttonDisabled]} 
             disabled={isLoading}
           >
-            <Text style={styles.buttonText}>{'Continue with Google'}</Text>
-          </TouchableOpacity> */}
+            <View style={styles.googleButtonContent}>
+              <Icon name="google" size={20} style={{
+                marginRight: wp(2),
+              }} color={'#4285F4'} />
+              <Text style={styles.buttonText}>{'Continue with Google'}</Text>
+            </View>
+          </TouchableOpacity>
 
           <View style={styles.socialButtonsContainer}>
             {/* <TouchableOpacity style={styles.socialButton}> */}
@@ -190,7 +195,7 @@ const styles = StyleSheet.create({
     height: hp(25),
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '700',
     textAlign: 'center',
     marginBottom: hp(1),
@@ -202,6 +207,7 @@ const styles = StyleSheet.create({
   },
   inputWrapper: {
     marginBottom: hp(3),
+    marginTop: hp(1),
   },
   inputContainer: {
     flexDirection: 'row',
@@ -220,17 +226,19 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
+    color: "black"
+    
   },
   eyeIcon: {
     padding: 8,
   },
   button: {
     backgroundColor: theme.background,
-    height: hp(7),
+    height: hp(5),
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: theme.active,
+    shadowColor: theme.primary,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -239,19 +247,45 @@ const styles = StyleSheet.create({
     shadowRadius: 4.65,
     elevation: 8,
   },
+  button12: {
+    height: hp(5),
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 6,
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    borderWidth: 1,
+    borderColor: 'black',
+  },
+  googleButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    paddingHorizontal: 12,
+    borderColor:'black'
+  },
   buttonDisabled: {
     opacity: 0.7,
   },
   buttonText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '500',
+    color: '#737373',
   },
   forgotPasswordContainer: {
     alignItems: 'center',
     marginTop: hp(2),
   },
   linkText: {
-    color: theme.active,
+    color: theme.primary,
     fontSize: 14,
     fontWeight: '500',
   },
@@ -263,7 +297,7 @@ const styles = StyleSheet.create({
   divider: {
     flex: 1,
     height: 1,
-    backgroundColor: theme.border,
+    backgroundColor: 'black',
   },
   dividerText: {
     paddingHorizontal: wp(4),
@@ -297,7 +331,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   registerLink: {
-    color: theme.active,
+    color: theme.primary,
     fontSize: 14,
     fontWeight: '600',
   },

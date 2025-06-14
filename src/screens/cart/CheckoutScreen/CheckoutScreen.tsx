@@ -115,10 +115,15 @@ const CheckoutScreen = () => {
         {
           text: 'OK',
           onPress: () => {
-            // Navigate back to home screen
+            // Navigate to Orders tab
             navigation.reset({
               index: 0,
-              routes: [{ name: 'Home' as never }],
+              routes: [{ 
+                name: 'home',
+                params: {
+                  screen: 'Orders'
+                }
+              }],
             });
           },
         },

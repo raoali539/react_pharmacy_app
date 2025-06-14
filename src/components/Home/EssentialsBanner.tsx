@@ -40,7 +40,7 @@ const EssentialsBanner = () => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    padding: wp(4),
+    // padding: wp(4),
     backgroundColor: '#FFF',
     marginHorizontal: wp(4),
     borderRadius: 16,

@@ -11,6 +11,7 @@ import BrowseProducts from "../products/BrowseProducts";
 import ChatConversationScreen from "../chat/ChatConversationScreen";
 import Login from "../auth/SplashScreen/Login";
 import Registration from "../auth/Registration";
+import OrdersScreen from "../orders/OrdersScreen";
 
 // Default option for screens without a header
 const headerShownFalse = { headerShown: false };
@@ -77,6 +78,15 @@ export const homeStackScreens: Array<{
     options: {
       headerShown: false,
       title: "Product Details",
+      headerTitleAlign: "center",
+    },
+  },
+  {
+    name: "Orders",
+    component: OrdersScreen,
+    options: {
+      headerShown: false,
+      title: "My Orders",
       headerTitleAlign: "center",
     },
   },

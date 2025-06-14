@@ -19,8 +19,7 @@ import Header from '../../../common/Header';
 import theme from '../../../assets/theme';
 import SectionHeader from '../../../common/SectionHeader';
 import EssentialsBanner from '../../../components/Home/EssentialsBanner';
-import Categories from '../../../components/Home/Categories';
-import VirtualizedHorizontalList from '../../../common/VirtualizedHorizontalList';
+import { VirtualizedHorizontalList } from '../../../common/VirtualizedHorizontalList';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../../utils/globalFunctions';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Icon } from '@rneui/base';
@@ -87,53 +86,53 @@ const FEATURED_PRODUCTS: Product[] = [
       name: "Health Plus"
     }
   },
-   {
-            id: "5",
-            name: 'Vicks Vaporub',
-            description: 'Relief for Cold Symptoms (50g)',
-            price: 280.00,
-            originalPrice: 310.00,
-            image: "https://media.post.rvohealth.io/wp-content/uploads/2020/02/mushrooms-varieties-types-732x549-thumbnail-732x549.jpg",
-            vendor: {
-                id: "v1",
-                name: "Main Pharmacy"
-            }
-        },
-        {
-            id: "6",
-            name: 'Dettol Hand Sanitizer',
-            description: 'Instant Hand Sanitizer 200ml',
-            price: 450.00,
-            originalPrice: 500.00,
-            image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2QG7iUSlAOSeTcY9rGTGN4cPNyYdndqSZYA&s",
-            vendor: {
-                id: "v4",
-                name: "SafeCare Pharmacy"
-            }
-        },
-        {
-            id: "7",
-            name: 'Revital H',
-            description: 'Daily Health Supplement (30 Capsules)',
-            price: 799.00,
-            image: "https://m.media-amazon.com/images/I/81EyKYuu06L._AC_UF894,1000_QL80_.jpg",
-            vendor: {
-                id: "v3",
-                name: "Health Plus"
-            }
-        },
-        {
-            id: "8",
-            name: 'ORS Powder Sachets',
-            description: 'Electrolyte Rehydration Formula (Pack of 10)',
-            price: 250.00,
-            originalPrice: 300.00,
-            image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7ppSBbwaGkSNB-GB2rfSY3dimWrn-LgsPeA&s",
-            vendor: {
-                id: "v5",
-                name: "Wellness Pharmacy"
-            }
-          }
+  {
+    id: "5",
+    name: 'Vicks Vaporub',
+    description: 'Relief for Cold Symptoms (50g)',
+    price: 280.00,
+    originalPrice: 310.00,
+    image: "https://media.post.rvohealth.io/wp-content/uploads/2020/02/mushrooms-varieties-types-732x549-thumbnail-732x549.jpg",
+    vendor: {
+      id: "v1",
+      name: "Main Pharmacy"
+    }
+  },
+  {
+    id: "6",
+    name: 'Dettol Hand Sanitizer',
+    description: 'Instant Hand Sanitizer 200ml',
+    price: 450.00,
+    originalPrice: 500.00,
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2QG7iUSlAOSeTcY9rGTGN4cPNyYdndqSZYA&s",
+    vendor: {
+      id: "v4",
+      name: "SafeCare Pharmacy"
+    }
+  },
+  {
+    id: "7",
+    name: 'Revital H',
+    description: 'Daily Health Supplement (30 Capsules)',
+    price: 799.00,
+    image: "https://m.media-amazon.com/images/I/81EyKYuu06L._AC_UF894,1000_QL80_.jpg",
+    vendor: {
+      id: "v3",
+      name: "Health Plus"
+    }
+  },
+  {
+    id: "8",
+    name: 'ORS Powder Sachets',
+    description: 'Electrolyte Rehydration Formula (Pack of 10)',
+    price: 250.00,
+    originalPrice: 300.00,
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7ppSBbwaGkSNB-GB2rfSY3dimWrn-LgsPeA&s",
+    vendor: {
+      id: "v5",
+      name: "Wellness Pharmacy"
+    }
+  }
 ];
 
 
@@ -233,16 +232,16 @@ const Home = () => {
         onRightIcon2Press={handleCartPress}
       />
 
-      <Animated.View 
+      <Animated.View
         entering={FadeInDown.duration(600).delay(200) as any}
         style={styles.welcomeSection}
       >
         <View style={styles.welcomeContent}>
           <Text style={styles.welcomeText}>
-             <Text style={styles.nameText}>Welcome Ali</Text>
+            <Text style={styles.nameText}>Welcome Ali</Text>
           </Text>
           <Text style={styles.subtitleText}>
-            Find your medicines and health products
+            Find your products here
           </Text>
         </View>
       </Animated.View>
@@ -259,10 +258,7 @@ const Home = () => {
           />
         }
       >
-        {/* <Categories onSelectCategory={(category) => console.log('Selected:', category)} /> */}
-        {/* <View style={styles.bannerContainer}>
-          <EssentialsBanner />
-        </View> */}
+
 
         <View style={styles.section}>
           <SectionHeader
@@ -270,20 +266,63 @@ const Home = () => {
             onViewAll={handleViewAll}
           />
           <View style={{
-            width:Dimensions.get('window').width , // full width minus horizontal padding
-            marginHorizontal: wp(5),
+            width: Dimensions.get('window').width,
+            // marginHorizontal: wp(2),
           }}>
-          <VirtualizedHorizontalList
-            data={FEATURED_PRODUCTS}
-            renderItem={renderProduct}
-            keyExtractor={keyExtractor}
-            showsHorizontalScrollIndicator={false}
-            itemWidth={wp(44)} // width + margin
-            contentContainerStyle={styles.productList}
-          />
+            <VirtualizedHorizontalList
+              data={FEATURED_PRODUCTS}
+              renderItem={renderProduct}
+              keyExtractor={keyExtractor}
+              showsHorizontalScrollIndicator={false}
+              itemWidth={wp(43)}
+              contentContainerStyle={styles.productList}
+            />
           </View>
-         
         </View>
+
+        <View style={styles.section}>
+          <SectionHeader
+            title="Top Rated "
+            onViewAll={handleViewAll}
+          />
+          <View style={{
+            width: Dimensions.get('window').width,
+            marginHorizontal: wp(2),
+          }}>
+            <VirtualizedHorizontalList
+              data={FEATURED_PRODUCTS}
+              renderItem={renderProduct}
+              keyExtractor={keyExtractor}
+              showsHorizontalScrollIndicator={false}
+              itemWidth={wp(43)}
+              contentContainerStyle={styles.productList}
+            />
+          </View>
+        </View>
+
+        <View style={styles.bannerContainer}>
+          <EssentialsBanner />
+        </View>
+
+        <View style={styles.section}>
+          <SectionHeader
+            title="Low Stock "
+            onViewAll={handleViewAll}
+          />
+          <View style={{
+            width: Dimensions.get('window').width,
+          }}>
+            <VirtualizedHorizontalList
+              data={FEATURED_PRODUCTS}
+              renderItem={renderProduct}
+              keyExtractor={keyExtractor}
+              showsHorizontalScrollIndicator={false}
+              itemWidth={wp(43)}
+              contentContainerStyle={styles.productList}
+            />
+          </View>
+        </View>
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -311,7 +350,7 @@ const styles = StyleSheet.create({
   },
   searchIcon: {
     marginRight: wp(2),
-    color:'#5A5A5A'
+    color: '#5A5A5A'
   },
   searchInput: {
     flex: 1,
@@ -321,14 +360,15 @@ const styles = StyleSheet.create({
     ...TYPOGRAPHY_STYLES.body1,
   },
   bannerContainer: {
-    marginVertical: hp(2),
+    marginBottom: hp(4),
+
     backgroundColor: theme.background,
   },
   section: {
-    marginTop: hp(3),
+    // marginTop: hp(3),
   },
   productList: {
-    paddingBottom: hp(8),
+    paddingBottom: hp(4),
     // paddingHorizontal: wp(1),
   },
   firstProduct: {
@@ -345,7 +385,7 @@ const styles = StyleSheet.create({
   welcomeText: {
     ...TYPOGRAPHY_STYLES.body1,
     marginBottom: 4,
-    color:'#5A5A5A'
+    color: '#5A5A5A'
   },
   nameText: {
     ...TYPOGRAPHY_STYLES.h2,

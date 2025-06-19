@@ -11,6 +11,7 @@ import {
   AccessibilityInfo,
   TextInput,
   Dimensions,
+  Image,
 } from 'react-native';
 import { Text } from 'react-native-gesture-handler';
 import { useCart } from '../../../contexts/CartContext';
@@ -25,6 +26,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Icon } from '@rneui/base';
 import { commonStyles } from '../../../assets/commonStyles';
 import { TYPOGRAPHY_STYLES } from '../../../assets/theme';
+import Categories from '../../../components/Home/Categories';
 
 interface Product {
   id: string;
@@ -219,15 +221,19 @@ const Home = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
       <Header
-        leftIcon='menu'
+        CustomLeftComponent={() => (
+          <Image 
+            source={require('../../../assets/images/lo.jpeg')} 
+            style={styles.headerLogo} 
+            resizeMode="contain" 
+          />
+        )}
         rightIcon='notifications'
         rightIcon2='shopping-cart'
-        leftIconType='feather'
         rightIconType='feather'
         title=""
         style={styles.elevation}
         containerStyle={commonStyles.headerContainer}
-        onLeftPress={() => console.log('Menu pressed')}
         onRightPress={handleNotificationPress}
         onRightIcon2Press={handleCartPress}
       />
@@ -259,6 +265,7 @@ const Home = () => {
         }
       >
 
+        <Categories onSelectCategory={(category) => console.log(category)} />
 
         <View style={styles.section}>
           <SectionHeader
@@ -371,6 +378,14 @@ const styles = StyleSheet.create({
   productList: {
     paddingBottom: hp(4),
     // paddingHorizontal: wp(1),
+  },
+  headerLogo: {
+    width: wp(20),
+    height: hp(4),
+  },
+  headerSection: {
+    width: '100%',
+    position: 'relative',
   },
   firstProduct: {
     marginLeft: 0,

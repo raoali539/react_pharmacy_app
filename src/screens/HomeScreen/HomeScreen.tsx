@@ -28,7 +28,7 @@ const HomeScreen = () => {
           contentContainerStyle={styles.scrollContent}
         >
           <SearchBar />
-          {/* <Categories onSelectCategory={(category) => console.log(category)} /> */}
+          <Categories onSelectCategory={(category) => console.log(category)} />
           {/* <FeaturedProducts /> */}
           {/* <PopularProducts /> */}
         </ScrollView>

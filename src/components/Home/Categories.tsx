@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Platform, ScrollView, Image } from 'react-native';
 import { Icon } from '@rneui/base';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils/globalFunctions';
 import theme from '../../assets/theme';
 import Animated, { FadeInDown, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
 const categories = [
-  { id: '1', name: 'Medicines', icon: 'pill', type: 'material-community' },
-  { id: '2', name: 'Healthcare', icon: 'heart-pulse', type: 'material-community' },
-  { id: '3', name: 'Baby Care', icon: 'baby-carriage', type: 'material-community' },
-  { id: '4', name: 'Personal', icon: 'face-man', type: 'material-community' },
-  { id: '5', name: 'Devices', icon: 'stethoscope', type: 'material-community' },
+  { id: '1', name: 'Anxiety', icon: 'brain', type: 'material-community', img: 'https://medlineplus.gov/images/AnxietyNew_Share.jpg' },
+  { id: '2', name: 'Depression', icon: 'emoticon-sad', type: 'material-community', img: 'https://stjosephinstitute.com/wp-content/uploads/2024/03/AdobeStock_138892525-scaled.webp' },
+  { id: '3', name: 'ADHD', icon: 'head-flash', type: 'material-community', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQakSAJqGXY5D-lasZ1rwJSDZgmDUrPDzNiFg&s' },
+  { id: '4', name: 'Insomnia', icon: 'power-sleep', type: 'material-community', img: 'https://www.nhlbi.nih.gov/sites/default/files/inline-images/19-1243%20NHLBI%20OY2%20Q1%20FHT%20Insomnia_900x600px%20%281%29.jpg' },
+  { id: '5', name: 'Stress', icon: 'meditation', type: 'material-community', img: 'https://neuronup.us/wp-content/uploads/2022/09/agency-young-adult-profession-stressed-black-1.jpg' },
 ];
 
 interface CategoriesProps {
@@ -47,12 +47,11 @@ const CategoryCard = ({ category, index, onPress }: any) => {
         }}
         activeOpacity={0.9}
       >
-        <View style={[styles.iconContainer, { backgroundColor: `${theme.primary}10` }]}>
-          <Icon
-            name={category.icon}
-            type={category.type}
-            size={26}
-            color={theme.primary}
+        <View style={[styles.imageContainer, { backgroundColor: `${theme.primary}10` }]}>
+          <Image
+            source={{ uri: category.img }}
+            style={styles.categoryImage}
+            resizeMode="cover"
           />
         </View>
         <Text style={styles.categoryName}>{category.name}</Text>
@@ -65,7 +64,11 @@ const Categories: React.FC<CategoriesProps> = ({ onSelectCategory }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Categories</Text>
-      <View style={styles.scrollContent}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
         {categories.map((category, index) => (
           <CategoryCard
             key={category.id}
@@ -74,7 +77,7 @@ const Categories: React.FC<CategoriesProps> = ({ onSelectCategory }) => {
             onPress={onSelectCategory}
           />
         ))}
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -94,38 +97,20 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: wp(4),
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    gap: wp(2),
   },
   categoryCard: {
     alignItems: 'center',
     width: wp(28),
-    marginBottom: hp(2.5),
-    padding: 8,
     borderRadius: 16,
-    // backgroundColor: Platform.select({
-    //   ios: 'rgba(255, 255, 255, 0.8)',
-    //   android: 'white',
-    // }),
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
+    marginBottom: hp(4),
   },
-  iconContainer: {
+  imageContainer: {
     width: wp(16),
     height: wp(16),
     borderRadius: wp(8),
-    justifyContent: 'center',
-    alignItems: 'center',
     marginBottom: 12,
+    overflow: 'hidden',
     ...Platform.select({
       ios: {
         shadowColor: theme.primary,
@@ -137,6 +122,10 @@ const styles = StyleSheet.create({
         elevation: 4,
       },
     }),
+  },
+  categoryImage: {
+    width: '100%',
+    height: '100%',
   },
   categoryName: {
     fontSize: 14,

@@ -19,7 +19,8 @@ interface HeaderProps {
   style?: any;
   containerStyle?: any;
   onSearch?: (text: string) => void;
-  showSearch?:boolean;
+  showSearch?: boolean;
+  CustomLeftComponent?: () => React.ReactElement;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -36,7 +37,8 @@ const Header: React.FC<HeaderProps> = ({
   style,
   containerStyle,
   onSearch,
-  showSearch=true,
+  showSearch = true,
+  CustomLeftComponent,
 }) => {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -58,7 +60,7 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <View style={[styles.container, !showBorder && styles.noBorder, style, containerStyle]}>
-      {isSearchVisible  ? (
+      {isSearchVisible ? (
         <View style={styles.searchContainer}>
           <TextInput
             style={[styles.searchInput, TYPOGRAPHY_STYLES.body1]}
@@ -70,10 +72,7 @@ const Header: React.FC<HeaderProps> = ({
             returnKeyType="search"
             onSubmitEditing={handleSearchSubmit}
           />
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={handleSearchPress}
-          >
+          <TouchableOpacity style={styles.closeButton} onPress={handleSearchPress}>
             <View style={styles.iconBackground}>
               <Icon name="x" type="feather" size={22} color={theme.text} />
             </View>
@@ -81,38 +80,30 @@ const Header: React.FC<HeaderProps> = ({
         </View>
       ) : (
         <>
-        {
-          leftIcon && (
-            <TouchableOpacity
-              style={styles.iconButton}
-              onPress={onLeftPress}
-              disabled={!onLeftPress}
-            >
-              <View style={styles.iconBackground}>
-                <Icon name={leftIcon} type={leftIconType} size={22} color={theme.text} />
-              </View>
-            </TouchableOpacity>
-          )
-        }
+          {CustomLeftComponent ? (
+            <CustomLeftComponent />
+          ) : (
+            leftIcon && (
+              <TouchableOpacity style={styles.iconButton} onPress={onLeftPress} disabled={!onLeftPress}>
+                <View style={styles.iconBackground}>
+                  <Icon name={leftIcon} type={leftIconType} size={22} color={theme.text} />
+                </View>
+              </TouchableOpacity>
+            )
+          )}
           <Text style={[styles.title, TYPOGRAPHY_STYLES.h4]} numberOfLines={1}>
             {title}
           </Text>
 
           <View style={styles.rightIcons}>
-            {
-              showSearch && (
-<TouchableOpacity
-              style={styles.iconButton}
-              onPress={handleSearchPress}
-            >
-              <View style={styles.iconBackground}>
-                <Icon name="search" type="feather" size={22} color={theme.text} />
-              </View>
-            </TouchableOpacity>
-              )
-            }
-            
-            
+            {showSearch && (
+              <TouchableOpacity style={styles.iconButton} onPress={handleSearchPress}>
+                <View style={styles.iconBackground}>
+                  <Icon name="search" type="feather" size={22} color={theme.text} />
+                </View>
+              </TouchableOpacity>
+            )}
+
             {rightIcon2 && (
               <TouchableOpacity
                 style={styles.iconButton}
@@ -145,9 +136,10 @@ const styles = StyleSheet.create({
     ...Platform.select({
       android: {
         paddingTop: StatusBar.currentHeight ? StatusBar.currentHeight + hp(1) : hp(3),
-      }
+      },
     }),
-  },  noBorder: {
+  },
+  noBorder: {
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
     ...Platform.select({
@@ -164,7 +156,8 @@ const styles = StyleSheet.create({
   iconButton: {
     padding: wp(2),
     width: wp(14),
-  },  iconBackground: {
+  },
+  iconBackground: {
     backgroundColor: theme.surface,
     padding: wp(2),
     borderRadius: wp(3),
@@ -172,7 +165,7 @@ const styles = StyleSheet.create({
     ...Platform.select({
       android: {
         elevation: 2,
-      }
+      },
     }),
   },
   title: {
@@ -190,7 +183,8 @@ const styles = StyleSheet.create({
     marginHorizontal: wp(2),
     flexDirection: 'row',
     alignItems: 'center',
-  },  searchInput: {
+  },
+  searchInput: {
     flex: 1,
     backgroundColor: theme.surface,
     height: hp(5),
@@ -201,13 +195,13 @@ const styles = StyleSheet.create({
     ...Platform.select({
       android: {
         paddingVertical: 0,
-      }
+      },
     }),
   },
   closeButton: {
     marginLeft: wp(2),
     padding: wp(2),
-  }
+  },
 });
 
 export default Header;

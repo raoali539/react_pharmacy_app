@@ -2,18 +2,40 @@ import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import authReducer from '../slices/authSlice';
+import productReducer from '../slices/productSlice';
+import cartReducer from '../slices/cartSlice';
+import categoryReducer from '../slices/categorySlice';
 
-const persistConfig = {
-  key: 'root',
+
+const authPersistConfig = {
+  key: 'auth',
   storage: AsyncStorage,
-  whitelist: ['auth'] // Only persist auth state
+  whitelist: ['user', 'token'] // Only persist user and token
 };
 
-const persistedAuthReducer = persistReducer(persistConfig, authReducer);
+const cartPersistConfig = {
+  key: 'cart',
+  storage: AsyncStorage,
+  whitelist: ['items', 'totalAmount', 'orders'] // Persist cart items and orders
+};
+
+
+const categoryPersistConfig = {
+  key: 'categories',
+  storage: AsyncStorage,
+  whitelist: ['categories'] // Persist categories
+};
+
+const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
+const persistedCartReducer = persistReducer(cartPersistConfig, cartReducer);
+const persistedCategoryReducer = persistReducer(categoryPersistConfig, categoryReducer);
 
 export const store = configureStore({
   reducer: {
     auth: persistedAuthReducer,
+    products: productReducer,
+    cart: persistedCartReducer,
+    categories: persistedCategoryReducer, // Include categories if needed
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

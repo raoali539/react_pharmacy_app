@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Platform,
   StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils/globalFunctions';
 import { Icon } from '@rneui/base';
@@ -17,39 +18,82 @@ import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
 import { commonStyles } from '../../assets/commonStyles';
 import { useCart } from '../../contexts/CartContext';
 import Header from '../../common/Header';
+import apiClient from '../../utils/apiClient';
 
-const ProductDetails = ({ route, navigation }:any) => {
-  const { product } = route.params;
+const ProductDetails = ({ route, navigation }: any) => {
+  const productId = route.params.product;
+  console.log('Product ID:', productId, route.params);
+  interface Product {
+    _id: string;
+    name: string;
+    price: number;
+    description: string;
+    imageUrl: string[];
+  }
+
+  const [product, setProduct] = useState<Product | null>(null);
   const [selectedColor, setSelectedColor] = useState('Mint');
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
+  const [loading, setLoading] = useState(true);
 
   const colors = ['Cloud', 'Milk Speckle', 'Mint', 'Rose Quartz'];
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await apiClient.get(`/v1/getProductbyid?productId=${productId._id}`);
+        console.log('Product Details:', response.data.data);
+        setProduct(response.data.data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching product:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [productId]);
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <ActivityIndicator size="large" color={theme.primary} style={styles.loader} />
+      </SafeAreaView>
+    );
+  }
+
+  if (!product) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.errorText}>Failed to load product details.</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
       <Header
-                leftIcon='arrow-left'
-                title="Product Details"
-                leftIconType='feather'
-                containerStyle={commonStyles.headerContainer}
-                onLeftPress={() =>{
-                    navigation.goBack();
-                }}
-                showSearch={false}
-             
-            />
+        leftIcon='arrow-left'
+        title="Product Details"
+        leftIconType='feather'
+        containerStyle={commonStyles.headerContainer}
+        onLeftPress={() => {
+          navigation.goBack();
+        }}
+        showSearch={false}
+      />
       <ScrollView showsVerticalScrollIndicator={false} style={styles.content}>
-        <Animated.View 
+        <Animated.View
           entering={FadeInDown.delay(100)}
           style={styles.imageContainer}
         >
-          <Image source={{ uri: product.image }} style={styles.productImage} />
+          <Image source={{ uri: product.imageUrl[0] }} style={styles.productImage} />
         </Animated.View>
 
         <View style={styles.detailsSection}>
-          <Animated.View 
+          <Animated.View
             entering={FadeInRight.delay(200)}
             style={styles.mainInfo}
           >
@@ -57,22 +101,12 @@ const ProductDetails = ({ route, navigation }:any) => {
 
             <View style={styles.priceContainer}>
               <Text style={[styles.price, TYPOGRAPHY_STYLES.price]}>${product.price}</Text>
-              {product.msrp && (
-                <Text style={[styles.originalPrice, TYPOGRAPHY_STYLES.body2]}>${product.msrp}</Text>
-              )}
             </View>
 
-            <View style={styles.ratingContainer}>
-              <Icon name="star" type="feather" size={16} color={theme.text} />
-              <Text style={[styles.rating, TYPOGRAPHY_STYLES.body2]}>{product.rating}</Text>
-              <Text style={[styles.reviews, TYPOGRAPHY_STYLES.body2]}>(1)</Text>
-              {product.minOrder && (
-                <Text style={[styles.minOrder, TYPOGRAPHY_STYLES.body2]}>{product.minOrder}</Text>
-              )}
-            </View>
+            <Text style={[styles.description, TYPOGRAPHY_STYLES.body1]}>{product.description}</Text>
           </Animated.View>
 
-          <Animated.View 
+          <Animated.View
             entering={FadeInRight.delay(300)}
             style={styles.colorSection}
           >
@@ -88,7 +122,6 @@ const ProductDetails = ({ route, navigation }:any) => {
                     ]}
                     onPress={() => setSelectedColor(color)}
                   >
-                    {/* <View style={[styles.colorDot, { backgroundColor: color.toLowerCase() }]} /> */}
                     <Text style={[
                       styles.colorText,
                       TYPOGRAPHY_STYLES.button2,
@@ -99,37 +132,10 @@ const ProductDetails = ({ route, navigation }:any) => {
               </View>
             </ScrollView>
           </Animated.View>
-
-          <Animated.View 
-            entering={FadeInRight.delay(400)}
-            style={styles.shippingInfo}
-          >
-            <Text style={[styles.sectionTitle, TYPOGRAPHY_STYLES.h4]}>Shipping</Text>
-            <Text style={[styles.deliveryDate, TYPOGRAPHY_STYLES.body1]}>
-              Estimated Delivery May 23 - Jun 4, 2025
-            </Text>
-            <Text style={[styles.shippingLocation, TYPOGRAPHY_STYLES.body2]}>
-              Ships from Australia
-            </Text>
-
-            <View style={styles.infoCard}>
-              <View style={styles.iconContainer}>
-                <Icon name="refresh-ccw" type="feather" size={20} color={theme.primary} />
-              </View>
-              <View style={styles.infoContent}>
-                <Text style={[styles.returnsTitle, TYPOGRAPHY_STYLES.button2]}>
-                  Free returns on all opening orders
-                </Text>
-                <Text style={[styles.returnsText, TYPOGRAPHY_STYLES.body2]}>
-                  You're eligible for free returns on this order with Caslew Pty Ltd.
-                </Text>
-              </View>
-            </View>
-          </Animated.View>
         </View>
       </ScrollView>
 
-      <Animated.View 
+      <Animated.View
         entering={FadeInDown.delay(500)}
         style={styles.bottomBar}
       >
@@ -138,11 +144,11 @@ const ProductDetails = ({ route, navigation }:any) => {
             onPress={() => quantity > 1 && setQuantity(quantity - 1)}
             style={[styles.quantityButton, quantity === 1 && styles.quantityButtonDisabled]}
           >
-            <Icon 
-              name="minus" 
-              type="feather" 
-              size={20} 
-              color={quantity === 1 ? theme.textLight : theme.text} 
+            <Icon
+              name="minus"
+              type="feather"
+              size={20}
+              color={quantity === 1 ? theme.textLight : theme.text}
             />
           </TouchableOpacity>
           <Text style={[styles.quantity, TYPOGRAPHY_STYLES.button1]}>{quantity}</Text>
@@ -153,16 +159,16 @@ const ProductDetails = ({ route, navigation }:any) => {
             <Icon name="plus" type="feather" size={20} color={theme.text} />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.addToCartButton} 
+        <TouchableOpacity style={styles.addToCartButton}
           onPress={() => {
             addToCart({
-              id: product.id,
-              productId: product.id,
+              id: product._id,
+              productId: product._id,
               name: product.name,
               price: product.price,
               quantity: quantity,
-              image: product.image,
-              vendorName: product.vendorName || 'Unknown Vendor'
+              image: product.imageUrl[0],
+              vendorName: 'Unknown Vendor'
             });
             navigation.navigate('Cart');
           }}
@@ -182,37 +188,22 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
-  iconButton: {
-    padding: wp(2),
-  },
-  iconBackground: {
-    backgroundColor: theme.surface,
-    padding: wp(2),
-    borderRadius: wp(3),
-    ...Platform.select({
-      ios: {
-        shadowColor: theme.text,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.08,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 2,
-      },
-    }),
-  },
-  headerTitle: {
+  loader: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
     textAlign: 'center',
-    marginHorizontal: wp(2),
     color: theme.text,
+    marginTop: hp(20),
   },
   imageContainer: {
     backgroundColor: theme.surface,
     height: hp(30),
     marginBottom: hp(2),
     ...theme.shadows.base,
-    resizeMode:'cover'
+    resizeMode: 'cover',
   },
   productImage: {
     width: '100%',
@@ -239,27 +230,9 @@ const styles = StyleSheet.create({
     color: theme.text,
     marginRight: wp(2),
   },
-  originalPrice: {
-    ...TYPOGRAPHY_STYLES.body2,
-    textDecorationLine: 'line-through',
+  description: {
     color: theme.text,
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
     marginBottom: hp(2),
-  },
-  rating: {
-    marginLeft: wp(1),
-    marginRight: wp(1),
-    color: theme.text,
-  },
-  reviews: {
-    marginRight: wp(2),
-    color: theme.text,
-  },
-  minOrder: {
-    color: theme.textLight,
   },
   colorSection: {
     marginBottom: hp(3),
@@ -277,8 +250,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.background,
     borderRadius: wp(4),
     marginRight: wp(2),
-    margin:'auto'
-    
+    margin: 'auto',
   },
   colorButton: {
     flexDirection: 'row',
@@ -286,18 +258,11 @@ const styles = StyleSheet.create({
     marginRight: wp(2),
     gap: wp(3),
     paddingHorizontal: wp(7),
-    paddingVertical: wp(2),   
+    paddingVertical: wp(2),
     borderRadius: wp(8),
     borderWidth: 1,
     borderColor: theme.border,
     backgroundColor: theme.surface,
-
-  },
-  colorDot: {
-    width: wp(3),
-    height: wp(3),
-    borderRadius: wp(1.5),
-    marginRight: wp(2),
   },
   selectedColor: {
     backgroundColor: theme.text,
@@ -307,49 +272,6 @@ const styles = StyleSheet.create({
     color: theme.surface,
   },
   colorText: {
-    color: theme.text,
-  },
-  shippingInfo: {
-    marginTop: hp(2),
-  },
-  deliveryDate: {
-    marginBottom: hp(0.5),
-    color: theme.text,
-  },
-  shippingLocation: {
-    marginBottom: hp(2),
-    color: theme.text,
-  },
-  infoCard: {
-    flexDirection: 'row',
-    backgroundColor: `${theme.primary}08`,
-    padding: wp(4),
-    borderRadius: wp(4),
-    marginBottom: hp(2),
-  },
-  iconContainer: {
-    width: wp(10),
-    height: wp(10),
-    borderRadius: wp(5),
-    backgroundColor: `${theme.primary}15`,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: wp(3),
-  },
-  infoContent: {
-    flex: 1,
-  },
-  freeShippingText: {
-    marginBottom: hp(0.5),
-  },
-  membershipText: {
-    color: theme.text,
-  },
-  returnsTitle: {
-    marginBottom: hp(0.5),
-    color: theme.text,
-  },
-  returnsText: {
     color: theme.text,
   },
   bottomBar: {

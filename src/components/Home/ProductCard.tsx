@@ -3,18 +3,21 @@ import { View, Text, StyleSheet, TouchableOpacity, Platform, Image, ActivityIndi
 import { Icon } from '@rneui/base';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils/globalFunctions';
 import theme, { TYPOGRAPHY_STYLES } from '../../assets/theme';
-import Animated, { FadeIn, useAnimatedStyle, withSpring, useSharedValue, withTiming, Easing } from 'react-native-reanimated';
+import Animated, { FadeIn, useAnimatedStyle, withTiming, Easing, useSharedValue } from 'react-native-reanimated';
 
 interface ProductCardProps {
   item: {
+    _id: string;
     name: string;
     description: string;
     price: number;
     originalPrice?: number;
-    image: string;
-    vendor: {
+    imageUrl: string[];  // Updated to match data structure
+    vendor?: {           // Made optional
       name: string;
     };
+    stockAvailable?: boolean;
+    // Other properties from data
   };
   index: number;
   showDiscount?: boolean;
@@ -25,7 +28,7 @@ interface ProductCardProps {
 
 const CARD_WIDTH = wp(43);
 const IMAGE_HEIGHT = hp(16);
-const CONTENT_HEIGHT = hp(15); // Increased height for better spacing
+const CONTENT_HEIGHT = hp(15);
 
 const ProductCard: React.FC<ProductCardProps> = ({
   item,
@@ -38,19 +41,22 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
   
-  // Calculate discount percentage if original price exists
+  // Get first image from array or empty string
+  const imageUri = item.imageUrl?.length > 0 ? item.imageUrl[0] : '';
+
+  // Calculate discount
   const discount = item.originalPrice && item.originalPrice > item.price
     ? Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)
     : 0;
 
   // Animation values
   const scale = useSharedValue(1);
-  
+
   // Handle press animation
   const handlePressIn = () => {
     scale.value = withTiming(0.97, { duration: 150, easing: Easing.bezier(0.25, 0.1, 0.25, 1) });
   };
-  
+
   const handlePressOut = () => {
     scale.value = withTiming(1, { duration: 200, easing: Easing.bezier(0.25, 0.1, 0.25, 1) });
   };
@@ -63,7 +69,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   });
 
   return (
-    <Animated.View 
+    <Animated.View
       entering={FadeIn.delay(index * 70).springify()}
       style={[styles.container, style, animatedStyle]}
     >
@@ -83,25 +89,25 @@ const ProductCard: React.FC<ProductCardProps> = ({
               <ActivityIndicator size="small" color={theme.primary} />
             </View>
           )}
-          
-          <Image
-            source={{ uri: item.image }}
-            style={styles.image}
-            resizeMode="cover"
-            onLoadStart={() => setImageLoading(true)}
-            onLoadEnd={() => setImageLoading(false)}
-            onError={() => {
-              setImageLoading(false);
-              setImageError(true);
-            }}
-          />
-          
+
+          {imageUri ? (
+            <Image
+              source={{ uri: imageUri }}
+              style={styles.image}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={styles.errorContainer}>
+              <Icon name="image-off" type="material-community" size={24} color={theme.textMuted} />
+            </View>
+          )}
+
           {imageError && (
             <View style={styles.errorContainer}>
               <Icon name="image-off" type="material-community" size={24} color={theme.textMuted} />
             </View>
           )}
-          
+
           {discount > 0 && showDiscount && (
             <View style={styles.discountTag}>
               <Text style={styles.discountText}>-{discount}%</Text>
@@ -111,19 +117,21 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
         <View style={styles.content}>
           <View style={styles.textContainer}>
-            <Text style={styles.vendor}>{item.vendor.name}</Text>
+            {item.vendor?.name && (
+              <Text style={styles.vendor}>{item.vendor.name}</Text>
+            )}
             <Text style={styles.name} numberOfLines={1}>{item.name}</Text>
             <Text style={styles.description} numberOfLines={2}>{item.description}</Text>
           </View>
-          
+
           <View style={styles.footer}>
             <View style={styles.priceContainer}>
-              <Text style={styles.price}>₹{item.price.toFixed(2)}</Text>
+              <Text style={styles.price}>₹{item.price}</Text>
               {showDiscount && item.originalPrice && item.originalPrice > item.price && (
                 <Text style={styles.originalPrice}>₹{item.originalPrice.toFixed(2)}</Text>
               )}
             </View>
-            
+
             <TouchableOpacity
               style={styles.addButton}
               onPress={onAddToCart}
@@ -140,7 +148,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
     </Animated.View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     width: CARD_WIDTH,

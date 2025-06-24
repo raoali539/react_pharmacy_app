@@ -1,5 +1,5 @@
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import {
   View,
   ScrollView,
@@ -27,7 +27,11 @@ import { Icon } from '@rneui/base';
 import { commonStyles } from '../../../assets/commonStyles';
 import { TYPOGRAPHY_STYLES } from '../../../assets/theme';
 import Categories from '../../../components/Home/Categories';
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
+import { getAllProducts } from '../../../redux/slices/productSlice';
+import { fetchCategories } from '../../../redux/slices/categorySlice';
 
+// Define a local product interface for the component
 interface Product {
   id: string;
   name: string;
@@ -41,118 +45,31 @@ interface Product {
   };
 }
 
-const FEATURED_PRODUCTS: Product[] = [
-  {
-    id: "1",
-    name: 'Panadol Extra',
-    description: 'Paracetamol & Caffeine Tablets',
-    price: 150.00,
-    originalPrice: 180.00,
-    image: "https://c8.alamy.com/comp/D91062/fake-mushroom-on-forest-floor-D91062.jpg",
-    vendor: {
-      id: "v1",
-      name: "Main Pharmacy"
-    }
-  },
-  {
-    id: "2",
-    name: 'Centrum Adults',
-    description: 'Multivitamin Tablets (30)',
-    price: 1250.00,
-    originalPrice: 1399.00,
-    image: "https://www.brandonthatchers.co.uk/uploads/items/6456424cf4e1410e/1c26823365d0ae27.jpeg?size=224&date=1602000697",
-    vendor: {
-      id: "v2",
-      name: "Health Plus"
-    }
-  },
-  {
-    id: "3",
-    name: 'Ensure Gold',
-    description: 'Adult Nutrition Drink 400g',
-    price: 2199.00,
-    image: "https://www.brandonthatchers.co.uk/uploads/items/7c76091ce601ce2f/b54e2fbd44fb96f6.jpeg?size=224&date=1602000547",
-    vendor: {
-      id: "v3",
-      name: "Health Plus"
-    }
-  },
-  {
-    id: "4",
-    name: 'Baby Milk',
-    description: 'Infant Formula Stage 1',
-    price: 3299.00,
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRn41hy2eegjTPDitK6e63GyBdSzvsSHR5JgGaRxWP5bO7gpGfFP01zplribLxllEWp8fc&usqp=CAU",
-    vendor: {
-      id: "v2",
-      name: "Health Plus"
-    }
-  },
-  {
-    id: "5",
-    name: 'Vicks Vaporub',
-    description: 'Relief for Cold Symptoms (50g)',
-    price: 280.00,
-    originalPrice: 310.00,
-    image: "https://media.post.rvohealth.io/wp-content/uploads/2020/02/mushrooms-varieties-types-732x549-thumbnail-732x549.jpg",
-    vendor: {
-      id: "v1",
-      name: "Main Pharmacy"
-    }
-  },
-  {
-    id: "6",
-    name: 'Dettol Hand Sanitizer',
-    description: 'Instant Hand Sanitizer 200ml',
-    price: 450.00,
-    originalPrice: 500.00,
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2QG7iUSlAOSeTcY9rGTGN4cPNyYdndqSZYA&s",
-    vendor: {
-      id: "v4",
-      name: "SafeCare Pharmacy"
-    }
-  },
-  {
-    id: "7",
-    name: 'Revital H',
-    description: 'Daily Health Supplement (30 Capsules)',
-    price: 799.00,
-    image: "https://m.media-amazon.com/images/I/81EyKYuu06L._AC_UF894,1000_QL80_.jpg",
-    vendor: {
-      id: "v3",
-      name: "Health Plus"
-    }
-  },
-  {
-    id: "8",
-    name: 'ORS Powder Sachets',
-    description: 'Electrolyte Rehydration Formula (Pack of 10)',
-    price: 250.00,
-    originalPrice: 300.00,
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7ppSBbwaGkSNB-GB2rfSY3dimWrn-LgsPeA&s",
-    vendor: {
-      id: "v5",
-      name: "Wellness Pharmacy"
-    }
-  }
-];
-
-
 const Home = () => {
   const navigation = useNavigation<NavigationProp<any>>();
-  const { state: cartState, dispatch } = useCart();
+  const { state: cartState, dispatch: cartDispatch } = useCart();
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Redux
+  const dispatch = useAppDispatch();
+  const { products: apiProducts, isLoading: productsLoading, error: productsError } = useAppSelector(state => state.products);
+  console.log('Products from Redux:', apiProducts);
+
+
   useEffect(() => {
     AccessibilityInfo.announceForAccessibility('Home screen loaded');
     fetchData();
+    dispatch(fetchCategories());
   }, []);
+
 
   const fetchData = useCallback(async () => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Dispatch the getAllProducts action
+      const resp = await dispatch(getAllProducts());
+      console.log('Fetched products:', resp);
       setIsLoading(false);
       setIsRefreshing(false);
       AccessibilityInfo.announceForAccessibility('Content loaded successfully');
@@ -160,7 +77,7 @@ const Home = () => {
       console.error('Error fetching data:', error);
       AccessibilityInfo.announceForAccessibility('Error loading content');
     }
-  }, []);
+  }, [dispatch]);
 
   const handleRefresh = useCallback(() => {
     setIsRefreshing(true);
@@ -168,27 +85,30 @@ const Home = () => {
   }, [fetchData]);
 
   const handleViewAll = () => {
-    navigation.navigate('ShowProducts'); // Navigate to Browse screen
+    navigation.navigate('ShowProducts', {
+      title: 'All Products',
+      products: apiProducts,
+    });
   };
 
-  const handleAddToCart = useCallback((item: Product) => {
+  const handleAddToCart = useCallback((item: any) => {
     const cartItem = {
       id: Date.now().toString(),
-      productId: item.id.toString(),
-      name: item.name,
-      price: item.price,
+      productId: item._id,
+      name: item?.name,
+      price: item?.price,
       quantity: 1,
-      image: item.image || '',
-      vendorName: 'Default Vendor', // Update this with actual vendor info if available
+      image: item.imageUrl[0] || '',
+      vendorName: item?.vendor?.name || 'Default Vendor',
     };
-    dispatch({
+    cartDispatch({
       type: 'ADD_ITEM',
       payload: cartItem,
     });
     navigation.navigate('Cart');
-  }, [navigation, dispatch]);
+  }, [navigation, cartDispatch]);
 
-  const renderProduct = useCallback(({ item, index }: { item: Product; index: number }) => (
+  const renderProduct = useCallback(({ item, index }: { item: any; index: number }) => (
     <ProductCard
       item={item}
       index={index}
@@ -199,7 +119,7 @@ const Home = () => {
     />
   ), [navigation, handleAddToCart]);
 
-  const keyExtractor = useCallback((item: Product) => item.id.toString(), []);
+  const keyExtractor = useCallback((item: any) => item._id, []);
 
   const handleNotificationPress = () => {
     navigation.navigate('Notifications');
@@ -209,7 +129,8 @@ const Home = () => {
     navigation.navigate('Cart');
   };
 
-  if (isLoading) {
+  // Use the loading state from Redux or the local state
+  if (isLoading || productsLoading) {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="dark-content" backgroundColor="#fff" />
@@ -222,10 +143,10 @@ const Home = () => {
       <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
       <Header
         CustomLeftComponent={() => (
-          <Image 
-            source={require('../../../assets/images/lo.jpeg')} 
-            style={styles.headerLogo} 
-            resizeMode="contain" 
+          <Image
+            source={require('../../../assets/images/lo.jpeg')}
+            style={styles.headerLogo}
+            resizeMode="contain"
           />
         )}
         rightIcon='notifications'
@@ -277,7 +198,7 @@ const Home = () => {
             // marginHorizontal: wp(2),
           }}>
             <VirtualizedHorizontalList
-              data={FEATURED_PRODUCTS}
+              data={apiProducts}
               renderItem={renderProduct}
               keyExtractor={keyExtractor}
               showsHorizontalScrollIndicator={false}
@@ -297,7 +218,7 @@ const Home = () => {
             marginHorizontal: wp(2),
           }}>
             <VirtualizedHorizontalList
-              data={FEATURED_PRODUCTS}
+              data={apiProducts}
               renderItem={renderProduct}
               keyExtractor={keyExtractor}
               showsHorizontalScrollIndicator={false}
@@ -320,7 +241,7 @@ const Home = () => {
             width: Dimensions.get('window').width,
           }}>
             <VirtualizedHorizontalList
-              data={FEATURED_PRODUCTS}
+              data={apiProducts}
               renderItem={renderProduct}
               keyExtractor={keyExtractor}
               showsHorizontalScrollIndicator={false}
@@ -339,7 +260,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.background,
-    paddingBottom:Platform.OS === 'android' ? hp(3) : 0,
+    paddingBottom: Platform.OS === 'android' ? hp(3) : 0,
   },
   scrollContent: {
     flexGrow: 1,

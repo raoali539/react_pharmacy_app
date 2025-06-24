@@ -36,7 +36,7 @@ const CartScreen = () => {
   const [searchText, setSearchText] = useState('');
   const scaleAnims = useRef(new Map()).current;
 
-  // Add safe checks for arrays
+  // Add safe checks for arrays and objects
   const cartItems = state?.items || [];
   const cartTotal = state?.total || 0;
 
@@ -98,8 +98,8 @@ const CartScreen = () => {
   };
 
   const filteredCartItems = cartItems.filter(item =>
-    item.name.toLowerCase().includes(searchText.toLowerCase()) ||
-    item.vendorName.toLowerCase().includes(searchText.toLowerCase())
+    item?.name?.toLowerCase().includes(searchText.toLowerCase()) ||
+    item?.vendorName?.toLowerCase().includes(searchText.toLowerCase())
   );
 
   const renderCartItem = ({ item }: any) => (
@@ -107,43 +107,43 @@ const CartScreen = () => {
       style={[
         styles.cartItem,
         {
-          transform: [{ scale: getScaleAnim(item.id) }],
+          transform: [{ scale: getScaleAnim(item?.id || '') }],
         }
       ]}
     >
       <View style={styles.cartItemContent}>
         <Image 
-          source={{ uri: item.image }} 
+          source={{ uri: item?.image }} 
           style={styles.itemImage}
           resizeMode="cover"
         />
         
         <View style={styles.itemDetailsContainer}>
           <View style={styles.itemInfo}>
-            <Text style={styles.itemName} numberOfLines={2}>{item.name}</Text>
+            <Text style={styles.itemName} numberOfLines={2}>{item?.name}</Text>
             <View style={styles.vendorContainer}>
               <Icon name="shop" type="feather" size={12} color="#666" />
-              <Text style={styles.vendorName}>{item.vendorName}</Text>
+              <Text style={styles.vendorName}>{item?.vendorName}</Text>
             </View>
-            <Text style={styles.itemPrice}>${typeof item?.price === 'number' ? item.price.toFixed(2) : '0.00'}</Text>
+            <Text style={styles.itemPrice}>${item?.price ? item.price : '0.00'}</Text>
           </View>
 
         <View style={styles.itemActions}>
             <View style={styles.quantityContainer}>
               <TouchableOpacity
-                style={[styles.quantityButton, item.quantity === 1 && styles.quantityButtonDisabled]}
+                style={[styles.quantityButton, item?.quantity === 1 && styles.quantityButtonDisabled]}
                 onPress={() => {
-                  updateQuantity(item.id, item.quantity - 1);
+                  updateQuantity(item?.id || '', (item?.quantity || 0) - 1);
                 }}
-                disabled={item.quantity === 1}
+                disabled={item?.quantity === 1}
               >
-                <Icon name="minus" type="feather" size={16} color={item.quantity === 1 ? '#999' : theme.text} />
+                <Icon name="minus" type="feather" size={16} color={item?.quantity === 1 ? '#999' : theme.text} />
               </TouchableOpacity>
-              <Text style={styles.quantity}>{item.quantity}</Text>
+              <Text style={styles.quantity}>{item?.quantity}</Text>
               <TouchableOpacity
                 style={styles.quantityButton}
                 onPress={() => {
-                  updateQuantity(item.id, item.quantity + 1);
+                  updateQuantity(item?.id || '', (item?.quantity || 0) + 1);
                 }}
               >
                 <Icon name="plus" type="feather" size={16} color={"#5A5A5A"} />
@@ -153,7 +153,7 @@ const CartScreen = () => {
             <View style={styles.actionButtons}>
               <TouchableOpacity 
                 style={[styles.actionButton, styles.removeButton]}
-                onPress={() => handleRemoveItem(item.id)}
+                onPress={() => handleRemoveItem(item?.id || '')}
               >
                 <Icon name="trash-2" type="feather" size={20} color="#5A5A5A" />
               </TouchableOpacity>
@@ -212,7 +212,7 @@ const CartScreen = () => {
           <FlatList
             data={filteredCartItems}
             renderItem={renderCartItem}
-            keyExtractor={item => item.id}
+            keyExtractor={item => item?.id || ''}
             contentContainerStyle={styles.list}
             showsVerticalScrollIndicator={false}
           />

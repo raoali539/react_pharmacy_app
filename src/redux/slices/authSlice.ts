@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import apiClient from '../../utils/apiClient';
 
 interface AuthState {
   user: any;
@@ -15,12 +15,12 @@ const initialState: AuthState = {
   error: null,
 };
 
-// Async thunks for login and register
+// Async thunks for authentication
 export const loginUser = createAsyncThunk(
   'auth/login',
   async (credentials: { email: string; password: string }, { rejectWithValue }) => {
     try {
-      const response = await axios.post('http://localhost:3000/api/dharmacy/login', credentials);
+      const response = await apiClient.post('/v1/login', credentials);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Login failed');
@@ -32,10 +32,22 @@ export const registerUser = createAsyncThunk(
   'auth/register',
   async (userData: { email: string; password: string; name: string }, { rejectWithValue }) => {
     try {
-      const response = await axios.post('http://localhost:3000/api/dharmacy/register', userData);
+      const response = await apiClient.post('/v1/register', userData);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Registration failed');
+    }
+  }
+);
+
+export const signUpWithGoogle = createAsyncThunk(
+  'auth/signUpWithGoogle',
+  async (googleData: { token: string; userInfo?: any }, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.post('/v1/signupwithgoogle', googleData);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Google sign up failed');
     }
   }
 );
@@ -84,6 +96,23 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(registerUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+      
+    // Google Sign Up cases
+    builder
+      .addCase(signUpWithGoogle.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(signUpWithGoogle.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.error = null;
+      })
+      .addCase(signUpWithGoogle.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });

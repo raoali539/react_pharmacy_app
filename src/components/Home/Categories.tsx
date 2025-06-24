@@ -1,17 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform, ScrollView, Image } from 'react-native';
-import { Icon } from '@rneui/base';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Platform, ScrollView, Image, ActivityIndicator } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils/globalFunctions';
 import theme from '../../assets/theme';
 import Animated, { FadeInDown, useAnimatedStyle, withSpring } from 'react-native-reanimated';
-
-const categories = [
-  { id: '1', name: 'Anxiety', icon: 'brain', type: 'material-community', img: 'https://medlineplus.gov/images/AnxietyNew_Share.jpg' },
-  { id: '2', name: 'Depression', icon: 'emoticon-sad', type: 'material-community', img: 'https://stjosephinstitute.com/wp-content/uploads/2024/03/AdobeStock_138892525-scaled.webp' },
-  { id: '3', name: 'ADHD', icon: 'head-flash', type: 'material-community', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQakSAJqGXY5D-lasZ1rwJSDZgmDUrPDzNiFg&s' },
-  { id: '4', name: 'Insomnia', icon: 'power-sleep', type: 'material-community', img: 'https://www.nhlbi.nih.gov/sites/default/files/inline-images/19-1243%20NHLBI%20OY2%20Q1%20FHT%20Insomnia_900x600px%20%281%29.jpg' },
-  { id: '5', name: 'Stress', icon: 'meditation', type: 'material-community', img: 'https://neuronup.us/wp-content/uploads/2022/09/agency-young-adult-profession-stressed-black-1.jpg' },
-];
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { fetchCategories } from '../../redux/slices/categorySlice';
 
 interface CategoriesProps {
   onSelectCategory: (category: string) => void;
@@ -49,7 +42,7 @@ const CategoryCard = ({ category, index, onPress }: any) => {
       >
         <View style={[styles.imageContainer, { backgroundColor: `${theme.primary}10` }]}>
           <Image
-            source={{ uri: category.img }}
+            source={{ uri: category.image }}
             style={styles.categoryImage}
             resizeMode="cover"
           />
@@ -61,6 +54,30 @@ const CategoryCard = ({ category, index, onPress }: any) => {
 };
 
 const Categories: React.FC<CategoriesProps> = ({ onSelectCategory }) => {
+  const dispatch = useAppDispatch();
+  const { categories, loading, error } = useAppSelector((state) => state.categories);
+  console.log('Categories:', categories);
+
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.loadingContainer]}>
+        <ActivityIndicator size="large" color={theme.primary} />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.container, styles.errorContainer]}>
+        <Text style={styles.errorText}>Error loading categories</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Categories</Text>
@@ -69,9 +86,9 @@ const Categories: React.FC<CategoriesProps> = ({ onSelectCategory }) => {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {categories.map((category, index) => (
+        {categories?.map((category, index) => (
           <CategoryCard
-            key={category.id}
+            key={category?._id}
             category={category}
             index={index}
             onPress={onSelectCategory}
@@ -133,6 +150,20 @@ const styles = StyleSheet.create({
     color: theme.text,
     textAlign: 'center',
     letterSpacing: 0.3,
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: hp(20),
+  },
+  errorContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: hp(20),
+  },
+  errorText: {
+    color: theme.error,
+    fontSize: 16,
   },
 });
 

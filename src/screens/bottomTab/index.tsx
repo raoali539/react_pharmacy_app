@@ -125,21 +125,6 @@ function BottomTab() {
         }}
       />
 
-      {/* Browse All Categories */}
-      {/* <Tab.Screen
-        name="Browse"
-        component={BrowseProducts}
-        options={{
-          tabBarIcon: ({ focused, color }) => (
-            <Icon
-              name="apps"
-              type="material"
-              color={color}
-              size={22}
-            />
-          ),
-        }}
-      /> */}
 
       {/* add to card screen */}
       <Tab.Screen

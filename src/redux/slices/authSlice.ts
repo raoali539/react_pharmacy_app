@@ -18,7 +18,7 @@ const initialState: AuthState = {
 // Async thunks for authentication
 export const loginUser = createAsyncThunk(
   'auth/login',
-  async (credentials: { email: string; password: string }, { rejectWithValue }) => {
+  async (credentials: { email: string; password: string; userType: 'User' | 'Vendor' }, { rejectWithValue }) => {
     try {
       const response = await apiClient.post('/v1/login', credentials);
       return response.data;

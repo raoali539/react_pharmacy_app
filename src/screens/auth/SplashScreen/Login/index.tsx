@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Alert,
   Image,
-  Animated,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView
@@ -21,6 +20,7 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../../
 import { loginUser } from '../../../../redux/slices/authSlice';
 import { RootState } from '../../../../redux/store/store';
 import { imagePath } from '../../../../assets/imagePath';
+import { Picker } from '@react-native-picker/picker';
 
 type NavigationProp = NativeStackNavigationProp<any>;
 
@@ -32,25 +32,7 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-
-  // Animations
-  const fadeAnim = new Animated.Value(0);
-  const slideAnim = new Animated.Value(50);
-
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 1000,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 800,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, []);
+  const [userType, setUserType] = useState<any>();
 
   const handleLogin = async () => {
     try {
@@ -58,9 +40,8 @@ const Login = () => {
         Alert.alert('Error', 'Please fill in all fields');
         return;
       }
-
-      const resultAction = await dispatch(loginUser({ email, password }) as any);
-      
+      // Optionally, you can validate userType here if needed
+      const resultAction = await dispatch(loginUser({ email, password, userType }) as any);
       if (loginUser.fulfilled.match(resultAction)) {
         navigation.navigate('HomeRoutes');
       } else if (loginUser.rejected.match(resultAction)) {
@@ -78,7 +59,7 @@ const Login = () => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
-        <Animated.View style={[styles.content, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+        <View style={styles.content}>
           <View style={styles.logoContainer}>
             <Image source={require('../../../../assets/images/logo.jpeg')} style={styles.logo} resizeMode="cover" />
           </View>
@@ -114,7 +95,32 @@ const Login = () => {
                 <Icon name={showPassword ? "eye-off-outline" : "eye-outline"} size={20} />
               </TouchableOpacity>
             </View>
+               <View style={{ marginBottom: hp(2) }}>
+            <Text style={{ fontSize: 16, marginBottom: 4, color: 'black' }}>Login as</Text>
+            <View style={{
+              borderWidth: 1,
+              borderColor: theme.border,
+              borderRadius: 12,
+              backgroundColor: '#F5F6FA',
+              overflow: 'hidden',
+            }}>
+              <Picker
+                selectedValue={userType}
+                onValueChange={(value)=>{
+                  console.log('Selected user type:', value);
+                  setUserType(value);
+                }}
+                style={{ color: 'black' }}
+                dropdownIconColor="black"
+              >
+                <Picker.Item label="User" value="User" />
+                <Picker.Item label="Vendor" value="Vendor" />
+              </Picker>
+            </View>
           </View>
+          </View>
+
+       
 
           <TouchableOpacity 
             style={[styles.button, isLoading && styles.buttonDisabled]} 
@@ -166,7 +172,7 @@ const Login = () => {
               <Text style={styles.registerLink}>Sign Up</Text>
             </TouchableOpacity>
           </View>
-        </Animated.View>
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

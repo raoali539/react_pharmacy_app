@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
   menuButton: { fontSize: 20 },
   chatContainer: { padding: 10, flexGrow: 1, justifyContent: 'flex-end' },
   receivedMessage: { backgroundColor: '#e0e0e0', padding: 12, borderRadius: 16, maxWidth: '75%', marginBottom: 10, alignSelf: 'flex-start', shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 2, },
-  sentMessage: { backgroundColor: '#ff4d4d', padding: 12, borderRadius: 16, maxWidth: '75%', marginBottom: 10, alignSelf: 'flex-end', shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 2, },
+  sentMessage: { backgroundColor: '#000', padding: 12, borderRadius: 16, maxWidth: '75%', marginBottom: 10, alignSelf: 'flex-end', shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 2, },
   messageText: { fontSize: 16, color: '#000' },
   sentMessageText: { color: '#fff' },
   timeText: { fontSize: 12, color: '#888', textAlign: 'right', marginTop: 4 },

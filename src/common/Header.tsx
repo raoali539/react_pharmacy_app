@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
     marginHorizontal: wp(2),
-    color: theme.text,
+    color: 'black',
   },
   rightIcons: {
     flexDirection: 'row',

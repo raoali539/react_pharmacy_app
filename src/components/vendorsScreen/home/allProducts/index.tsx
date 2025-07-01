@@ -20,6 +20,7 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../../
 import theme, { TYPOGRAPHY_STYLES } from '../../../../assets/theme';
 import Header from '../../../../common/Header';
 import { commonStyles } from '../../../../assets/commonStyles';
+import VendorHeader from '../../header';
 
 interface Product {
     _id: string;
@@ -385,15 +386,11 @@ const VendorAllProducts = ({ route, navigation }: any) => {
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
-            <Header
-                leftIcon="arrow-left"
-                leftIconType="feather"
-                rightIconType="feather"
-                title={title}
-                containerStyle={commonStyles.headerContainer}
-                onLeftPress={navigation.goBack}
-                onRightPress={handleNotificationPress}
-                onRightIcon2Press={handleCartPress}
+            <VendorHeader
+            backIcon={true}
+               containerStyle={{
+                paddingTop: 20,
+               }}
             />
             
             {products.length === 0 ? (

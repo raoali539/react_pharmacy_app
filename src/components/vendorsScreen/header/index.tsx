@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Platform, TextInput, StatusBar } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, Platform, TextInput, StatusBar, Image, Alert } from 'react-native';
 import theme from '../../../assets/theme';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../../utils/globalFunctions';
+import { useNavigation } from '@react-navigation/native';
+import { Icon } from '@rneui/themed';
 
 interface HeaderProps {
     rightChildren?: React.ReactElement;
@@ -9,20 +11,75 @@ interface HeaderProps {
     leftChildren?: React.ReactElement;
     containerStyle?: any;
     style?: any;
+    backIcon?: boolean;
 }
 
+
+
 const VendorHeader: React.FC<HeaderProps> = ({
-    rightChildren,
-    CenterChildren,
-    leftChildren,
     containerStyle,
     style,
+    backIcon = false,
 }) => {
+    const navigation = useNavigation();
+
+    const centerChildren = useCallback(() => (
+        <Image
+            source={require('../../../assets/images/lo.jpeg')}
+            style={{ width: 100, height: 100, borderRadius: 20,marginTop:10 }}
+            resizeMode="contain"
+        />
+    ), []);
+
+    const leftChildren = useCallback(() => (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            {backIcon && (
+                <TouchableOpacity onPress={() => { 
+                    navigation.goBack() }}>
+                        
+                    <Icon
+                        name="arrow-back"
+                        type="material"
+                        color={'black'}
+                        size={35}
+                    />
+                </TouchableOpacity>
+            )}
+            {
+                !backIcon && (
+                    <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+                        <Icon
+                            name="settings"
+                            type="material"
+                            color={'black'}
+                            size={30}
+                        />
+
+                    </TouchableOpacity>
+                )
+            }
+
+        </View>
+
+    ), [navigation]);
+
+    const rightChildren = useCallback(() => (
+        <TouchableOpacity>
+            <Icon
+                name="notifications"
+                type="material"
+                color={'black'}
+                size={30}
+            />
+        </TouchableOpacity>
+    ), [navigation]);
+
+
     return (
         <View style={[styles.container, containerStyle, style]}>
-            <View style={styles.left}>{leftChildren}</View>
-            <View style={styles.center}>{CenterChildren}</View>
-            <View style={styles.right}>{rightChildren}</View>
+            <View style={styles.left}>{leftChildren()}</View>
+            <View style={styles.center}>{centerChildren()}</View>
+            <View style={styles.right}>{rightChildren()}</View>
         </View>
     );
 };
@@ -33,7 +90,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         backgroundColor: theme.background,
-        paddingHorizontal: wp(8),
+        paddingHorizontal: wp(4),
+        marginTop: StatusBar.currentHeight || 0,
+        height: hp(8),
         ...theme.shadows.base,
         ...Platform.select({
             android: {

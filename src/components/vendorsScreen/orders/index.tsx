@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, ActivityIndicator, Dimensions } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, ActivityIndicator, Dimensions, SafeAreaView, StatusBar } from 'react-native';
+import VendorHeader from '../header';
+import theme from '../../../assets/theme';
 
 // Order status constants
 enum OrderStatus {
@@ -40,7 +42,7 @@ const VendorReceivedOrder = () => {
       try {
         // In real app, this would be an API call to your backend
         await new Promise(resolve => setTimeout(resolve, 1500));
-        
+
         const mockOrders: Order[] = [
           {
             id: 'ORD-78900',
@@ -98,7 +100,7 @@ const VendorReceivedOrder = () => {
             ]
           }
         ];
-        
+
         setOrders(mockOrders);
         setLoading(false);
       } catch (err) {
@@ -128,9 +130,9 @@ const VendorReceivedOrder = () => {
   const renderOrderItem = ({ item }: { item: Order }) => {
     const statusDetails = getStatusDetails(item.status);
     const isExpanded = expandedOrderId === item.id;
-    
+
     return (
-      <TouchableOpacity 
+      <TouchableOpacity
         style={[styles.orderCard, isExpanded && styles.expandedCard]}
         onPress={() => toggleExpandOrder(item.id)}
         activeOpacity={0.95}
@@ -140,25 +142,25 @@ const VendorReceivedOrder = () => {
             <Text style={styles.orderIdLabel}>ORDER</Text>
             <Text style={styles.orderId}>#{item.id}</Text>
           </View>
-          
-          <View style={[styles.statusBadge, { backgroundColor: `${statusDetails.color}15` }]}> 
-            <Text style={[styles.statusText, { color: statusDetails.color }]}> 
+
+          <View style={[styles.statusBadge, { backgroundColor: `${statusDetails.color}15` }]}>
+            <Text style={[styles.statusText, { color: statusDetails.color }]}>
               {statusDetails.icon} {statusDetails.text}
             </Text>
           </View>
         </View>
-        
+
         <View style={styles.customerRow}>
           <Text style={styles.customerIcon}>👤</Text>
           <Text style={styles.customerName}>{item.customer}</Text>
           <Text style={styles.date}>{item.date}</Text>
         </View>
-        
+
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>TOTAL</Text>
           <Text style={styles.totalAmount}>${item.total.toFixed(2)}</Text>
         </View>
-        
+
         {isExpanded && (
           <View style={styles.expandedContent}>
             <Text style={styles.itemsTitle}>ITEMS</Text>
@@ -173,13 +175,13 @@ const VendorReceivedOrder = () => {
                 </View>
               ))}
             </View>
-            
+
             <View style={styles.actionButtons}>
               <TouchableOpacity style={styles.actionButton}>
                 <Text style={styles.actionButtonText}>View Details</Text>
               </TouchableOpacity>
               {item.status === OrderStatus.Processing && (
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={[styles.actionButton, styles.primaryButton]}
                   onPress={() => console.log('Process order:', item.id)}
                 >
@@ -189,7 +191,7 @@ const VendorReceivedOrder = () => {
             </View>
           </View>
         )}
-        
+
         <View style={styles.footer}>
           <Text style={styles.viewDetailsText}>
             {isExpanded ? 'Tap to collapse' : 'Tap to view details'}
@@ -212,12 +214,12 @@ const VendorReceivedOrder = () => {
   if (error) {
     return (
       <View style={styles.errorContainer}>
-        <Image 
-          source={{uri: 'https://cdn-icons-png.flaticon.com/512/564/564619.png'}} 
+        <Image
+          source={{ uri: 'https://cdn-icons-png.flaticon.com/512/564/564619.png' }}
           style={styles.errorImage}
         />
         <Text style={styles.errorText}>{error}</Text>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.retryButton}
           onPress={() => {
             setError(null);
@@ -232,16 +234,27 @@ const VendorReceivedOrder = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
+
+      <VendorHeader
+        backIcon={false}
+      />
+      <View style={{
+        paddingHorizontal: 16,
+        paddingTop: 24,
+        paddingBottom: 16,
+      }}>
+
       <View style={styles.header}>
         <Text style={styles.screenTitle}>Customer Orders</Text>
         <Text style={styles.ordersCount}>{orders.length} orders</Text>
       </View>
-      
+
       {orders.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Image 
-            source={{uri: 'https://cdn-icons-png.flaticon.com/512/4555/4555971.png'}} 
+          <Image
+            source={{ uri: 'https://cdn-icons-png.flaticon.com/512/4555/4555971.png' }}
             style={styles.emptyImage}
           />
           <Text style={styles.emptyTitle}>No Orders Yet</Text>
@@ -258,23 +271,23 @@ const VendorReceivedOrder = () => {
           ListFooterComponent={<View style={styles.listFooter} />}
         />
       )}
-    </View>
+            </View>
+
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFF',
-    paddingHorizontal: isTablet ? 24 : 16,
-    paddingTop: 24,
-    paddingBottom: 16,
+    backgroundColor: theme.background,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 24,
+    marginTop: 20,
   },
   screenTitle: {
     fontSize: isTablet ? 28 : 24,
@@ -293,21 +306,24 @@ const styles = StyleSheet.create({
   },
   orderCard: {
     backgroundColor: 'white',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-    shadowColor: '#6366F1',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 6,
-    borderWidth: 1,
-    borderColor: '#F1F5F9',
+    borderRadius: 20,
+    padding: 24,
+    marginBottom: 20,
+    shadowColor: '#4B2996', // deeper shadow color
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.22,
+    shadowRadius: 24,
+    elevation: 18,
+    borderWidth: 2,
+    borderColor: '#E0D7F3', // subtle premium border
+    // Add a slight gradient effect using overlay if needed (React Native Linear Gradient for more premium look)
   },
   expandedCard: {
-    shadowOpacity: 0.15,
-    shadowRadius: 20,
-    elevation: 10,
+    shadowOpacity: 0.32,
+    shadowRadius: 32,
+    elevation: 28,
+    borderColor: '#7C3AED', // highlight border for expanded
+    borderWidth: 2.5,
   },
   orderHeader: {
     flexDirection: 'row',
@@ -329,7 +345,7 @@ const styles = StyleSheet.create({
   orderId: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1E293B',
+    color: 'black',
   },
   statusBadge: {
     paddingVertical: 6,
@@ -355,7 +371,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     fontWeight: '600',
-    color: '#1E293B',
+    color: 'black',
   },
   date: {
     fontSize: 14,
@@ -374,7 +390,7 @@ const styles = StyleSheet.create({
   totalAmount: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1E293B',
+    color: 'black',
   },
   expandIcon: {
     fontSize: 20,
@@ -409,7 +425,7 @@ const styles = StyleSheet.create({
   productName: {
     fontSize: 15,
     fontWeight: '500',
-    color: '#1E293B',
+    color: 'black',
     marginBottom: 4,
   },
   productQty: {
@@ -419,7 +435,7 @@ const styles = StyleSheet.create({
   productPrice: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#1E293B',
+    color: 'black',
   },
   actionButtons: {
     flexDirection: 'row',

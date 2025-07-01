@@ -17,6 +17,8 @@ import VendorAllProducts from "../../components/vendorsScreen/home/allProducts";
 import ChatScreen from "../../components/vendorsScreen/chat/oneToOne";
 import AddProductForm from "../../components/products/AddProductForm";
 import VendorProductDetail from "../../components/vendorsScreen/home/productDetail";
+import SettingsScreen from "../settings/SettingScreen";
+import VendorSettingsScreen from "../../components/vendorsScreen/setting";
 
 // Default option for screens without a header
 const headerShownFalse = { headerShown: false };
@@ -114,6 +116,15 @@ export const homeStackScreens: Array<{
     options: {
       headerShown: false,
       title: "Product Details",
+      headerTitleAlign: "center",
+    },
+  },
+  {
+    name: "Settings",
+    component: VendorSettingsScreen,
+    options: {
+      headerShown: false,
+      title: "Settings",
       headerTitleAlign: "center",
     },
   },

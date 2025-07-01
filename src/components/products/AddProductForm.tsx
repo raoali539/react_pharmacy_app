@@ -12,11 +12,15 @@ import {
   Modal,
   FlatList,
   Platform,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import Header from '../../common/Header';
 import { commonStyles } from '../../assets/commonStyles';
 import { useNavigation } from '@react-navigation/native';
+import theme from '../../assets/theme';
+import VendorHeader from '../vendorsScreen/header';
 const MAX_IMAGES = 3;
 
 const AddProductForm = ({params}:any) => {
@@ -79,7 +83,14 @@ const AddProductForm = ({params}:any) => {
   };
 
   return (
-    <ScrollView style={styles.container} keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1 }}>
+      
+      <SafeAreaView style={styles.container}>
+            <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
+            <VendorHeader
+                backIcon={false}
+            />
+                <ScrollView style={styles.container} keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1 }}>
+
         {
           isEditMode && (
    <Header
@@ -220,13 +231,16 @@ const AddProductForm = ({params}:any) => {
         </View>
 
         {/* Submit Button */}
-        <View style={styles.section}>
+        <View style={[styles.section,{
+          paddingBottom: Platform.OS === 'ios' ? 20 : 30,
+        }]}>
           <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
             <Text style={styles.submitBtnText}>Add Product</Text>
           </TouchableOpacity>
         </View>
       </View>
-    </ScrollView>
+          </ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -243,7 +257,7 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#ff4444',
+    color: '#000000',
     marginBottom: 32,
     textAlign: 'left',
     alignSelf: 'flex-start',
@@ -251,6 +265,7 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: 32,
+    
   },
   imageSection: {
     flexDirection: 'row',
@@ -277,7 +292,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 4,
     right: 4,
-    backgroundColor: '#ff4444',
+    backgroundColor: '#000000',
     width: 24,
     height: 24,
     borderRadius: 12,
@@ -300,7 +315,7 @@ const styles = StyleSheet.create({
   cameraIcon: {
     width: 40,
     height: 40,
-    backgroundColor: '#ff4444',
+    backgroundColor: '#000000',
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
@@ -324,10 +339,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f8f8',
   },
   inputError: {
-    borderColor: '#ff4444',
+    borderColor: '#000000',
   },
   errorText: {
-    color: '#ff4444',
+    color: '#000000',
     fontSize: 12,
     marginTop: 4,
   },
@@ -364,7 +379,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   submitBtn: {
-    backgroundColor: '#ff4444',
+    backgroundColor: '#000000',
     borderRadius: 8,
     padding: 16,
     alignItems: 'center',

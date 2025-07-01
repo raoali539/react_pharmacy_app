@@ -152,12 +152,21 @@ function VendorBottomTab() {
                 options={{
                     tabBarLabel: '',
                     tabBarIcon: ({ focused, size }) => (
-                        <Icon
-                            name="add"
-                            type="material"
-                            color={focused ? '#fff' : 'gray'}
-                            size={30}
-                        />
+                        <View style={{
+                            backgroundColor: 'gray',
+                            borderRadius: 20, // 50% of 40px diameter
+                            width: 40,
+                            height: 40,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}>
+                            <Icon
+                                name="add"
+                                type="material"
+                                color={focused ? '#fff' : 'white'}
+                                size={24}
+                            />
+                        </View>
                     ),
                 }}
             />

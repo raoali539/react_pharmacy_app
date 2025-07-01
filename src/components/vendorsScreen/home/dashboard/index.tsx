@@ -3,19 +3,12 @@ import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 
 const MetricCard = ({ title, value, percentage, isPositive, backgroundColor, icon }: any) => {
   return (
-    <View style={[styles.card, { backgroundColor }]}> 
-      <View style={styles.cardHeader}>
+    <View style={[styles.card, { backgroundColor, alignItems: 'center', justifyContent: 'center' }]}> 
+      <View style={[styles.cardHeader, { justifyContent: 'center' }]}> 
         <Text style={styles.cardTitle}>{title}</Text>
-        <Text style={styles.trendIcon}>{icon}</Text>
       </View>
-      <View style={styles.cardContent}>
+      <View style={[styles.cardContent, { justifyContent: 'center' }]}> 
         <Text style={styles.cardValue}>{value}</Text>
-        <Text style={[
-          styles.cardPercentage, 
-          { color: isPositive ? '#4ade80' : '#ef4444' }
-        ]}>
-          {isPositive ? '+' : ''}{percentage}
-        </Text>
       </View>
     </View>
   );
@@ -82,10 +75,10 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 1,
-    marginHorizontal: 8,
-    padding: 24,
+    marginHorizontal: 4,
+    padding: 14,
     borderRadius: 28,
-    minHeight: 140,
+    minHeight: 80,
     justifyContent: 'space-between',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 6 },

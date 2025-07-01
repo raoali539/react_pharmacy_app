@@ -6,8 +6,12 @@ import {
     FlatList,
     TouchableOpacity,
     StyleSheet,
+    SafeAreaView,
+    StatusBar,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import VendorHeader from '../../header';
+import theme from '../../../../assets/theme';
 
 const ChatList = () => {
     const navigation = useNavigation();
@@ -52,7 +56,18 @@ const ChatList = () => {
     );
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
+
+            <VendorHeader
+                backIcon={false}
+            />
+            <View style={{
+                flex: 1,
+                paddingHorizontal: 16,
+                paddingTop: 20, // Adjusted for better spacing
+            }}>
+
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>Recent Chats</Text>
                 <TouchableOpacity>
@@ -68,14 +83,16 @@ const ChatList = () => {
                 ItemSeparatorComponent={() => <View style={styles.separator} />}
                 contentContainerStyle={styles.listContent}
             />
-        </View>
+                        </View>
+
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: theme.background,
     },
     header: {
         flexDirection: 'row',
@@ -83,10 +100,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 24,
         paddingVertical: 20,
-        paddingTop: 54, // Account for status bar
         borderBottomWidth: 1,
         borderBottomColor: '#E5E7EB',
-        marginBottom: 8,
+        marginBottom: 18,
     },
     headerTitle: {
         fontSize: 20,
@@ -125,6 +141,8 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.04,
         shadowRadius: 2,
         elevation: 1,
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
     },
     avatar: {
         width: 56,

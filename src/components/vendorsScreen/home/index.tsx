@@ -331,7 +331,7 @@ const VendorHome = () => {
                 </View>
                 <View style={[styles.section, styles.sectionSpacing]}>
                     <SectionHeader
-                        title="All Products"
+                        title="My Products"
                         onViewAll={handleViewAll}
                         style={{
                             paddingVertical: theme.spacing.sm,

@@ -15,6 +15,8 @@ import {
   Platform
 } from 'react-native';
 import { launchImageLibrary, ImageLibraryOptions, Asset } from 'react-native-image-picker';
+import VendorHeader from '../header';
+import theme from '../../../assets/theme';
 
 interface NotificationSettings {
   orderAlerts: boolean;
@@ -149,8 +151,8 @@ const VendorSettingsScreen: React.FC = () => {
       'Are you sure you want to reset all settings to default values?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Reset', 
+        {
+          text: 'Reset',
           style: 'destructive',
           onPress: () => {
             // Reset to default values
@@ -207,12 +209,12 @@ const VendorSettingsScreen: React.FC = () => {
     </View>
   );
 
-  const InputSetting: React.FC<InputSettingProps> = ({ 
-    label, 
-    value, 
-    onChangeText, 
-    placeholder, 
-    keyboardType = 'default' 
+  const InputSetting: React.FC<InputSettingProps> = ({
+    label,
+    value,
+    onChangeText,
+    placeholder,
+    keyboardType = 'default'
   }) => (
     <View style={styles.inputContainer}>
       <Text style={styles.inputLabel}>{label}</Text>
@@ -231,12 +233,10 @@ const VendorSettingsScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-      
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Settings</Text>
-      </View>
+      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
+      <VendorHeader
+        backIcon={true}
+      />
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Profile Image Section */}
@@ -375,7 +375,7 @@ const VendorSettingsScreen: React.FC = () => {
           <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
             <Text style={styles.saveButtonText}>Save Settings</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity style={styles.secondaryButton} onPress={handleReset}>
             <Text style={styles.secondaryButtonText}>Reset to Default</Text>
           </TouchableOpacity>
@@ -388,8 +388,7 @@ const VendorSettingsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingBottom: 90,
-    backgroundColor: '#F7F8FA', // Softer background for premium feel
+    backgroundColor: '#fff', // Softer background for premium feel
   },
   header: {
     backgroundColor: '#FFFFFF',

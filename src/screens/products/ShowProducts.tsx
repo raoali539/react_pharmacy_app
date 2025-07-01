@@ -16,6 +16,7 @@ import theme, { TYPOGRAPHY_STYLES } from '../../assets/theme';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import Header from '../../common/Header';
 import { commonStyles } from '../../assets/commonStyles';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 
 // Define the Product type
 interface Vendor {
@@ -34,8 +35,13 @@ interface Product {
 }
 
 const ShowProducts = ({ route, navigation }: any) => {
-    const { title, products } = route?.params;
+    const { title, products,type } = route?.params;
     console.log('Products:', products);
+  const dispatch = useAppDispatch();
+  const { products: apiProducts, isLoading: productsLoading, error: productsError,
+    lowstockProducts, highstockProducts
+  } = useAppSelector(state => state.products);
+
 
     const handleNotificationPress = () => {
         navigation.navigate('Notifications');
@@ -120,7 +126,7 @@ const ShowProducts = ({ route, navigation }: any) => {
                 onRightIcon2Press={handleCartPress}
             />
             <FlatList
-                data={products}
+                data={type === '1' ? apiProducts : type === '2' ? lowstockProducts : highstockProducts}
                 renderItem={renderProduct}
                 keyExtractor={item => item.id}
                 contentContainerStyle={styles.productList}

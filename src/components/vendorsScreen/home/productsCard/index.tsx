@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform, Image, ActivityIndicator } from 'react-native';
 import { Icon } from '@rneui/base';
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils/globalFunctions';
-import theme, { TYPOGRAPHY_STYLES } from '../../assets/theme';
 import Animated, { FadeIn, useAnimatedStyle, withTiming, Easing, useSharedValue } from 'react-native-reanimated';
+import theme from '../../../../assets/theme';
+import { heightPercentageToDP as hp ,widthPercentageToDP as wp } from '../../../../utils/globalFunctions';
 
 interface ProductCardProps {
   item: {
@@ -13,50 +13,128 @@ interface ProductCardProps {
     price: number;
     originalPrice?: number;
     imageUrl: string[];
-    vendor?: { name: string };
-    stockAvailable?: number;
+    vendor?: {
+      name: string;
+    };
+    stockAvailable?: boolean;
+    rating?: number;
+    reviews?: number;
   };
   index: number;
   showDiscount?: boolean;
-  onPress?: () => void;
-  onAddToCart?: () => void;
+  onPress: () => void;
   style?: object;
 }
 
-const CARD_WIDTH = wp(45) - wp(3); // Slightly wider for better fit in 2-column grid
-const IMAGE_HEIGHT = hp(15);
-const CONTENT_HEIGHT = hp(13);
+const CARD_WIDTH = wp(44); 
+const IMAGE_HEIGHT = hp(14);
+const CONTENT_HEIGHT = hp(14);
 
-const ProductCard: React.FC<ProductCardProps> = ({
+const VendorProductCard: React.FC<ProductCardProps> = ({
   item,
   showDiscount = true,
   onPress,
-  onAddToCart,
   style,
   index,
-}) => {
+}: any) => {
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
+  
   const imageUri = item.imageUrl?.length > 0 ? item.imageUrl[0] : '';
+
   const discount = item.originalPrice && item.originalPrice > item.price
     ? Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)
     : 0;
+
   const scale = useSharedValue(1);
+  const opacity = useSharedValue(1);
+
   const handlePressIn = () => {
-    scale.value = withTiming(0.97, { duration: 150, easing: Easing.bezier(0.25, 0.1, 0.25, 1) });
+    scale.value = withTiming(0.96, { 
+      duration: 200, 
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1) 
+    });
+    opacity.value = withTiming(0.9, { duration: 200 });
   };
+
   const handlePressOut = () => {
-    scale.value = withTiming(1, { duration: 200, easing: Easing.bezier(0.25, 0.1, 0.25, 1) });
+    scale.value = withTiming(1, { 
+      duration: 300, 
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1) 
+    });
+    opacity.value = withTiming(1, { duration: 300 });
   };
+
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ scale: scale.value }],
+      opacity: opacity.value,
     };
   });
+
+  const handleImageLoad = () => {
+    setImageLoading(false);
+    setImageError(false);
+  };
+
+  const handleImageError = () => {
+    setImageLoading(false);
+    setImageError(true);
+  };
+
+  const renderStars = (rating: number) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(
+        <Icon
+          key={i}
+          name="star"
+          type="material"
+          size={12}
+          color="#FFD700"
+        />
+      );
+    }
+
+    if (hasHalfStar) {
+      stars.push(
+        <Icon
+          key="half"
+          name="star-half"
+          type="material"
+          size={12}
+          color="#FFD700"
+        />
+      );
+    }
+
+    const emptyStars = 5 - Math.ceil(rating);
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(
+        <Icon
+          key={`empty-${i}`}
+          name="star-border"
+          type="material"
+          size={12}
+          color="#E0E0E0"
+        />
+      );
+    }
+
+    return stars;
+  };
+
   return (
     <Animated.View
       entering={FadeIn.delay(index * 70).springify()}
-      style={[styles.container, style, animatedStyle]}
+      style={[
+        styles.container,
+        style,
+        { marginHorizontal: wp(1.5), marginBottom: hp(2), width: CARD_WIDTH, height: IMAGE_HEIGHT + CONTENT_HEIGHT },
+      ]}
     >
       <TouchableOpacity
         style={styles.card}
@@ -113,18 +191,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 <Text style={styles.originalPrice}>₹{item.originalPrice.toFixed(2)}</Text>
               )}
             </View>
-            {onAddToCart && (
-              <TouchableOpacity
-                style={styles.addButton}
-                onPress={onAddToCart}
-                activeOpacity={0.7}
-                accessible={true}
-                accessibilityLabel={`Add ${item.name} to cart`}
-                accessibilityHint="Double tap to add this item to your shopping cart"
-              >
-                <Icon name="plus" type="feather" size={18} color={theme.background} />
-              </TouchableOpacity>
-            )}
           </View>
         </View>
       </TouchableOpacity>
@@ -134,10 +200,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: CARD_WIDTH,
-    marginHorizontal: wp(1.5),
-    marginBottom: hp(2),
-    height: IMAGE_HEIGHT + CONTENT_HEIGHT,
+    // width, marginHorizontal, marginBottom, height are set inline for 2-column grid
   },
   card: {
     backgroundColor: theme.surface,
@@ -176,6 +239,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    overflow: 'hidden',
   },
   errorContainer: {
     position: 'absolute',
@@ -186,10 +252,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(245, 245, 245, 0.8)',
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    overflow: 'hidden',
   },
   image: {
     width: '100%',
     height: '100%',
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
   },
   discountTag: {
     position: 'absolute',
@@ -264,25 +335,6 @@ const styles = StyleSheet.create({
     fontSize: wp(2.7),
     marginTop: 1,
   },
-  addButton: {
-    backgroundColor: theme.primary,
-    width: wp(8),
-    height: wp(8),
-    borderRadius: wp(4),
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...Platform.select({
-      ios: {
-        shadowColor: theme.primary,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 2,
-      },
-    }),
-  },
 });
 
-export default ProductCard;
+export default VendorProductCard;

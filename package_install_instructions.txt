@@ -1,0 +1,2 @@
+# Install these packages for AddProductForm improvements
+npm install react-native-image-picker @react-native-picker/picker

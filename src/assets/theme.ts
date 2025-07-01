@@ -192,8 +192,8 @@ export const TYPOGRAPHY_STYLES = {
   },
   display2: {
     fontFamily: fonts.BOLD,
-    fontSize: theme.fontSizes['4xl'],
-    lineHeight: theme.fontSizes['4xl'] * 1.2,
+    fontSize: theme.fontSizes['2xl'],
+    lineHeight: theme.fontSizes['2xl'] * 1.2,
     letterSpacing: -0.5,
   },
   

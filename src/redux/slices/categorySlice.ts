@@ -23,7 +23,7 @@ export const fetchCategories = createAsyncThunk(
   'categories/fetchCategories',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await apiClient.get('/v1/getAllCategories');
+      const response = await apiClient.get('/getAllCategories');
       // Check if response.data exists and return the appropriate structure
       const categories = response.data?.data || response.data || [];
       console.log('Fetched categories:', categories);

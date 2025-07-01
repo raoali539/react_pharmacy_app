@@ -30,20 +30,20 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
   const getButtonStyle = () => {
     const baseStyle = [styles.button];
-    
+
     // Add variant styles
     switch (variant) {
       case 'secondary':
-        baseStyle.push(styles.secondaryButton);
+        baseStyle.push({ ...styles.button, ...styles.secondaryButton });
         break;
       case 'outline':
-        baseStyle.push(styles.outlineButton);
+        baseStyle.push({ ...styles.button, ...styles.outlineButton });
         break;
       case 'ghost':
-        baseStyle.push(styles.ghostButton);
+        baseStyle.push({ ...styles.button, ...styles.ghostButton });
         break;
       default:
-        baseStyle.push(styles.primaryButton);
+        baseStyle.push({ ...styles.button, ...styles.primaryButton });
     }
 
     // Add size styles
@@ -70,13 +70,13 @@ const Button: React.FC<ButtonProps> = ({
 
     switch (variant) {
       case 'outline':
-        baseStyle.push(styles.outlineText);
+        baseStyle.push({ ...styles.text, ...styles.outlineText });
         break;
       case 'ghost':
-        baseStyle.push(styles.ghostText);
+        baseStyle.push({ ...styles.text, ...styles.ghostText });
         break;
       default:
-        baseStyle.push(styles.primaryText);
+        baseStyle.push({ ...styles.text, ...styles.primaryText });
     }
 
     switch (size) {
@@ -207,3 +207,5 @@ const styles = StyleSheet.create({
     marginLeft: wp(2),
   },
 });
+
+export { Button };

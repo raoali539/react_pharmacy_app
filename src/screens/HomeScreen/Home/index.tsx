@@ -28,8 +28,10 @@ import { commonStyles } from '../../../assets/commonStyles';
 import { TYPOGRAPHY_STYLES } from '../../../assets/theme';
 import Categories from '../../../components/Home/Categories';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
-import { getAllProducts } from '../../../redux/slices/productSlice';
+import { getAllProducts, getHighStockProducts, getLowStockProducts } from '../../../redux/slices/productSlice';
 import { fetchCategories } from '../../../redux/slices/categorySlice';
+import AddProductForm from '../../../components/products/AddProductForm';
+import VendorDashboard from '../../../components/vendor/VendorDashboard';
 
 // Define a local product interface for the component
 interface Product {
@@ -54,7 +56,9 @@ const Home = () => {
 
   // Redux
   const dispatch = useAppDispatch();
-  const { products: apiProducts, isLoading: productsLoading, error: productsError } = useAppSelector(state => state.products);
+  const { products: apiProducts, isLoading: productsLoading, error: productsError,
+    lowstockProducts, highstockProducts
+  } = useAppSelector(state => state.products);
   console.log('Products from Redux:', apiProducts);
 
 
@@ -67,9 +71,9 @@ const Home = () => {
 
   const fetchData = useCallback(async () => {
     try {
-      // Dispatch the getAllProducts action
       const resp = await dispatch(getAllProducts());
-      console.log('Fetched products:', resp);
+      await dispatch(getLowStockProducts());
+      await dispatch(getHighStockProducts());
       setIsLoading(false);
       setIsRefreshing(false);
       AccessibilityInfo.announceForAccessibility('Content loaded successfully');
@@ -88,6 +92,7 @@ const Home = () => {
     navigation.navigate('ShowProducts', {
       title: 'All Products',
       products: apiProducts,
+      type: '1',
     });
   };
 
@@ -235,13 +240,17 @@ const Home = () => {
         <View style={styles.section}>
           <SectionHeader
             title="Low Stock "
-            onViewAll={handleViewAll}
+            onViewAll={() => navigation.navigate('ShowProducts', {
+              title: 'Low Stock Products',
+              products: lowstockProducts,
+              type: '2',
+            })}
           />
           <View style={{
             width: Dimensions.get('window').width,
           }}>
             <VirtualizedHorizontalList
-              data={apiProducts}
+              data={lowstockProducts}
               renderItem={renderProduct}
               keyExtractor={keyExtractor}
               showsHorizontalScrollIndicator={false}
@@ -250,6 +259,8 @@ const Home = () => {
             />
           </View>
         </View>
+        <AddProductForm />
+        <VendorDashboard />
 
       </ScrollView>
     </SafeAreaView>

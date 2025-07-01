@@ -14,6 +14,8 @@ interface Product {
 
 interface ProductsState {
   products: Product[];
+  lowstockProducts?: Product[]; // Optional property for low stock products
+  highstockProducts?: Product[]; // Optional property for high stock products
   filteredProducts: Product[];
   selectedProduct: Product | null;
   isLoading: boolean;
@@ -26,6 +28,8 @@ const initialState: ProductsState = {
   selectedProduct: null,
   isLoading: false,
   error: null,
+  lowstockProducts: [], // Initialize as empty array
+  highstockProducts: [], // Initialize as empty array
 };
 
 // Async thunks for product-related operations
@@ -33,12 +37,36 @@ export const getAllProducts = createAsyncThunk(
   'products/getAllProducts',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await apiClient.get('/v1/getAllProducts');
-      console.log('Fetched products:', response);
-      return response.data;
+      const AllProducts = await apiClient.get('/products?type=1');
+      console.log('Fetched products:', AllProducts);
+      return AllProducts.data;
     } catch (error: any) {
       console.error('Error fetching products:', error);
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch products');
+    }
+  }
+);
+
+export const getLowStockProducts = createAsyncThunk(
+  'products/getLowStockProducts',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get('/products?type=2');
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch low stock products');
+    }
+  }
+);
+
+export const getHighStockProducts = createAsyncThunk(
+  'products/getHighStockProducts',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get('/products?type=3');
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch high stock products');
     }
   }
 );
@@ -103,6 +131,7 @@ const productSlice = createSlice({
       })
       .addCase(getAllProducts.fulfilled, (state, action) => {
         state.isLoading = false;
+        console.log('Fetched products:', action.payload.products);
         state.products = action.payload.products;
         state.filteredProducts = action.payload.products;
         state.error = null;
@@ -124,6 +153,39 @@ const productSlice = createSlice({
         state.error = null;
       })
       .addCase(getProductByCategory.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Get Low Stock Products cases
+    builder
+      .addCase(getLowStockProducts.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(getLowStockProducts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.lowstockProducts = action.payload.products;
+        state.error = null;
+      })
+      .addCase(getLowStockProducts.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+
+    // Get High Stock Products cases
+    builder
+      .addCase(getHighStockProducts.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(getHighStockProducts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.highstockProducts = action.payload.products;
+        state.error = null;
+      })
+      .addCase(getHighStockProducts.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });

@@ -147,3 +147,5 @@ const styles = StyleSheet.create({
     marginTop: hp(0.5),
   },
 });
+
+export { Input };

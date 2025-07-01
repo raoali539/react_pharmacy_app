@@ -6,13 +6,13 @@ import { Platform } from 'react-native';
 const getBaseUrl = () => {
   if (Platform.OS === 'android') {
     // Android emulator: use 10.0.2.2 to access host machine
-    return 'http://10.0.2.2:8000/api/dharmacy';
+    return 'http://10.0.2.2:8000/api/dharmacy/v1';
   } else if (Platform.OS === 'ios') {
     // iOS simulator: localhost works
-    return 'http://localhost:8000/api/dharmacy';
+    return 'http://localhost:8000/api/dharmacy/v1';
   } else {
     // For physical devices, replace with your computer's local IP (e.g., 192.168.1.100)
-    return 'http://192.168.1.100:8000/api/dharmacy';
+    return 'http://192.168.1.100:8000/api/dharmacy/v1';
   }
 };
 

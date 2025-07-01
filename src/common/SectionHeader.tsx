@@ -13,6 +13,7 @@ interface SectionHeaderProps {
   onViewAll?: () => void;
   showDecoration?: boolean;
   style?: object;
+  color?: string;
 }
 
 const SectionHeader: React.FC<SectionHeaderProps> = ({
@@ -22,15 +23,16 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
   onViewAll,
   showDecoration = true,
   style,
+  color
 }) => {
   return (
     <Animated.View style={[styles.container, style]}>
       <View style={styles.titleContainer}>
-        <Text style={[styles.title, TYPOGRAPHY_STYLES.h3]} numberOfLines={1}>
+        <Text style={[styles.title, TYPOGRAPHY_STYLES.h3, { color }]} numberOfLines={1}>
           {title}
         </Text>
         {subtitle && (
-          <Text style={[styles.subtitle, TYPOGRAPHY_STYLES.body2]} numberOfLines={1}>
+          <Text style={[styles.subtitle, TYPOGRAPHY_STYLES.body2, { color }]} numberOfLines={1}>
             {subtitle}
           </Text>
         )}
@@ -39,7 +41,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
 
       {onViewAll && (
         <TouchableOpacity style={styles.viewAllButton} onPress={onViewAll}>
-          <Text style={[styles.viewAllText, TYPOGRAPHY_STYLES.button2]}>
+          <Text style={[styles.viewAllText, TYPOGRAPHY_STYLES.button2, { color }]}>
             {viewAllLabel}
           </Text>
           <Icon

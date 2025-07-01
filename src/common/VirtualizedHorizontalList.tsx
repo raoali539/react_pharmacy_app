@@ -110,6 +110,7 @@ const VirtualizedHorizontalList = <T extends any>({
       decelerationRate="fast"
       snapToInterval={itemWidth}
       bounces={false}
+      
     />
   );
 };

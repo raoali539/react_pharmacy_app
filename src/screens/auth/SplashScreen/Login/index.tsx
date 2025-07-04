@@ -42,11 +42,18 @@ const Login = () => {
       }
       // Optionally, you can validate userType here if needed
       const resultAction = await dispatch(loginUser({ email, password, userType }) as any);
-      if (loginUser.fulfilled.match(resultAction)) {
-        navigation.navigate('HomeRoutes');
-      } else if (loginUser.rejected.match(resultAction)) {
+      console.log('Login result:', resultAction);
+      if(resultAction.payload.redirect == "/userHome"){
+        navigation.navigate('home' as never);
+      }
+      if(resultAction.payload.redirect ==  "/adminHome"){
+        console.log('Admin Home');
+        navigation.navigate('home' as never);
+      }
+      if (loginUser.rejected.match(resultAction)) {
         Alert.alert('Error', resultAction.payload as string || 'Login failed');
       }
+      // No navigation here! App.tsx will handle route switching based on Redux state
     } catch (error) {
       console.error('Login error:', error);
       Alert.alert('Error', 'Something went wrong');
@@ -168,7 +175,7 @@ const Login = () => {
 
           <View style={styles.registerContainer}>
             <Text style={styles.registerText}>Don't have an account? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Registration' as never)}>
+            <TouchableOpacity onPress={() => {/* navigation to Register, keep if needed */}}>
               <Text style={styles.registerLink}>Sign Up</Text>
             </TouchableOpacity>
           </View>

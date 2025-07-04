@@ -9,48 +9,61 @@ import {
   ScrollView,
   Platform,
   Alert,
+  StatusBar,
 } from 'react-native';
 import { Icon } from '@rneui/base';
 import { useNavigation } from '@react-navigation/native';
 import theme, { TYPOGRAPHY_STYLES } from '../../../assets/theme';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../../utils/globalFunctions';
 import { useCart } from '../../../contexts/CartContext';
+import { checkout } from '../../../utils/checkoutApi';
 
 const CheckoutScreen = () => {
   const navigation = useNavigation();
   const { state, dispatch } = useCart();
   const [formData, setFormData] = useState({
-    street: '',
-    aptSuite: '',
-    town: '',
+    fullName: '',
+    addressLine1: '',
+    city: '',
     postalCode: '',
+    country: '',
     phone: '',
   });
   const [errors, setErrors] = useState({
-    street: '',
-    town: '',
+    fullName: '',
+    addressLine1: '',
+    city: '',
     postalCode: '',
+    country: '',
     phone: '',
   });
 
   const validateForm = () => {
     let isValid = true;
     const newErrors = {
-      street: '',
-      town: '',
+      fullName: '',
+      addressLine1: '',
+      city: '',
       postalCode: '',
+      country: '',
       phone: '',
     };
 
-    // Street validation
-    if (!formData.street.trim()) {
-      newErrors.street = 'Street address is required';
+    // Full Name validation
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = 'Full name is required';
       isValid = false;
     }
 
-    // Town validation
-    if (!formData.town.trim()) {
-      newErrors.town = 'Town/Locality is required';
+    // Address Line 1 validation
+    if (!formData.addressLine1.trim()) {
+      newErrors.addressLine1 = 'Address is required';
+      isValid = false;
+    }
+
+    // City validation
+    if (!formData.city.trim()) {
+      newErrors.city = 'City is required';
       isValid = false;
     }
 
@@ -58,56 +71,48 @@ const CheckoutScreen = () => {
     if (!formData.postalCode.trim()) {
       newErrors.postalCode = 'Postal code is required';
       isValid = false;
-    } else if (!/^\d{4}$/.test(formData.postalCode.trim())) {
-      newErrors.postalCode = 'Invalid postal code format (4 digits)';
+    } else if (!/^\d{4,6}$/.test(formData.postalCode.trim())) {
+      newErrors.postalCode = 'Invalid postal code format (4-6 digits)';
       isValid = false;
     }
 
-    // Phone validation
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone number is required';
-      isValid = false;
-    } else if (!/^\d{9,10}$/.test(formData.phone.trim())) {
-      newErrors.phone = 'Invalid phone number (9-10 digits)';
-      isValid = false;
-    }
 
     setErrors(newErrors);
     return isValid;
   };
 
-  const handleSubmit = () => {
-    if (!validateForm()) {
-      Alert.alert('Error', 'Please fix the errors in the form');
-      return;
-    }
+ const handleSubmit = async () => {
+  if (!validateForm()) {
+    Alert.alert('Error', 'Please fix the errors in the form');
+    return;
+  }
 
-    if (!state.items.length) {
-      Alert.alert('Error', 'Your cart is empty');
-      return;
-    }
+  if (!state.items.length) {
+    Alert.alert('Error', 'Your cart is empty');
+    return;
+  }
 
-    // Create order object
-    const order = {
-      items: state.items,
-      total: state.total,
-      shippingAddress: {
-        street: formData.street,
-        aptSuite: formData.aptSuite,
-        town: formData.town,
-        postalCode: formData.postalCode,
-        phone: formData.phone,
-      },
-      orderDate: new Date().toISOString(),
-    };
+  console.log('Form Data:', state.items);
 
-    // Here you would typically send the order to your backend
-    console.log('Order submitted:', order);
+  const payload = {
+    items: state.items.map((item: any) => ({
+      productId: item.productId || item._id || item.id,
+      quantity: item.quantity,
+    })),
+    shippingAddress: {
+      fullName: formData.fullName,
+      addressLine1: formData.addressLine1,
+      city: formData.city,
+      postalCode: formData.postalCode,
+      country: formData.country,
+    },
+  };
 
-    // Clear cart
+  console.log('Checkout Payload:', payload);
+
+  try {
+    await checkout(payload);
     dispatch({ type: 'CLEAR_CART' });
-
-    // Show success message
     Alert.alert(
       'Success',
       'Your order has been placed successfully!',
@@ -115,21 +120,22 @@ const CheckoutScreen = () => {
         {
           text: 'OK',
           onPress: () => {
-            // Navigate to Orders tab
             navigation.reset({
               index: 0,
-              routes: [{ 
+              routes: [{
                 name: 'home',
-                params: {
-                  screen: 'Orders'
-                }
+                params: { screen: 'Orders' },
               }],
             });
           },
         },
       ],
     );
-  };
+  } catch (error: any) {
+    const msg = error?.response?.data?.message || 'Failed to place order. Please try again.';
+    Alert.alert('Error', msg);
+  }
+};
 
   const renderError = (error: string) => {
     if (!error) return null;
@@ -137,11 +143,10 @@ const CheckoutScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
       <View style={styles.header}>
-        <TouchableOpacity 
-          onPress={() => navigation.goBack()}
-        >
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <View style={styles.iconBackground}>
             <Icon name="arrow-left" type="feather" size={22} color={theme.text} />
           </View>
@@ -150,84 +155,109 @@ const CheckoutScreen = () => {
         <View style={styles.iconButton} />
       </View>
 
-      <ScrollView style={styles.content}>
-        <Text style={styles.sectionTitle}>Address</Text>
-        
+      <ScrollView style={styles.content} keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-start' }}>
+        <Text style={styles.sectionTitle}>Shipping Address</Text>
+
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Street and number</Text>
+          <Text style={styles.label}>Full Name</Text>
           <TextInput
-            style={[styles.input, errors.street ? styles.inputError : null]}
-            value={formData.street}
-            onChangeText={(text) => {
-              setFormData(prev => ({ ...prev, street: text }));
-              setErrors(prev => ({ ...prev, street: '' }));
+            style={[styles.input, errors.fullName ? styles.inputError : null]}
+            value={formData.fullName}
+            onChangeText={text => {
+              setFormData(prev => ({ ...prev, fullName: text }));
+              setErrors(prev => ({ ...prev, fullName: '' }));
             }}
-            placeholder="Enter street address"
+            placeholder="Enter your full name"
+            autoCapitalize="words"
+            returnKeyType="next"
           />
-          {renderError(errors.street)}
+          {renderError(errors.fullName)}
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Apt, Suite (optional)</Text>
+          <Text style={styles.label}>Address Line 1</Text>
           <TextInput
-            style={styles.input}
-            value={formData.aptSuite}
-            onChangeText={(text) => setFormData(prev => ({ ...prev, aptSuite: text }))}
-            placeholder="Enter apartment or suite number"
-          />
-        </View>
-
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Town/Locality</Text>
-          <TextInput
-            style={[styles.input, errors.town ? styles.inputError : null]}
-            value={formData.town}
-            onChangeText={(text) => {
-              setFormData(prev => ({ ...prev, town: text }));
-              setErrors(prev => ({ ...prev, town: '' }));
+            style={[styles.input, errors.addressLine1 ? styles.inputError : null]}
+            value={formData.addressLine1}
+            onChangeText={text => {
+              setFormData(prev => ({ ...prev, addressLine1: text }));
+              setErrors(prev => ({ ...prev, addressLine1: '' }));
             }}
-            placeholder="Enter town or locality"
+            placeholder="Street address, P.O. box, company name, c/o"
+            autoCapitalize="words"
+            returnKeyType="next"
           />
-          {renderError(errors.town)}
+          {renderError(errors.addressLine1)}
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Postal code</Text>
+          <Text style={styles.label}>City</Text>
+          <TextInput
+            style={[styles.input, errors.city ? styles.inputError : null]}
+            value={formData.city}
+            onChangeText={text => {
+              setFormData(prev => ({ ...prev, city: text }));
+              setErrors(prev => ({ ...prev, city: '' }));
+            }}
+            placeholder="Enter your city"
+            autoCapitalize="words"
+            returnKeyType="next"
+          />
+          {renderError(errors.city)}
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Postal Code</Text>
           <TextInput
             style={[styles.input, errors.postalCode ? styles.inputError : null]}
             value={formData.postalCode}
-            onChangeText={(text) => {
+            onChangeText={text => {
               setFormData(prev => ({ ...prev, postalCode: text }));
               setErrors(prev => ({ ...prev, postalCode: '' }));
             }}
             placeholder="Enter postal code"
             keyboardType="number-pad"
-            maxLength={4}
+            maxLength={6}
+            returnKeyType="next"
           />
           {renderError(errors.postalCode)}
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Phone number</Text>
-          <View style={styles.phoneInputContainer}>
-            <View style={styles.countryCode}>
-              <Text style={styles.countryCodeText}>+61</Text>
-              <Icon name="chevron-down" type="feather" size={20} color={theme.text} />
-            </View>
-            <TextInput
-              style={[styles.phoneInput, errors.phone ? styles.inputError : null]}
-              value={formData.phone}
-              onChangeText={(text) => {
-                setFormData(prev => ({ ...prev, phone: text }));
-                setErrors(prev => ({ ...prev, phone: '' }));
-              }}
-              placeholder="Enter phone number"
-              keyboardType="phone-pad"
-              maxLength={10}
-            />
-          </View>
-          {renderError(errors.phone)}
+          <Text style={styles.label}>Country</Text>
+          <TextInput
+            style={[styles.input, errors.country ? styles.inputError : null]}
+            value={formData.country}
+            onChangeText={text => {
+              setFormData(prev => ({ ...prev, country: text }));
+              setErrors(prev => ({ ...prev, country: '' }));
+            }}
+            placeholder="Enter your country"
+            autoCapitalize="words"
+            returnKeyType="next"
+          />
+          {renderError(errors.country)}
         </View>
+
+        {/* <View style={styles.inputContainer}>
+          <Text style={styles.label}>Phone Number</Text>
+          <TextInput
+            style={[styles.input, errors.phone ? styles.inputError : null]}
+            value={formData.phone}
+            onChangeText={text => {
+              setFormData(prev => ({ ...prev, phone: text }));
+              setErrors(prev => ({ ...prev, phone: '' }));
+            }}
+            placeholder="Enter phone number"
+            keyboardType="phone-pad"
+            maxLength={15}
+            returnKeyType="done"
+          />
+          {renderError(errors.phone)}
+        </View> */}
+
+        {/* Spacer to ensure button is visible when keyboard is open */}
+        <View style={{ height: 32 }} />
       </ScrollView>
 
       <View style={styles.footer}>
@@ -236,7 +266,7 @@ const CheckoutScreen = () => {
             <Text style={styles.totalLabel}>Order Total</Text>
             <Text style={styles.totalAmount}>A${state?.total?.toFixed(2) || '0.00'}</Text>
           </View>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.continueButton, !state?.items?.length && styles.disabledButton]}
             onPress={handleSubmit}
             disabled={!state?.items?.length}
@@ -250,9 +280,10 @@ const CheckoutScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
     backgroundColor: theme.background,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   header: {
     flexDirection: 'row',
@@ -318,35 +349,6 @@ const styles = StyleSheet.create({
     color: theme.text,
   },
   input: {
-    borderWidth: 1,
-    borderColor: theme.border,
-    borderRadius: theme.borderRadius.lg,
-    paddingHorizontal: wp(4),
-    paddingVertical: hp(1.5),
-    fontSize: wp(3.8),
-    color: theme.text,
-  },
-  phoneInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  countryCode: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: wp(4),
-    paddingVertical: hp(1.5),
-    borderWidth: 1,
-    borderColor: theme.border,
-    borderRadius: theme.borderRadius.lg,
-    marginRight: wp(2),
-  },
-  countryCodeText: {
-    ...TYPOGRAPHY_STYLES.body1,
-    marginRight: wp(2),
-    color: theme.text,
-  },
-  phoneInput: {
-    flex: 1,
     borderWidth: 1,
     borderColor: theme.border,
     borderRadius: theme.borderRadius.lg,

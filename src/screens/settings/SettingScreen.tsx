@@ -27,28 +27,34 @@ interface SettingsSection {
   items: SettingsItem[];
 }
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '../../redux/hooks';
+import { logout } from '../../redux/slices/authSlice';
+import { useNavigation } from '@react-navigation/native';
+
+
 const SettingsScreen = () => {
   const [animatedIndex, setAnimatedIndex] = useState(-1);
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+  const user = useAppSelector((state: any) => state.auth?.user);
+console.log('SettingsScreen user:', user);
+  // Handles logout: clears AsyncStorage, Redux, and navigates to Login
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.clear();
+      dispatch(logout());
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' as never }],
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
   const settingsSections: SettingsSection[] = [
-    // {
-    //   title: 'Balances',
-    //   items: [
-    //     {
-    //       title: 'Available credit',
-    //       rightText: 'A$0.00',
-    //       icon: 'wallet',
-    //       iconType: 'feather',
-    //       onPress: () => {},
-    //     },
-    //     {
-    //       title: 'Earn credit',
-    //       icon: 'gift',
-    //       iconType: 'feather',
-    //       onPress: () => {},
-    //     },
-    //   ],
-    // },
     {
       title: 'Account',
       items: [
@@ -56,68 +62,29 @@ const SettingsScreen = () => {
           title: 'Orders & reviews',
           icon: 'shopping-bag',
           iconType: 'feather',
-          onPress: () => {},
+          onPress: () => { },
         },
         {
           title: 'Invoices',
           icon: 'file-text',
           iconType: 'feather',
-          onPress: () => {},
+          onPress: () => { },
         },
         {
           title: 'Messages',
           icon: 'message-circle',
           iconType: 'feather',
-          onPress: () => {},
+          onPress: () => { },
         },
         {
           title: 'Settings',
           icon: 'settings',
           iconType: 'feather',
-          onPress: () => {},
+          onPress: () => { },
         },
-        // {
-        //   title: 'Refer brands, earn A$2,000',
-        //   icon: 'users',
-        //   iconType: 'feather',
-        //   onPress: () => {},
-        // },
-        // {
-        //   title: 'My team',
-        //   icon: 'user-plus',
-        //   iconType: 'feather',
-        //   onPress: () => {},
-        // },
-        // {
-        //   title: 'Blog',
-        //   icon: 'book-open',
-        //   iconType: 'feather',
-        //   onPress: () => {},
-        // },
+
       ],
     },
-    // {
-    //   items: [
-    //     {
-    //       title: 'Instagram',
-    //       icon: 'instagram',
-    //       iconType: 'feather',
-    //       onPress: () => {},
-    //     },
-    //     {
-    //       title: 'Facebook',
-    //       icon: 'facebook',
-    //       iconType: 'feather',
-    //       onPress: () => {},
-    //     },
-    //     {
-    //       title: 'Twitter',
-    //       icon: 'twitter',
-    //       iconType: 'feather',
-    //       onPress: () => {},
-    //     },
-    //   ],
-    // },
     {
       title: 'Legal',
       items: [
@@ -125,42 +92,25 @@ const SettingsScreen = () => {
           title: 'Terms of Service',
           icon: 'file',
           iconType: 'feather',
-          onPress: () => {},
+          onPress: () => { },
         },
         {
           title: 'Privacy Policy',
           icon: 'shield',
           iconType: 'feather',
-          onPress: () => {},
+          onPress: () => { },
         },
-        // {
-        //   title: 'Open Source Licenses',
-        //   icon: 'code',
-        //   iconType: 'feather',
-        //   onPress: () => {},
-        // },
       ],
     },
     {
       title: 'Support',
       items: [
-        // {
-        //   title: 'Give feedback',
-        //   icon: 'message-square',
-        //   iconType: 'feather',
-        //   onPress: () => {},
-        // },
-        // {
-        //   title: 'Help Center',
-        //   icon: 'help-circle',
-        //   iconType: 'feather',
-        //   onPress: () => {},
-        // },
+
         {
           title: 'Contact us',
           icon: 'phone',
           iconType: 'feather',
-          onPress: () => {},
+          onPress: () => { },
         },
       ],
     },
@@ -170,7 +120,7 @@ const SettingsScreen = () => {
           title: 'Log out',
           icon: 'log-out',
           iconType: 'feather',
-          onPress: () => {},
+          onPress: handleLogout,
         },
       ],
     },
@@ -195,11 +145,11 @@ const SettingsScreen = () => {
       >
         <View style={styles.settingsItemLeft}>
           <View style={[styles.iconContainer, title === 'Log out' && styles.logoutIconContainer]}>
-            <Icon 
-              name={icon} 
-              type={iconType} 
-              size={20} 
-              color={title === 'Log out' ? theme.error : theme.primary} 
+            <Icon
+              name={icon}
+              type={iconType}
+              size={20}
+              color={title === 'Log out' ? theme.error : theme.primary}
             />
           </View>
           <Text style={[
@@ -210,11 +160,11 @@ const SettingsScreen = () => {
         {rightText ? (
           <Text style={styles.rightText}>{rightText}</Text>
         ) : (
-          <Icon 
-            name="chevron-right" 
-            type="feather" 
-            size={18} 
-            color={title === 'Log out' ? theme.error : theme.textLight} 
+          <Icon
+            name="chevron-right"
+            type="feather"
+            size={18}
+            color={title === 'Log out' ? theme.error : theme.textLight}
           />
         )}
       </TouchableOpacity>
@@ -224,23 +174,23 @@ const SettingsScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
-     
+
       <ScrollView contentContainerStyle={styles.content}>
         {/* Profile Section */}
-        <Animated.View 
+        <Animated.View
           entering={FadeInDown.duration(600)}
           style={styles.profileSection}
         >
           <View style={styles.profileImageContainer}>
-            <Text style={styles.profileInitial}>Z</Text>
+            <Text style={styles.profileInitial}>{user?.userName?.charAt(0)}</Text>
           </View>
-          <Text style={styles.profileName}>Zohaib Rao</Text>
+          <Text style={styles.profileName}>{user?.userName}</Text>
           <Text style={styles.profileSubtitle}>My Cat</Text>
         </Animated.View>
 
         {/* Settings Sections */}
         {settingsSections.map((section, sectionIndex) => (
-          <Animated.View 
+          <Animated.View
             key={sectionIndex}
             entering={FadeInDown.delay(sectionIndex * 200).springify()}
             style={styles.sectionContainer}

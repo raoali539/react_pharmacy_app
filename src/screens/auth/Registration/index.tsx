@@ -17,10 +17,12 @@ const Registration = () => {
     password: '',
     confirmPassword: '',
     phone: '',
+    userType: 'User',
   });
 
   const handleRegistration = async () => {
-    if (!formData.fullName || !formData.email || !formData.password || !formData.confirmPassword || !formData.phone) {
+
+    if (!formData.fullName || !formData.email || !formData.password || !formData.confirmPassword || !formData.phone || !formData.userType) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
@@ -34,7 +36,8 @@ const Registration = () => {
       const resultAction = await dispatch(registerUser({
         name: formData.fullName,
         email: formData.email,
-        password: formData.password
+        password: formData.password,
+        userType: formData.userType
       }) as any);
 
       if (registerUser.fulfilled.match(resultAction)) {
@@ -56,14 +59,14 @@ const Registration = () => {
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
         <Text style={styles.title}>Create Account</Text>
-        
+
         <TextInput
           style={styles.input}
           placeholder="Full Name"
           value={formData.fullName}
           onChangeText={(value) => handleInputChange('fullName', value)}
         />
-        
+
         <TextInput
           style={styles.input}
           placeholder="Email"
@@ -72,7 +75,7 @@ const Registration = () => {
           keyboardType="email-address"
           autoCapitalize="none"
         />
-        
+
         <TextInput
           style={styles.input}
           placeholder="Phone Number"
@@ -80,7 +83,26 @@ const Registration = () => {
           onChangeText={(value) => handleInputChange('phone', value)}
           keyboardType="phone-pad"
         />
-        
+
+        {/* User Type Dropdown */}
+        <View style={styles.dropdownContainer}>
+          <Text style={styles.dropdownLabel}>Register as:</Text>
+          <View style={styles.dropdownRow}>
+            <TouchableOpacity
+              style={[styles.dropdownOption, formData.userType === 'User' && styles.dropdownOptionSelected]}
+              onPress={() => handleInputChange('userType', 'User')}
+            >
+              <Text style={formData.userType === 'User' ? styles.dropdownTextSelected : styles.dropdownText}>User</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.dropdownOption, formData.userType === 'Vendor' && styles.dropdownOptionSelected]}
+              onPress={() => handleInputChange('userType', 'Vendor')}
+            >
+              <Text style={formData.userType === 'Vendor' ? styles.dropdownTextSelected : styles.dropdownText}>Vendor</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
         <TextInput
           style={styles.input}
           placeholder="Password"
@@ -88,7 +110,7 @@ const Registration = () => {
           onChangeText={(value) => handleInputChange('password', value)}
           secureTextEntry
         />
-        
+
         <TextInput
           style={styles.input}
           placeholder="Confirm Password"
@@ -97,8 +119,8 @@ const Registration = () => {
           secureTextEntry
         />
 
-        <TouchableOpacity 
-          style={[styles.button, isLoading && styles.buttonDisabled]} 
+        <TouchableOpacity
+          style={[styles.button, isLoading && styles.buttonDisabled]}
           onPress={handleRegistration}
           disabled={isLoading}
         >
@@ -157,9 +179,43 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   linkText: {
-    color: theme.active,
+    color: theme.primary,
     textAlign: 'center',
     marginTop: 10,
+  },
+  dropdownContainer: {
+    marginBottom: 15,
+  },
+  dropdownLabel: {
+    marginBottom: 5,
+    color: theme.text,
+    fontWeight: '500',
+  },
+  dropdownRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  dropdownOption: {
+    flex: 1,
+    paddingVertical: 12,
+    marginHorizontal: 5,
+    borderWidth: 1,
+    borderColor: theme.border,
+    borderRadius: 8,
+    backgroundColor: theme.surface,
+    alignItems: 'center',
+  },
+  dropdownOptionSelected: {
+    backgroundColor: theme.primary,
+    borderColor: theme.primary,
+  },
+  dropdownText: {
+    color: theme.text,
+    fontWeight: '500',
+  },
+  dropdownTextSelected: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
 

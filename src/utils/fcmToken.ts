@@ -1,7 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import messaging from "@react-native-firebase/messaging";
-import * as Sentry from "@sentry/react-native";
-import { saveFcmToken } from "@/redux/actions/notifications";
 
 /**
  * Stores the current Firebase Cloud Messaging (FCM) token in AsyncStorage.
@@ -35,12 +33,10 @@ export const storeFcmTokenInAsyncStorage = async (): Promise<void> => {
         await AsyncStorage.setItem("fcmToken", newToken);
       } catch (refreshError) {
         console.error("Error refreshing FCM Token:", refreshError);
-        Sentry.captureException(refreshError);
       }
     });
   } catch (error) {
     console.error("Error storing FCM Token on app launch:", error);
-    Sentry.captureException(error);
   }
 };
 
@@ -59,9 +55,8 @@ export const sendFcmTokenToBackendAfterLogin = async (
     if (!fcmToken || !userId) return;
 
     // Save the FCM token to the backend
-    await saveFcmToken();
+    // await saveFcmToken();
   } catch (error) {
     console.error("Error sending FCM Token to backend after login:", error);
-    Sentry.captureException(error);
   }
 };

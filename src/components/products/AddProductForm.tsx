@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useState } from 'react';
+import axios from 'axios';
 import {
   View,
   Text,
@@ -21,11 +22,14 @@ import { commonStyles } from '../../assets/commonStyles';
 import { useNavigation } from '@react-navigation/native';
 import theme from '../../assets/theme';
 import VendorHeader from '../vendorsScreen/header';
+import { useAppDispatch, addProduct } from '../../redux';
+
 const MAX_IMAGES = 3;
 
 const AddProductForm = ({params}:any) => {
     const route = useRoute<any>();
     const navigation = useNavigation();
+    const dispatch = useAppDispatch();
   const { isEditMode = false } = (route.params || {}); // Safely access isEditMode
   const [title, setTitle] = useState('');
   const [price, setPrice] = useState('2500000');
@@ -34,8 +38,18 @@ const AddProductForm = ({params}:any) => {
   const [images, setImages] = useState<{ id: string; uri?: string }[]>([]); // Start with no images
   const [categoryModalVisible, setCategoryModalVisible] = useState(false);
   const [errors, setErrors] = useState<{ title?: string; price?: string }>({});
+  const [loading, setLoading] = useState(false);
 
-  const categories = ['Cows', 'Goats', 'Sheep', 'Buffaloes', 'Chickens', 'Other'];
+  // For demo, use static category IDs. Replace with real IDs as needed.
+  const categoryMap: { [key: string]: string } = {
+    Cows: '6856e1b38ce19353d0f1f73b',
+    Goats: '6856e1b38ce19353d0f1f73c',
+    Sheep: '6856e1b38ce19353d0f1f73d',
+    Buffaloes: '6856e1b38ce19353d0f1f73e',
+    Chickens: '6856e1b38ce19353d0f1f73f',
+    Other: '6856e1b38ce19353d0f1f740',
+  };
+  const categories = Object.keys(categoryMap);
 
   const handleImagePicker = async (index: number) => {
     try {
@@ -76,10 +90,36 @@ const AddProductForm = ({params}:any) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validate()) return;
-    // Submit logic here
-    Alert.alert('Product Added', 'Your product has been added successfully!');
+    setLoading(true);
+    try {
+      const payload = {
+        name: title,
+        description: details,
+        price: Number(price),
+        imageUrl: [
+          'https://celestiaglow.pk/wp-content/uploads/2025/02/IMG_0446-Photoroom.png',
+        ],
+        category: categoryMap[category] || categoryMap['Other'],
+        stockAvailable: 15,
+      };
+      // Use Redux thunk instead of direct axios
+      const resultAction = await dispatch(addProduct(payload));
+      if (addProduct.fulfilled.match(resultAction)) {
+        Alert.alert('Product Added', 'Your product has been added successfully!');
+        setTitle('');
+        setPrice('');
+        setDetails('');
+        setImages([]);
+      } else {
+        Alert.alert('Error', resultAction.payload as string || 'Failed to add product.');
+      }
+    } catch (e: any) {
+      Alert.alert('Error', e?.message || 'Could not add product.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -234,8 +274,8 @@ const AddProductForm = ({params}:any) => {
         <View style={[styles.section,{
           paddingBottom: Platform.OS === 'ios' ? 20 : 30,
         }]}>
-          <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
-            <Text style={styles.submitBtnText}>Add Product</Text>
+          <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit} disabled={loading}>
+            <Text style={styles.submitBtnText}>{loading ? 'Adding...' : 'Add Product'}</Text>
           </TouchableOpacity>
         </View>
       </View>

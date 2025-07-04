@@ -42,9 +42,9 @@ const ProductDetails = ({ route, navigation }: any) => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await apiClient.get(`/v1/getProductbyid?productId=${productId._id}`);
+        const response = await apiClient.get(`/getProductbyid?productId=${productId._id}`);
         console.log('Product Details:', response.data.data);
-        setProduct(response.data.data);
+        setProduct(response.data.data ? response.data.data : []);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching product:', error);

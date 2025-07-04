@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "530036575979",
+    "project_id": "dharmacy-dev",
+    "storage_bucket": "dharmacy-dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:530036575979:android:21fc7debe49a02e466f8ae",
+        "android_client_info": {
+          "package_name": "com.pharmacymanagement"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqDk8QJjor1lFNl-qJvLJA0MtB12AdE28"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

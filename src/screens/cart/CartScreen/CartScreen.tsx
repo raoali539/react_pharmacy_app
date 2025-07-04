@@ -22,6 +22,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../../
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../../../common/Header';
 import { commonStyles } from '../../../assets/commonStyles';
+import { useAppSelector } from '../../../redux';
 
 type RootStackParamList = {
   Auth: { screen: string };
@@ -35,6 +36,8 @@ const CartScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [searchText, setSearchText] = useState('');
   const scaleAnims = useRef(new Map()).current;
+  const user = useAppSelector((state: any) => state.auth?.user);
+  console.log('CartScreen user:', user);
 
   // Add safe checks for arrays and objects
   const cartItems = state?.items || [];
@@ -81,7 +84,7 @@ const CartScreen = () => {
 
   const proceedToCheckout = async () => {
     try {
-      const token = await AsyncStorage.getItem('userToken');
+      const token = await user?.token || await AsyncStorage.getItem('token');
       if (token) {
         navigation.navigate('Checkout');
       } else {

@@ -17,7 +17,8 @@ import productReducer, {
   getProductByCategory, 
   getProductById, 
   sellProduct, 
-  clearProductError 
+  clearProductError, 
+  addProduct
 } from './slices/productSlice';
 
 // Cart slice exports
@@ -54,6 +55,7 @@ export {
   getProductById,
   sellProduct,
   clearProductError,
+  addProduct,
   
   // Cart slice
   cartReducer,

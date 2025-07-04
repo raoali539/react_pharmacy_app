@@ -99,6 +99,19 @@ export const getProductById = createAsyncThunk(
   }
 );
 
+export const addProduct = createAsyncThunk(
+  'products/addProduct',
+  async (productData: any, { rejectWithValue }) => {
+    try {
+      // Use the same endpoint as your direct axios call
+      const response = await apiClient.post('/createProduct', productData);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to add product');
+    }
+  }
+);
+
 export const sellProduct = createAsyncThunk(
   'products/sellProduct',
   async (productData: Partial<Product>, { rejectWithValue }) => {
@@ -218,6 +231,25 @@ const productSlice = createSlice({
         state.error = null;
       })
       .addCase(sellProduct.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Add Product cases
+    builder
+      .addCase(addProduct.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(addProduct.fulfilled, (state, action) => {
+        state.isLoading = false;
+        // Optionally add the new product to the list
+        if (action.payload.product) {
+          state.products = [...state.products, action.payload.product];
+        }
+        state.error = null;
+      })
+      .addCase(addProduct.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });

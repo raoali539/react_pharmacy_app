@@ -12,105 +12,26 @@ enum OrderStatus {
   Cancelled = 'Cancelled',
 }
 
-type OrderItem = {
-  name: string;
-  quantity: number;
-  price: number;
-};
 
-type Order = {
-  id: string;
-  customer: string;
-  date: string;
-  total: number;
-  status: OrderStatus;
-  items: OrderItem[];
-};
+
 
 const { width } = Dimensions.get('window');
 const isTablet = width >= 768;
 
+
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
+import { fetchOrders } from '../../../redux/slices/orderSlice';
+import type { Order } from '../../../redux/slices/orderSlice';
+import { heightPercentageToDP } from '../../../utils/globalFunctions';
+
 const VendorReceivedOrder = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+  const { orders, loading, error } = useAppSelector(state => state.orders);
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
 
-  // Simulating API call to fetch orders
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        // In real app, this would be an API call to your backend
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        const mockOrders: Order[] = [
-          {
-            id: 'ORD-78900',
-            customer: 'Alice Brown',
-            date: '2023-06-14',
-            total: 99.99,
-            status: OrderStatus.New,
-            items: [
-              { name: 'Basic White Tee', quantity: 1, price: 19.99 },
-              { name: 'Classic Blue Jeans', quantity: 2, price: 40.00 }
-            ]
-          },
-          {
-            id: 'ORD-78901',
-            customer: 'John Smith',
-            date: '2023-06-15',
-            total: 124.99,
-            status: OrderStatus.Processing,
-            items: [
-              { name: 'Premium Cotton T-Shirt', quantity: 2, price: 29.99 },
-              { name: 'Designer Slim Fit Jeans', quantity: 1, price: 64.99 }
-            ]
-          },
-          {
-            id: 'ORD-78902',
-            customer: 'Sarah Johnson',
-            date: '2023-06-16',
-            total: 89.49,
-            status: OrderStatus.Shipped,
-            items: [
-              { name: 'Summer Floral Maxi Dress', quantity: 1, price: 49.99 },
-              { name: 'Wide Brim Sun Hat', quantity: 1, price: 39.50 }
-            ]
-          },
-          {
-            id: 'ORD-78903',
-            customer: 'Mike Chen',
-            date: '2023-06-18',
-            total: 210.75,
-            status: OrderStatus.Delivered,
-            items: [
-              { name: 'Pro Running Shoes', quantity: 1, price: 129.99 },
-              { name: 'Performance Sports Socks (3-Pack)', quantity: 3, price: 26.92 }
-            ]
-          },
-          {
-            id: 'ORD-78904',
-            customer: 'Emily Rodriguez',
-            date: '2023-06-20',
-            total: 175.25,
-            status: OrderStatus.Cancelled,
-            items: [
-              { name: 'Winter Parka Jacket', quantity: 1, price: 149.99 },
-              { name: 'Knit Beanie', quantity: 1, price: 25.26 }
-            ]
-          }
-        ];
-
-        setOrders(mockOrders);
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to load orders. Please check your connection.');
-        setLoading(false);
-      }
-    };
-
-    fetchOrders();
-  }, []);
+    dispatch(fetchOrders());
+  }, [dispatch]);
 
   const toggleExpandOrder = (id: string) => {
     setExpandedOrderId(expandedOrderId === id ? null : id);
@@ -127,24 +48,40 @@ const VendorReceivedOrder = () => {
     return statusDetails[status];
   };
 
+  // Map Redux order to UI fields
   const renderOrderItem = ({ item }: { item: Order }) => {
-    const statusDetails = getStatusDetails(item.status);
-    const isExpanded = expandedOrderId === item.id;
+    // Map status to OrderStatus enum for badge
+    let status: OrderStatus;
+    switch (item.orderStatus) {
+      case 'processing':
+        status = OrderStatus.Processing;
+        break;
+      case 'delivered':
+        status = OrderStatus.Delivered;
+        break;
+      case 'cancelled':
+        status = OrderStatus.Cancelled;
+        break;
+      default:
+        status = OrderStatus.New;
+    }
+    const statusDetails = getStatusDetails(status);
+    const isExpanded = expandedOrderId === item._id;
 
     return (
       <TouchableOpacity
         style={[styles.orderCard, isExpanded && styles.expandedCard]}
-        onPress={() => toggleExpandOrder(item.id)}
+        onPress={() => toggleExpandOrder(item._id)}
         activeOpacity={0.95}
       >
         <View style={styles.orderHeader}>
           <View style={styles.orderIdContainer}>
             <Text style={styles.orderIdLabel}>ORDER</Text>
-            <Text style={styles.orderId}>#{item.id}</Text>
+            <Text style={styles.orderId}>#{item._id.slice(-6).toUpperCase()}</Text>
           </View>
 
-          <View style={[styles.statusBadge, { backgroundColor: `${statusDetails.color}15` }]}>
-            <Text style={[styles.statusText, { color: statusDetails.color }]}>
+          <View style={[styles.statusBadge, { backgroundColor: `${statusDetails.color}15` }]}> 
+            <Text style={[styles.statusText, { color: statusDetails.color }]}> 
               {statusDetails.icon} {statusDetails.text}
             </Text>
           </View>
@@ -152,13 +89,13 @@ const VendorReceivedOrder = () => {
 
         <View style={styles.customerRow}>
           <Text style={styles.customerIcon}>👤</Text>
-          <Text style={styles.customerName}>{item.customer}</Text>
-          <Text style={styles.date}>{item.date}</Text>
+          <Text style={styles.customerName}>{item.shippingAddress.fullName}</Text>
+          <Text style={styles.date}>{new Date(item.createdAt).toLocaleDateString()}</Text>
         </View>
 
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>TOTAL</Text>
-          <Text style={styles.totalAmount}>${item.total.toFixed(2)}</Text>
+          <Text style={styles.totalAmount}>${item.totalAmount.toFixed(2)}</Text>
         </View>
 
         {isExpanded && (
@@ -180,10 +117,10 @@ const VendorReceivedOrder = () => {
               <TouchableOpacity style={styles.actionButton}>
                 <Text style={styles.actionButtonText}>View Details</Text>
               </TouchableOpacity>
-              {item.status === OrderStatus.Processing && (
+              {status === OrderStatus.Processing && (
                 <TouchableOpacity
                   style={[styles.actionButton, styles.primaryButton]}
-                  onPress={() => console.log('Process order:', item.id)}
+                  onPress={() => console.log('Process order:', item._id)}
                 >
                   <Text style={[styles.actionButtonText, styles.primaryButtonText]}>Process Order</Text>
                 </TouchableOpacity>
@@ -221,11 +158,7 @@ const VendorReceivedOrder = () => {
         <Text style={styles.errorText}>{error}</Text>
         <TouchableOpacity
           style={styles.retryButton}
-          onPress={() => {
-            setError(null);
-            setLoading(true);
-            setTimeout(() => setOrders([]), 500); // Simulate retry
-          }}
+          onPress={() => dispatch(fetchOrders())}
         >
           <Text style={styles.retryButtonText}>Try Again</Text>
         </TouchableOpacity>
@@ -264,7 +197,7 @@ const VendorReceivedOrder = () => {
         <FlatList
           data={orders}
           renderItem={renderOrderItem}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item._id}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={<View style={styles.listHeader} />}
@@ -281,6 +214,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.background,
+    paddingBottom: heightPercentageToDP(20)
   },
   header: {
     flexDirection: 'row',

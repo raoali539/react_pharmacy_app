@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,44 +12,25 @@ import {
 } from 'react-native';
 import { Icon } from '@rneui/base';
 import { useNavigation } from '@react-navigation/native';
+
 import theme from '../../assets/theme';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from '../../utils/globalFunctions';
 import Header from '../../common/Header';
 import { commonStyles } from '../../assets/commonStyles';
-
-interface Order {
-  id: string;
-  statusDate: string;
-  status: 'delivered' | 'processing' | 'cancelled';
-  storeName: string;
-  orderDate: string;
-  total: number;
-  packageCount?: number;
-}
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { fetchOrders } from '../../redux/slices/orderSlice';
+import type { Order } from '../../redux/slices/orderSlice';
 
 const OrdersScreen = () => {
   const navigation = useNavigation();
-  const [orders] = useState<Order[]>([
-    {
-      id: '1',
-      statusDate: 'Jun 5, 2025',
-      status: 'delivered',
-      storeName: 'Fodory',
-      orderDate: 'May 24, 2025',
-      total: 119.34,
-      packageCount: 1,
-    },
-    {
-      id: '2',
-      statusDate: 'May 13, 2025',
-      status: 'cancelled',
-      storeName: 'DIRTEA',
-      orderDate: 'May 8, 2025',
-      total: 0.00,
-    }
-  ]);
+  const dispatch = useAppDispatch();
+  const { orders, loading, error } = useAppSelector(state => state.orders);
+console.log('OrdersScreen orders:', orders, 'Loading:', loading, 'Error:', error);
+  useEffect(() => {
+    dispatch(fetchOrders());
+  }, [dispatch]);
 
-  const getStatusColor = (status: Order['status']) => {
+  const getStatusColor = (status: Order['orderStatus']) => {
     switch (status) {
       case 'delivered':
         return theme.success;
@@ -63,33 +44,29 @@ const OrdersScreen = () => {
   };
 
   const renderOrderButtons = (item: Order) => {
-    if (item.status === 'delivered') {
+    if (item.orderStatus === 'delivered') {
       return (
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={[styles.button, styles.reviewButton]}>
             <Text style={styles.buttonText}>Write review</Text>
           </TouchableOpacity>
-          
           <TouchableOpacity style={[styles.button, styles.trackButton]}>
             <Text style={styles.buttonText}>
-              Track Shipment • {item.packageCount} package
+              Track Shipment • {item.items.length} package
             </Text>
           </TouchableOpacity>
-          
           <TouchableOpacity style={[styles.button, styles.buyButton]}>
             <Text style={styles.buttonText}>Buy again</Text>
           </TouchableOpacity>
-          
           <TouchableOpacity style={[styles.button, styles.reportButton]}>
             <Text style={styles.buttonText}>Report damaged / Missing items</Text>
           </TouchableOpacity>
-          
           <TouchableOpacity style={[styles.button, styles.helpButton]}>
             <Text style={styles.buttonText}>Get help</Text>
           </TouchableOpacity>
         </View>
       );
-    } else if (item.status === 'cancelled') {
+    } else if (item.orderStatus === 'cancelled') {
       return (
         <View style={styles.voiceContainer}>
           <TouchableOpacity style={styles.playButton}>
@@ -100,16 +77,6 @@ const OrdersScreen = () => {
               color={theme.text} 
             />
           </TouchableOpacity>
-          
-          {/* <Text style={styles.timeText}>01:08</Text> */}
-          
-          {/* <View style={styles.progressBar}> */}
-            {/* <View style={styles.progressFill} /> */}
-          {/* </View> */}
-{/*          
-          <TouchableOpacity style={styles.replyButton}>
-            <Text style={styles.replyText}>Reply</Text>
-          </TouchableOpacity> */}
         </View>
       );
     }
@@ -119,21 +86,19 @@ const OrdersScreen = () => {
   const renderOrder = ({ item, index }: { item: Order; index: number }) => (
     <View style={styles.orderCard}>
       <View style={styles.statusRow}>
-        <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>
-          {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+        <Text style={[styles.statusText, { color: getStatusColor(item.orderStatus) }]}>
+          {item.orderStatus.charAt(0).toUpperCase() + item.orderStatus.slice(1)}
         </Text>
-        <Text style={styles.statusDate}>{item.statusDate}</Text>
+        <Text style={styles.statusDate}>{new Date(item.createdAt).toLocaleDateString()}</Text>
       </View>
 
       <View style={styles.storeRow}>
-        <Text style={styles.storeName}>{item.storeName}</Text>
-       
+        <Text style={styles.storeName}>{item.shippingAddress.fullName}</Text>
       </View>
       <View style={styles.storeRow}>
-        <Text style={styles.orderDate}>{item.orderDate}</Text>
-        <Text style={styles.totalAmount}>• ${item.total.toFixed(2)}</Text>
+        <Text style={styles.orderDate}>{new Date(item.createdAt).toLocaleDateString()}</Text>
+        <Text style={styles.totalAmount}>• ${item.totalAmount.toFixed(2)}</Text>
       </View>
-
 
       {renderOrderButtons(item)}
     </View>
@@ -148,7 +113,6 @@ const OrdersScreen = () => {
         containerStyle={commonStyles.headerContainer}
         showSearch={false}
       />
-      
       <View style={styles.searchContainer}>
         <TouchableOpacity style={styles.searchBox}>
           <Icon 
@@ -159,19 +123,28 @@ const OrdersScreen = () => {
           />
           <Text style={styles.searchText}>Search All Orders</Text>
         </TouchableOpacity>
-        
         <TouchableOpacity style={styles.filterButton}>
           <Text style={styles.filterText}>All filters</Text>
         </TouchableOpacity>
       </View>
-
-      <FlatList
-        data={orders}
-        renderItem={renderOrder}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.listContainer}
-        showsVerticalScrollIndicator={false}
-      />
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text>Loading...</Text>
+        </View>
+      ) : error ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ color: theme.error }}>{error}</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={orders}
+          renderItem={renderOrder}
+          keyExtractor={item => item._id}
+          contentContainerStyle={styles.listContainer}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={<Text>No orders found.</Text>}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -180,6 +153,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.background,
+    marginBottom:100
   },
   listContainer: {
     padding: wp(4),
